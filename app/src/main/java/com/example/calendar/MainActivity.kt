@@ -27,9 +27,8 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.calendar.ui.theme.CalendarTheme
-import java.util.Calendar
-import java.util.Date
 import java.text.SimpleDateFormat
+import java.util.*
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -88,18 +87,15 @@ fun CalendarHeader(selectedDate: Date, onDateChange: (Calendar) -> Unit) {
         val dateFormat = SimpleDateFormat("MMMM yyyy")
         val monthYear = dateFormat.format(calendar.time)
 
-        BasicTextField(
-            value = monthYear,
-            onValueChange = {},
-            keyboardOptions = KeyboardOptions.Default.copy(
-                imeAction = ImeAction.Done
+        Text(
+            text = monthYear,
+            modifier = Modifier
+                .padding(16.dp)
+                .fillMaxWidth(0.8f),
+            style = TextStyle(
+                color = MaterialTheme.colorScheme.onBackground,
+                fontSize = 20.sp
             ),
-            keyboardActions = KeyboardActions(
-                onDone = {
-                }
-            ),
-            textStyle = TextStyle(fontSize = 20.sp),
-            modifier = Modifier.padding(16.dp).fillMaxWidth(0.8f)
         )
 
         IconButton(
