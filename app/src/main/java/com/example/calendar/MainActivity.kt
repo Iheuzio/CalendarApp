@@ -27,9 +27,9 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.calendar.ui.theme.CalendarTheme
-import java.time.DayOfWeek
 import java.util.Calendar
-import java.util.GregorianCalendar
+import java.util.Date
+import java.text.SimpleDateFormat
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -49,30 +49,28 @@ class MainActivity : ComponentActivity() {
 
 @Composable
 fun CalendarView() {
-    var selectedDate by remember { mutableStateOf(GregorianCalendar()) }
+    var selectedDate by remember { mutableStateOf(Calendar.getInstance().time) }
 
     Column(
         modifier = Modifier.fillMaxSize()
     ) {
-        // Header with previous and next month navigation
         CalendarHeader(selectedDate) { newDate ->
-            selectedDate = newDate
+            selectedDate = newDate.time
         }
 
-        // Day of the week headers
         DayOfWeekHeader()
 
-        // Calendar grid
         CalendarGrid(selectedDate) { day ->
-            selectedDate = day
-            // You can navigate to a new window here.
-            // Implement your navigation logic.
+            selectedDate = day.time
         }
     }
 }
 
 @Composable
-fun CalendarHeader(selectedDate: GregorianCalendar, onDateChange: (GregorianCalendar) -> Unit) {
+fun CalendarHeader(selectedDate: Date, onDateChange: (Calendar) -> Unit) {
+    val calendar = Calendar.getInstance()
+    calendar.time = selectedDate
+
     Row(
         modifier = Modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.SpaceBetween,
@@ -80,37 +78,24 @@ fun CalendarHeader(selectedDate: GregorianCalendar, onDateChange: (GregorianCale
     ) {
         IconButton(
             onClick = {
-                selectedDate.add(Calendar.MONTH, -1)
-                onDateChange(selectedDate)
+                calendar.add(Calendar.MONTH, -1)
+                onDateChange(calendar)
             }
         ) {
             Icon(imageVector = Icons.Default.KeyboardArrowLeft, contentDescription = "Previous Month")
         }
-        var month = ""
-        when((selectedDate.get(Calendar.MONTH) + 1))
-        {
-            1 -> month = "January"
-            2 -> month = "February"
-            3 -> month = "March"
-            4 -> month = "April"
-            5 -> month = "May"
-            6 -> month = "June"
-            7 -> month = "July"
-            8 -> month = "August"
-            9 -> month = "September"
-            10 -> month = "October"
-            11 -> month = "November"
-            12 -> month = "December"
-        }
+
+        val dateFormat = SimpleDateFormat("MMMM yyyy")
+        val monthYear = dateFormat.format(calendar.time)
+
         BasicTextField(
-            value = month,
+            value = monthYear,
             onValueChange = {},
             keyboardOptions = KeyboardOptions.Default.copy(
                 imeAction = ImeAction.Done
             ),
             keyboardActions = KeyboardActions(
                 onDone = {
-                    // You can add date validation and change the selected date here.
                 }
             ),
             textStyle = TextStyle(fontSize = 20.sp),
@@ -119,8 +104,8 @@ fun CalendarHeader(selectedDate: GregorianCalendar, onDateChange: (GregorianCale
 
         IconButton(
             onClick = {
-                selectedDate.add(Calendar.MONTH, 1)
-                onDateChange(selectedDate)
+                calendar.add(Calendar.MONTH, 1)
+                onDateChange(calendar)
             }
         ) {
             Icon(imageVector = Icons.Default.KeyboardArrowRight, contentDescription = "Next Month")
@@ -130,12 +115,13 @@ fun CalendarHeader(selectedDate: GregorianCalendar, onDateChange: (GregorianCale
 
 @Composable
 fun DayOfWeekHeader() {
+    val dayNames = listOf("Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat")
+
     Row(
         modifier = Modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.SpaceEvenly
     ) {
-        val dayNames = arrayOf("Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat")
-        for (dayName in dayNames) {
+        dayNames.forEach { dayName ->
             Text(
                 text = dayName,
                 modifier = Modifier
@@ -148,37 +134,38 @@ fun DayOfWeekHeader() {
 }
 
 @Composable
-fun CalendarGrid(selectedDate: GregorianCalendar, onDateClick: (GregorianCalendar) -> Unit) {
-    val calendar = GregorianCalendar()
-    calendar.time = selectedDate.time
-    calendar.set(Calendar.DAY_OF_MONTH, 1)
+fun CalendarGrid(selectedDate: Date, onDateClick: (Calendar) -> Unit) {
+    val calendar = Calendar.getInstance()
+    calendar.time = selectedDate
 
-    val daysInMonth = calendar.getActualMaximum(Calendar.DAY_OF_MONTH)
-    val dayOfWeekOfFirstDay = calendar.get(Calendar.DAY_OF_WEEK) - 1
+    val firstDayOfMonth = calendar.clone() as Calendar
+    firstDayOfMonth.set(Calendar.DAY_OF_MONTH, 1)
+    val dayOfWeekOfFirstDay = firstDayOfMonth.get(Calendar.DAY_OF_WEEK) - 1
+
+    val lastDayOfMonth = firstDayOfMonth.clone() as Calendar
+    lastDayOfMonth.add(Calendar.MONTH, 1)
+    lastDayOfMonth.add(Calendar.DAY_OF_MONTH, -1)
+    val daysInMonth = lastDayOfMonth.get(Calendar.DAY_OF_MONTH)
 
     val density = LocalDensity.current.density
     val cellSize = 40.dp
     val cellPadding = 4.dp
     val rowPadding = 4.dp
 
-    Column(
-        modifier = Modifier.fillMaxWidth()
-    ) {
-        for (i in 0 until DayOfWeek.values().size) {
-            Row(
-                modifier = Modifier.fillMaxWidth().padding(bottom = rowPadding),
-                horizontalArrangement = Arrangement.SpaceEvenly
-            ) {
-                for (j in 0 until 7) {
-                    val day = i * 7 + j + 1 - dayOfWeekOfFirstDay
-                    val cellDate = GregorianCalendar()
-                    cellDate.time = selectedDate.time
+    for (i in 0 until 6) {
+        Row(
+            modifier = Modifier.fillMaxWidth().padding(bottom = rowPadding),
+            horizontalArrangement = Arrangement.SpaceEvenly
+        ) {
+            for (j in 0 until 7) {
+                val day = i * 7 + j + 1 - dayOfWeekOfFirstDay
+
+                if (day in 1..daysInMonth) {
+                    val cellDate = firstDayOfMonth.clone() as Calendar
                     cellDate.set(Calendar.DAY_OF_MONTH, day)
 
-                    val isCurrentMonth = day in 1..daysInMonth
-                    val isSelected = calendar.get(Calendar.YEAR) == selectedDate.get(Calendar.YEAR) &&
-                            calendar.get(Calendar.MONTH) == selectedDate.get(Calendar.MONTH) &&
-                            calendar.get(Calendar.DAY_OF_MONTH) == selectedDate.get(Calendar.DAY_OF_MONTH)
+                    val isCurrentMonth = cellDate.get(Calendar.MONTH) == selectedDate.getMonth()
+                    val isSelected = cellDate.time == selectedDate
 
                     Box(
                         modifier = Modifier
@@ -196,16 +183,22 @@ fun CalendarGrid(selectedDate: GregorianCalendar, onDateClick: (GregorianCalenda
                             },
                         contentAlignment = Alignment.Center
                     ) {
-                        if (isCurrentMonth) {
-                            Text(
-                                text = day.toString(),
-                                color = if (isSelected) Color.White else MaterialTheme.colorScheme.onBackground,
-                                fontSize = 16.sp
-                            )
-                        }
+                        Text(
+                            text = day.toString(),
+                            color = if (isSelected) Color.White else MaterialTheme.colorScheme.onBackground,
+                            fontSize = 16.sp
+                        )
                     }
-
-                    calendar.add(Calendar.DAY_OF_MONTH, 1)
+                } else {
+                    Box(
+                        modifier = Modifier.size(cellSize),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Text(
+                            text = "",
+                            fontSize = 16.sp
+                        )
+                    }
                 }
             }
         }
