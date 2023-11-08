@@ -11,6 +11,7 @@ import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.KeyboardArrowLeft
 import androidx.compose.material.icons.filled.KeyboardArrowRight
 import androidx.compose.material3.*
@@ -49,6 +50,7 @@ class MainActivity : ComponentActivity() {
 @Composable
 fun CalendarView() {
     var selectedDate by remember { mutableStateOf(Calendar.getInstance().time) }
+    val isEventCreationDialogVisible = remember { mutableStateOf(false) }
 
     Column(
         modifier = Modifier.fillMaxSize()
@@ -62,8 +64,70 @@ fun CalendarView() {
         CalendarGrid(selectedDate) { day ->
             selectedDate = day.time
         }
+
+        // Add the icon to launch the event creation window
+        FloatingActionButton(
+            onClick = { isEventCreationDialogVisible.value = true },
+            modifier = Modifier
+                .padding(16.dp)
+                .size(56.dp),
+            content = {
+                Icon(
+                    imageVector = Icons.Default.Add,
+                    contentDescription = "Add Event",
+                    tint = Color.White
+                )
+            }
+        )
+
+        // Just added to show what it could look like
+        // will call the event creation window when implemented
+        if (isEventCreationDialogVisible.value) {
+            AlertDialog(
+                onDismissRequest = { isEventCreationDialogVisible.value = false },
+                title = { Text("Create Event") },
+                text = {
+                    var eventName by remember { mutableStateOf("") }
+
+                    BasicTextField(
+                        value = eventName,
+                        onValueChange = { eventName = it },
+                        modifier = Modifier.fillMaxWidth(),
+                        textStyle = TextStyle(
+                            color = MaterialTheme.colorScheme.onBackground,
+                            fontSize = 16.sp
+                        ),
+                        keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
+                        keyboardActions = KeyboardActions(
+                            onDone = {
+
+                            }
+                        )
+                    )
+                },
+                confirmButton = {
+                    TextButton(
+                        onClick = {
+                            isEventCreationDialogVisible.value = false
+                        }
+                    ) {
+                        Text("Create")
+                    }
+                },
+                dismissButton = {
+                    TextButton(
+                        onClick = {
+                            isEventCreationDialogVisible.value = false
+                        }
+                    ) {
+                        Text("Cancel")
+                    }
+                }
+            )
+        }
     }
 }
+
 
 @Composable
 fun CalendarHeader(selectedDate: Date, onDateChange: (Calendar) -> Unit) {
