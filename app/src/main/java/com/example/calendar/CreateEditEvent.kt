@@ -1,12 +1,18 @@
 package com.example.calendar
 
+import android.app.DatePickerDialog
 import android.app.TimePickerDialog
+import android.widget.DatePicker
 import androidx.compose.foundation.layout.Column
 import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import com.example.calendar.ui.theme.CalendarTheme
@@ -15,27 +21,36 @@ import com.example.calendar.ui.theme.CalendarTheme
 @Composable
 fun CreateEditEventScreen(inputDate: String, inputTime: String, inputTitle: String = "",
                           inputDescription: String = "", inputLocation: String = "") {
-    var date = inputDate
-    var time = inputTime
-    var title = inputTitle
-    var description = inputDescription
-    var location = inputLocation
+
+    // State variables (to be moved into ViewModel)
+    var date by remember { mutableStateOf(inputDate) }
+    var time by remember { mutableStateOf(inputTime) }
+    var title by remember { mutableStateOf(inputTitle) }
+    var description by remember { mutableStateOf(inputDescription) }
+    var location by remember { mutableStateOf(inputLocation) }
 
     Column {
         //Title input
         TextField(
             value = title,
             onValueChange = { title = it },
-            label = { Text(title) }
+            label = { Text("Title") }
         )
 
         //Date input (date picker or based on what dates there are in calendar?)
         Text("Date: $date")
         //Showing a small calendar screen here to pick the date would be cute, or maybe like sliding up down for date
             //(kind of like select)
+        val dateValues = inputDate.split("/")
+        val datePicker = DatePickerDialog(
+            LocalContext.current,
+            { _: DatePicker, selectedYear: Int, selectedMonth: Int, selectedDayOfMonth: Int ->
+                date = "$selectedDayOfMonth/${selectedMonth + 1}/$selectedYear"
+            }, dateValues[2].toInt(), dateValues[0].toInt(), dateValues[1].toInt()
+        )
         Button(
             onClick = {
-                date = ""
+                datePicker.show()
             }
         ) {
             Text(text = "Select date")
@@ -65,14 +80,14 @@ fun CreateEditEventScreen(inputDate: String, inputTime: String, inputTitle: Stri
         TextField(
             value = description,
             onValueChange = { description = it },
-            label = { Text(description) }
+            label = { Text("Description") }
         )
 
         //Location input
         TextField(
             value = location,
             onValueChange = { location = it },
-            label = { Text(location) }
+            label = { Text("Location") }
         )
 
         //To save changes

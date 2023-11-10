@@ -23,6 +23,7 @@ class MainActivity : ComponentActivity() {
                     color = MaterialTheme.colorScheme.background
                 ) {
                     Greeting("Android")
+                    CreateEditEventScreen(inputDate = "01/08/2023", inputTime = "9:22")
                 }
             }
         }
