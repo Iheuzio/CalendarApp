@@ -80,6 +80,9 @@ fun CalendarView() {
             onChangeDate = { newDate ->
                 selectedDate = newDate
                 // update events list based on newDate
+            },
+            onNavigateToCreateEvent = {
+                //show create event screen
             }
         )
     }

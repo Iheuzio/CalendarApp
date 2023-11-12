@@ -35,13 +35,29 @@ import androidx.compose.foundation.lazy.items
 
 
     @Composable
-    fun DailyOverviewScreen(selectedDate: Date, events: List<UsageEvents.Event>, onEventSelected: (UsageEvents.Event) -> Unit, onAddEvent: () -> Unit, onChangeDate: (Date) -> Unit) {
+    fun DailyOverviewScreen(
+        selectedDate: Date,
+        events: List<UsageEvents.Event>,
+        onEventSelected: (UsageEvents.Event) -> Unit,
+        onAddEvent: () -> Unit,
+        onChangeDate: (Date) -> Unit,
+        onNavigateToCreateEvent: () -> Unit
+        ) {
         Column(modifier = Modifier.fillMaxSize()) {
             //temp events list:
             val events = listOf(
                 Event(id = 1, title = "evt 1", description = "description", time = "9:00 AM"),
                 Event(id = 2, title = "evt2", description = "description", time = "12:00 PM"),
                 Event(id = 3, title = "event 3", description = "description", time = "2:00 PM")
+            )
+            Button(
+                onClick = onNavigateToCreateEvent,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(16.dp),
+                content = {
+                    Text("Add Event")
+                }
             )
 
             DailyHeader(selectedDate, onChangeDate)
