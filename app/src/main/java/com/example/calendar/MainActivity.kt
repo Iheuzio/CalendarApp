@@ -48,9 +48,9 @@ class MainActivity : ComponentActivity() {
                 ) {
                     // remove this if wanting to test your event stuff, just uncomment 
                     CalendarView()
-
-                    Greeting("Android")
-                    CreateEditEventScreen(inputDate = "01/08/2023", inputTime = "9:22")
+                    //DailyOverviewScreen(null, null, null, null);
+                    //Greeting("Android")
+                    //CreateEditEventScreen(inputDate = "01/08/2023", inputTime = "9:22")
                 }
             }
         }

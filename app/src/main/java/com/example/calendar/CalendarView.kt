@@ -1,5 +1,6 @@
 package com.example.calendar
 
+import android.app.usage.UsageEvents
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -21,6 +22,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -37,26 +39,51 @@ import java.util.*
 fun CalendarView() {
     var selectedDate by remember { mutableStateOf(Calendar.getInstance().time) }
     val isEventCreationDialogVisible = remember { mutableStateOf(false) }
+    var showDailyOverview by remember { mutableStateOf(false) }
 
-    Column(
-        modifier = Modifier.fillMaxSize()
-    ) {
-        CalendarHeader(selectedDate) { newDate ->
-            selectedDate = newDate.time
+    // temporary placeholder for events
+    val events = remember { mutableStateListOf<UsageEvents.Event>() }
+
+    if (!showDailyOverview) {
+        Column(
+            modifier = Modifier.fillMaxSize()
+        ) {
+            CalendarHeader(selectedDate) { newDate ->
+                selectedDate = newDate.time
+            }
+
+            DayOfWeekHeader()
+
+            CalendarGrid(selectedDate) { day ->
+                selectedDate = day.time
+                //after day is clicked, show day overview
+                showDailyOverview = true
+            }
+
+            EventCreationButton(isEventCreationDialogVisible)
+
+            if (isEventCreationDialogVisible.value) {
+                EventCreationDialog(onDismiss = { isEventCreationDialogVisible.value = false })
+            }
         }
-
-        DayOfWeekHeader()
-
-        CalendarGrid(selectedDate) { day ->
-            selectedDate = day.time
-        }
-
-        EventCreationButton(isEventCreationDialogVisible)
-
-        if (isEventCreationDialogVisible.value) {
-            EventCreationDialog(onDismiss = { isEventCreationDialogVisible.value = false })
-        }
+    } else {
+        // call DailyOverviewScreen when day is clicked
+        DailyOverviewScreen(
+            selectedDate = selectedDate,
+            events = events,
+            onEventSelected = { event ->
+                // handle event selected action
+            },
+            onAddEvent = {
+                // handle add event action
+            },
+            onChangeDate = { newDate ->
+                selectedDate = newDate
+                // update events list based on newDate
+            }
+        )
     }
+
 }
 
 @Composable
