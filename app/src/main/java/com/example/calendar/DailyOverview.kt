@@ -8,9 +8,12 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.KeyboardArrowLeft
 import androidx.compose.material3.Button
+import androidx.compose.material3.Divider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -27,12 +30,21 @@ import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Date
 import java.util.Locale
+import androidx.compose.foundation.lazy.items
+
 
     @Composable
     fun DailyOverviewScreen(selectedDate: Date, events: List<UsageEvents.Event>, onEventSelected: (UsageEvents.Event) -> Unit, onAddEvent: () -> Unit, onChangeDate: (Date) -> Unit) {
         Column(modifier = Modifier.fillMaxSize()) {
-            // Step 1: Display the header with the selected day and navigation buttons
+            //temp events list:
+            val events = listOf(
+                Event(id = 1, title = "evt 1", description = "description", time = "9:00 AM"),
+                Event(id = 2, title = "evt2", description = "description", time = "12:00 PM"),
+                Event(id = 3, title = "event 3", description = "description", time = "2:00 PM")
+            )
+
             DailyHeader(selectedDate, onChangeDate)
+            DailyEventsList(events = events)
 
         }
     }
@@ -83,4 +95,34 @@ private fun getNextDay(selectedDate: Date): Date {
     calendar.time = selectedDate
     calendar.add(Calendar.DAY_OF_MONTH, 1)
     return calendar.time
+}
+@Composable
+fun EventItem(event: Event) {
+    Row(modifier = Modifier
+        .fillMaxWidth()
+        .padding(8.dp)) {
+        Text(
+            text = event.time,
+            modifier = Modifier.width(80.dp)
+        )
+        Column(
+            modifier = Modifier
+                .padding(start = 8.dp)
+                .align(Alignment.CenterVertically)
+        ) {
+            Text(
+                text = event.title
+            )
+        }
+    }
+    Divider()
+}
+@Composable
+fun DailyEventsList(events: List<Event>) {
+    //events should be sorted by time later
+    LazyColumn {
+        items(events) { event ->
+            EventItem(event)
+        }
+    }
 }
