@@ -5,6 +5,7 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -119,10 +120,47 @@ fun EventItem(event: Event) {
 }
 @Composable
 fun DailyEventsList(events: List<Event>) {
+    val hoursOfDay = (8..24).toList()  //8- midnihgt
+    val timeFormatter = remember { SimpleDateFormat("h:mm a", Locale.getDefault()) }
+
     //events should be sorted by time later
     LazyColumn {
-        items(events) { event ->
-            EventItem(event)
+        items(hoursOfDay) { hour ->
+            val eventsAtThisHour = events.filter {
+                val eventTime = timeFormatter.parse(it.time)
+                val eventCalendar = Calendar.getInstance().apply { time = eventTime }
+                eventCalendar.get(Calendar.HOUR_OF_DAY) == hour
+            }
+            if (eventsAtThisHour.isNotEmpty()) {
+                //if theres an evt, display it
+                eventsAtThisHour.forEach { event ->
+                    EventItem(event)
+                }
+            } else {
+                // otherwise just display empty hour
+                TimeSlot(hour)
+            }
         }
     }
+}
+@Composable
+fun TimeSlot(hour: Int) {
+    val timeString = remember(hour) {
+        val calendar = Calendar.getInstance().apply {
+            set(Calendar.HOUR_OF_DAY, hour)
+            set(Calendar.MINUTE, 0)
+        }
+        SimpleDateFormat("h:mm a", Locale.getDefault()).format(calendar.time)
+    }
+
+    Row(modifier = Modifier
+        .fillMaxWidth()
+        .padding(8.dp)) {
+        Text(
+            text = timeString,
+            modifier = Modifier.width(80.dp)
+        )
+        Spacer(modifier = Modifier.weight(1f))
+    }
+    Divider()
 }
