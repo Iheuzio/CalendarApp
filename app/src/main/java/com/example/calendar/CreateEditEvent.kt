@@ -16,6 +16,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.navigation.NavController
+import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
@@ -92,16 +93,16 @@ fun CreateEditEventScreen(navController: NavController, inputDate: String, input
             label = { Text("Location") }
         )
 
-        //To save changes
+            //To save changes
         Button(
             onClick = {
                 //Save changes and pop back navigation to start
-                /*navController.navigate(NavRoutes.Home.route) {
+                navController.navigate(NavRoutes.CalendarView.route) {
                 popUpTo(navController.graph.findStartDestination().id) {
                     saveState = true
                     inclusive = true
                 }
-            }*/
+            }
             }
         ) {
             Text("Save changes")
