@@ -14,6 +14,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.KeyboardArrowLeft
 import androidx.compose.material.icons.filled.KeyboardArrowRight
+import androidx.compose.material3.Button
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -31,10 +32,13 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavController
+import androidx.navigation.compose.rememberNavController
+import androidx.navigation.compose.NavHost
 import java.util.*
 
 @Composable
-fun CalendarView() {
+fun CalendarView(navController: NavController) {
     var selectedDate by remember { mutableStateOf(Calendar.getInstance().time) }
     val isEventCreationDialogVisible = remember { mutableStateOf(false) }
 
@@ -51,7 +55,16 @@ fun CalendarView() {
             selectedDate = day.time
         }
 
-        EventCreationButton(isEventCreationDialogVisible)
+        //EventCreationButton(isEventCreationDialogVisible)
+        Button(
+            modifier = Modifier.weight(1f),
+            onClick = {
+                navController.navigate(NavRoutes.CreateEditEvent.route)
+            }
+        ) {
+            Text("Create event")
+        }
+
 
         if (isEventCreationDialogVisible.value) {
             EventCreationDialog(onDismiss = { isEventCreationDialogVisible.value = false })

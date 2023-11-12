@@ -31,6 +31,12 @@ import java.text.SimpleDateFormat
 import java.util.*
 import androidx.annotation.StringRes
 import androidx.compose.ui.platform.LocalContext
+import androidx.navigation.NavController
+import androidx.navigation.NavHostController
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.rememberNavController
+
 
 
 fun Context.getStringResource(@StringRes resId: Int): String {
@@ -48,8 +54,22 @@ class MainActivity : ComponentActivity() {
                 ) {
                     // remove this if wanting to test your event stuff, just uncomment 
                     //CalendarView()
-                    CreateEditEventScreen(inputDate = "01/08/2023", inputTime = "9:22")
+                    //CreateEditEventScreen(inputDate = "01/08/2023", inputTime = "9:22")
+                    CalendarApp()
                 }
+            }
+        }
+    }
+
+    @Composable
+    fun CalendarApp(navController: NavHostController = rememberNavController()) {
+
+        NavHost(navController = navController, startDestination = NavRoutes.CalendarView.route) {
+            composable(NavRoutes.CalendarView.route) {
+                CalendarView(navController = navController)
+            }
+            composable(NavRoutes.CreateEditEvent.route) {
+                CreateEditEventScreen(navController = navController, inputDate = "01/08/2023", inputTime = "9:22")
             }
         }
     }

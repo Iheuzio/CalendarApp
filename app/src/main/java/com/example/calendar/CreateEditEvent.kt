@@ -15,11 +15,15 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.navigation.NavController
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.rememberNavController
 import com.example.calendar.ui.theme.CalendarTheme
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun CreateEditEventScreen(inputDate: String, inputTime: String, inputTitle: String = "",
+fun CreateEditEventScreen(navController: NavController, inputDate: String, inputTime: String, inputTitle: String = "",
                           inputDescription: String = "", inputLocation: String = "") {
 
     // State variables (to be moved into ViewModel)
@@ -39,8 +43,6 @@ fun CreateEditEventScreen(inputDate: String, inputTime: String, inputTitle: Stri
 
         //Date input (date picker or based on what dates there are in calendar?)
         Text("Date: $date")
-        //Showing a small calendar screen here to pick the date would be cute, or maybe like sliding up down for date
-            //(kind of like select)
         val dateValues = inputDate.split("/")
         val datePicker = DatePickerDialog(
             LocalContext.current,
@@ -113,6 +115,7 @@ fun CreateEditEventPreview() {
     CalendarTheme {
         val date = "01/08/2023"
         val time = "12:43"
-        CreateEditEventScreen(date, time)
+        val navController = rememberNavController()
+        CreateEditEventScreen(navController, date, time)
     }
 }
