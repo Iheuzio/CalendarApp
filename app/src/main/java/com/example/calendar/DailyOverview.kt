@@ -24,6 +24,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.semantics.Role.Companion.Image
 import androidx.compose.ui.unit.dp
 import java.text.SimpleDateFormat
+import java.util.Calendar
 import java.util.Date
 import java.util.Locale
 
@@ -49,7 +50,7 @@ import java.util.Locale
             verticalAlignment = Alignment.CenterVertically
         ) {
             Button(onClick = {
-                //onChangeDate(getPreviousDay(selectedDate))
+                onChangeDate(getPreviousDay(selectedDate))
             }) {
                 Image(
                     painter = painterResource(id = R.drawable.arrow_back),
@@ -60,7 +61,7 @@ import java.util.Locale
             Text(text = dateString)
 
             Button(onClick = {
-                //onChangeDate(getNextDay(selectedDate))
+                onChangeDate(getNextDay(selectedDate))
             }) {
                 Image(
                     painter = painterResource(id = R.drawable.arrow_forward),
@@ -70,10 +71,16 @@ import java.util.Locale
         }
     }
 
-//    private fun getPreviousDay(selectedDate: Date): Date {
-//
-//    }
-//
-//    private fun getNextDay(selectedDate: Date): Date {
-//
-//    }
+    private fun getPreviousDay(selectedDate: Date): Date {
+        val calendar = Calendar.getInstance()
+        calendar.time = selectedDate
+        calendar.add(Calendar.DAY_OF_MONTH, -1)
+        return calendar.time
+    }
+
+private fun getNextDay(selectedDate: Date): Date {
+    val calendar = Calendar.getInstance()
+    calendar.time = selectedDate
+    calendar.add(Calendar.DAY_OF_MONTH, 1)
+    return calendar.time
+}
