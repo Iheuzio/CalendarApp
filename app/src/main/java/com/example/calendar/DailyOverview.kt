@@ -1,6 +1,7 @@
 package com.example.calendar
 
 import android.app.usage.UsageEvents
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -19,6 +20,8 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.semantics.Role.Companion.Image
 import androidx.compose.ui.unit.dp
 import java.text.SimpleDateFormat
 import java.util.Date
@@ -48,7 +51,10 @@ import java.util.Locale
             Button(onClick = {
                 //onChangeDate(getPreviousDay(selectedDate))
             }) {
-                Text(text = "Previous Day")
+                Image(
+                    painter = painterResource(id = R.drawable.arrow_back),
+                    contentDescription = "Back"
+                )
             }
 
             Text(text = dateString)
@@ -56,7 +62,10 @@ import java.util.Locale
             Button(onClick = {
                 //onChangeDate(getNextDay(selectedDate))
             }) {
-                Text(text = "Next Day")
+                Image(
+                    painter = painterResource(id = R.drawable.arrow_forward),
+                    contentDescription = "Next"
+                )
             }
         }
     }
