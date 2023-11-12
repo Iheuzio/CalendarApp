@@ -1,5 +1,6 @@
 package com.example.calendar
 
+import android.content.Context
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -20,8 +21,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.style.TextAlign
@@ -30,6 +29,13 @@ import androidx.compose.ui.unit.sp
 import com.example.calendar.ui.theme.CalendarTheme
 import java.text.SimpleDateFormat
 import java.util.*
+import androidx.annotation.StringRes
+import androidx.compose.ui.platform.LocalContext
+
+
+fun Context.getStringResource(@StringRes resId: Int): String {
+    return resources.getString(resId)
+}
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -65,69 +71,83 @@ fun CalendarView() {
             selectedDate = day.time
         }
 
-        // Add the icon to launch the event creation window
-        FloatingActionButton(
-            onClick = { isEventCreationDialogVisible.value = true },
-            modifier = Modifier
-                .padding(16.dp)
-                .size(56.dp),
-            content = {
-                Icon(
-                    imageVector = Icons.Default.Add,
-                    contentDescription = "Add Event",
-                    tint = Color.White
-                )
-            }
-        )
+        EventCreationButton(isEventCreationDialogVisible)
 
-        // Just added to show what it could look like
-        // will call the event creation window when implemented
         if (isEventCreationDialogVisible.value) {
-            AlertDialog(
-                onDismissRequest = { isEventCreationDialogVisible.value = false },
-                title = { Text("Create Event") },
-                text = {
-                    var eventName by remember { mutableStateOf("") }
-
-                    BasicTextField(
-                        value = eventName,
-                        onValueChange = { eventName = it },
-                        modifier = Modifier.fillMaxWidth(),
-                        textStyle = TextStyle(
-                            color = MaterialTheme.colorScheme.onBackground,
-                            fontSize = 16.sp
-                        ),
-                        keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
-                        keyboardActions = KeyboardActions(
-                            onDone = {
-
-                            }
-                        )
-                    )
-                },
-                confirmButton = {
-                    TextButton(
-                        onClick = {
-                            isEventCreationDialogVisible.value = false
-                        }
-                    ) {
-                        Text("Create")
-                    }
-                },
-                dismissButton = {
-                    TextButton(
-                        onClick = {
-                            isEventCreationDialogVisible.value = false
-                        }
-                    ) {
-                        Text("Cancel")
-                    }
-                }
-            )
+            EventCreationDialog(onDismiss = { isEventCreationDialogVisible.value = false })
         }
     }
 }
 
+// Replace with your compose nav function
+@Composable
+fun EventCreationButton(isEventCreationDialogVisible: MutableState<Boolean>) {
+    FloatingActionButton(
+        onClick = { isEventCreationDialogVisible.value = true },
+        modifier = Modifier
+            .padding(16.dp)
+            .size(56.dp),
+        content = {
+            Icon(
+                imageVector = Icons.Default.Add,
+                contentDescription = LocalContext.current.getStringResource(R.string.create_event),
+                tint = Color.White
+            )
+        }
+    )
+}
+
+// This should be swapped for a nav composable rather than a popup dialog
+@Composable
+fun EventCreationDialog(onDismiss: () -> Unit) {
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        title = { Text(LocalContext.current.getStringResource(R.string.create_event)) },
+        text = {
+            var eventName by remember { mutableStateOf("") }
+
+            BasicTextField(
+                value = eventName,
+                onValueChange = { eventName = it },
+                modifier = Modifier.fillMaxWidth(),
+                textStyle = TextStyle(
+                    color = MaterialTheme.colorScheme.onBackground,
+                    fontSize = 16.sp
+                ),
+                keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
+                keyboardActions = KeyboardActions(
+                    onDone = {
+
+                    }
+                )
+            )
+        },
+        confirmButton = {
+            ConfirmButton(onDismiss)
+        },
+        dismissButton = {
+            DismissButton(onDismiss)
+        }
+    )
+}
+
+@Composable
+fun ConfirmButton(onConfirm: () -> Unit) {
+    TextButton(
+        onClick = onConfirm
+    ) {
+        Text(LocalContext.current.getStringResource(R.string.confirm))
+    }
+}
+
+@Composable
+fun DismissButton(onDismiss: () -> Unit) {
+    TextButton(
+        onClick = onDismiss
+    ) {
+        Text(LocalContext.current.getStringResource(R.string.cancel))
+    }
+}
 
 @Composable
 fun CalendarHeader(selectedDate: Date, onDateChange: (Calendar) -> Unit) {
@@ -145,22 +165,10 @@ fun CalendarHeader(selectedDate: Date, onDateChange: (Calendar) -> Unit) {
                 onDateChange(calendar)
             }
         ) {
-            Icon(imageVector = Icons.Default.KeyboardArrowLeft, contentDescription = "Previous Month")
+            Icon(imageVector = Icons.Default.KeyboardArrowLeft, contentDescription = LocalContext.current.getStringResource(R.string.previous_month))
         }
 
-        val dateFormat = SimpleDateFormat("MMMM yyyy")
-        val monthYear = dateFormat.format(calendar.time)
-
-        Text(
-            text = monthYear,
-            modifier = Modifier
-                .padding(16.dp)
-                .fillMaxWidth(0.8f),
-            style = TextStyle(
-                color = MaterialTheme.colorScheme.onBackground,
-                fontSize = 20.sp
-            ),
-        )
+        monthYearHeader()
 
         IconButton(
             onClick = {
@@ -168,29 +176,60 @@ fun CalendarHeader(selectedDate: Date, onDateChange: (Calendar) -> Unit) {
                 onDateChange(calendar)
             }
         ) {
-            Icon(imageVector = Icons.Default.KeyboardArrowRight, contentDescription = "Next Month")
+            Icon(imageVector = Icons.Default.KeyboardArrowRight, contentDescription = LocalContext.current.getStringResource(R.string.next_month))
         }
     }
 }
 
 @Composable
+fun monthYearHeader() {
+    val calendar = Calendar.getInstance()
+    val dateFormat = SimpleDateFormat("MMMM yyyy")
+    val monthYear = dateFormat.format(calendar.time)
+
+    Text(
+        text = monthYear,
+        modifier = Modifier
+            .padding(16.dp)
+            .fillMaxWidth(0.8f),
+        style = TextStyle(
+            color = MaterialTheme.colorScheme.onBackground,
+            fontSize = 20.sp
+        ),
+    )
+}
+
+@Composable
 fun DayOfWeekHeader() {
-    val dayNames = listOf("Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat")
+    // use localContext to get string resources for each day of the week
+    val dayNames = listOf(
+        LocalContext.current.getStringResource(R.string.sunday),
+        LocalContext.current.getStringResource(R.string.monday),
+        LocalContext.current.getStringResource(R.string.tuesday),
+        LocalContext.current.getStringResource(R.string.wednesday),
+        LocalContext.current.getStringResource(R.string.thursday),
+        LocalContext.current.getStringResource(R.string.friday),
+        LocalContext.current.getStringResource(R.string.saturday)
+    )
 
     Row(
         modifier = Modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.SpaceEvenly
     ) {
         dayNames.forEach { dayName ->
-            Text(
-                text = dayName,
-                modifier = Modifier
-                    .weight(1f)
-                    .padding(8.dp),
-                textAlign = TextAlign.Center
-            )
+            DayNameText(dayName)
         }
     }
+}
+
+@Composable
+fun DayNameText(dayName: String) {
+    Text(
+        text = dayName,
+        modifier = Modifier
+            .padding(8.dp),
+        textAlign = TextAlign.Center
+    )
 }
 
 @Composable
@@ -207,14 +246,14 @@ fun CalendarGrid(selectedDate: Date, onDateClick: (Calendar) -> Unit) {
     lastDayOfMonth.add(Calendar.DAY_OF_MONTH, -1)
     val daysInMonth = lastDayOfMonth.get(Calendar.DAY_OF_MONTH)
 
-    val density = LocalDensity.current.density
     val cellSize = 40.dp
-    val cellPadding = 4.dp
     val rowPadding = 4.dp
 
     for (i in 0 until 6) {
         Row(
-            modifier = Modifier.fillMaxWidth().padding(bottom = rowPadding),
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(bottom = rowPadding),
             horizontalArrangement = Arrangement.SpaceEvenly
         ) {
             for (j in 0 until 7) {
@@ -224,7 +263,7 @@ fun CalendarGrid(selectedDate: Date, onDateClick: (Calendar) -> Unit) {
                     val cellDate = firstDayOfMonth.clone() as Calendar
                     cellDate.set(Calendar.DAY_OF_MONTH, day)
 
-                    val isCurrentMonth = cellDate.get(Calendar.MONTH) == selectedDate.getMonth()
+                    val isCurrentMonth = cellDate.get(Calendar.MONTH) == selectedDate.month
                     val isSelected = cellDate.time == selectedDate
 
                     Box(
