@@ -2,6 +2,7 @@ package com.example.calendar
 
 import android.app.usage.UsageEvents
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -33,9 +34,11 @@ import java.util.Calendar
 import java.util.Date
 import java.util.Locale
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.ui.graphics.Color
 
 
-    @Composable
+@Composable
     fun DailyOverviewScreen(
         selectedDate: Date,
         events: List<UsageEvents.Event>,
@@ -123,19 +126,21 @@ fun EventItem(event: Event) {
     Row(modifier = Modifier
         .fillMaxWidth()
         .padding(8.dp)
-        .height((duration * 60).toInt().dp))
+        //.height((duration * 60).toInt().dp)
+    )
     {
+
         Column(
             modifier = Modifier
-                .padding(start = 8.dp)
-                .align(Alignment.CenterVertically)
+                .fillMaxWidth()
+                .height((duration * 60).toInt().dp)
+                .background(Color(0xFFE1BEE7), RoundedCornerShape(4.dp)) // A light purple color and rounded corners
+                .padding(8.dp)
         ) {
-            Text(text = "${event.startTime} - ${event.endTime}")
             Text(text = event.title)
             Text(text = event.description)
         }
     }
-    Divider()
 }
 @Composable
 fun DailyEventsList(events: List<Event>) {
@@ -160,13 +165,28 @@ fun DailyEventsList(events: List<Event>) {
                 eventStart.before(hourEnd) && eventEnd.after(hourStart)
             }
 
-            // display an event if present, otherwise show an empty time slot
-            if (eventsThisHour.isNotEmpty()) {
-                val event = eventsThisHour.first()
-                EventItem(event)
-            } else {
-                TimeSlot(hourStartString)
+            Row(modifier = Modifier
+                .fillMaxWidth()
+                .padding(vertical = 4.dp, horizontal = 8.dp)
+            ) {
+                Text(
+                    text = hourStartString,
+                    modifier = Modifier
+                        .width(80.dp)
+                        .padding(end = 8.dp)
+                )
+
+                if (eventsThisHour.isNotEmpty()) {
+                    val event = eventsThisHour.first()
+                    EventItem(event)
+                } else {
+                    Spacer(modifier = Modifier
+                        .fillMaxWidth()
+                        .height(60.dp)
+                    )
+                }
             }
+            Divider()
         }
     }
 }
@@ -184,7 +204,6 @@ fun TimeSlot(time: String) {
         )
         Spacer(modifier = Modifier.weight(1f))
     }
-    Divider()
 }
 fun getTime(dateStr: String): Date {
     val format = SimpleDateFormat("HH:mm", Locale.getDefault())
