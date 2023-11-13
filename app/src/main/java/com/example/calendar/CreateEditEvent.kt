@@ -98,11 +98,12 @@ fun CreateEditEventScreen(navController: NavController, inputDate: String, input
             onClick = {
                 //Save changes and pop back navigation to start
                 navController.navigate(NavRoutes.CalendarView.route) {
-                popUpTo(navController.graph.findStartDestination().id) {
-                    saveState = true
-                    inclusive = true
+                    //change so it goes back to the day it was created on
+                    popUpTo(navController.graph.findStartDestination().id) {
+                        saveState = true
+                        inclusive = true
+                    }
                 }
-            }
             }
         ) {
             Text("Save changes")
