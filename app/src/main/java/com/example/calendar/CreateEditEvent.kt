@@ -15,11 +15,17 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.navigation.NavController
+import androidx.navigation.NavGraph.Companion.findStartDestination
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.rememberNavController
 import com.example.calendar.ui.theme.CalendarTheme
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun CreateEditEventScreen(inputDate: String, inputTime: String, inputTitle: String = "",
+fun CreateEditEventScreen(viewModel: EventViewModel, navController: NavController, inputDate: String,
+                          inputTime: String, inputTitle: String = "",
                           inputDescription: String = "", inputLocation: String = "") {
 
     // State variables (to be moved into ViewModel)
@@ -39,8 +45,6 @@ fun CreateEditEventScreen(inputDate: String, inputTime: String, inputTitle: Stri
 
         //Date input (date picker or based on what dates there are in calendar?)
         Text("Date: $date")
-        //Showing a small calendar screen here to pick the date would be cute, or maybe like sliding up down for date
-            //(kind of like select)
         val dateValues = inputDate.split("/")
         val datePicker = DatePickerDialog(
             LocalContext.current,
@@ -90,16 +94,18 @@ fun CreateEditEventScreen(inputDate: String, inputTime: String, inputTitle: Stri
             label = { Text("Location") }
         )
 
-        //To save changes
+            //To save changes
         Button(
             onClick = {
+                viewModel.addToList(Event(date, time, title, description, location))
                 //Save changes and pop back navigation to start
-                /*navController.navigate(NavRoutes.Home.route) {
-                popUpTo(navController.graph.findStartDestination().id) {
-                    saveState = true
-                    inclusive = true
+                navController.navigate(NavRoutes.CalendarView.route) {
+                    //change so it goes back to the day it was created on
+                    popUpTo(navController.graph.findStartDestination().id) {
+                        saveState = true
+                        inclusive = true
+                    }
                 }
-            }*/
             }
         ) {
             Text("Save changes")
@@ -113,6 +119,8 @@ fun CreateEditEventPreview() {
     CalendarTheme {
         val date = "01/08/2023"
         val time = "12:43"
-        CreateEditEventScreen(date, time)
+        val navController = rememberNavController()
+        val viewModel = EventViewModel()
+        CreateEditEventScreen(viewModel, navController, date, time)
     }
 }

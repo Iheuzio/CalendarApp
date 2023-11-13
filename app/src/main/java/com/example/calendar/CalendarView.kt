@@ -14,6 +14,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.KeyboardArrowLeft
 import androidx.compose.material.icons.filled.KeyboardArrowRight
+import androidx.compose.material3.Button
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -26,27 +27,31 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavController
 import java.util.*
 
 @Composable
-fun CalendarView(viewModel: CalendarViewModel) {
+fun CalendarView(navController: NavController, calendarModel: CalendarViewModel) {
     Column(
         modifier = Modifier.fillMaxSize()
     ) {
-        CalendarHeader(viewModel.selectedDate.value) { newDate ->
-            viewModel.onDateChange(newDate)
+        CalendarHeader(calendarModel.selectedDate.value) { newDate ->
+            calendarModel.onDateChange(newDate)
         }
 
         DayOfWeekHeader()
 
-        CalendarGrid(viewModel.selectedDate.value) { day ->
-            viewModel.onDateChange(day)
+        CalendarGrid(calendarModel.selectedDate.value) { day ->
+            calendarModel.onDateChange(day)
         }
 
-        EventCreationButton(viewModel.isEventCreationDialogVisible)
-
-        if (viewModel.isEventCreationDialogVisible.value) {
-            EventCreationDialog(onDismiss = { viewModel.toggleEventCreationDialogVisibility() })
+        //EventCreationButton(isEventCreationDialogVisible)
+        Button(
+            onClick = {
+                navController.navigate(NavRoutes.CreateEditEvent.route)
+            }
+        ) {
+            Text("Create event")
         }
     }
 }
@@ -85,6 +90,8 @@ fun CalendarHeader(selectedDate: Date, onDateChange: (Calendar) -> Unit) {
 
 @Composable
 fun CalendarGrid(selectedDate: Date, onDateClick: (Calendar) -> Unit) {
+    //loop over list of events for this given month to make them appear
+
     val calendar = Calendar.getInstance()
     calendar.time = selectedDate
 
