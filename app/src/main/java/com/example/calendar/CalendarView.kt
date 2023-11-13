@@ -19,7 +19,6 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -34,27 +33,27 @@ import androidx.compose.ui.unit.sp
 import java.util.*
 
 @Composable
-fun CalendarView() {
+fun CalendarView(viewModel: CalendarViewModel) {
     var selectedDate by remember { mutableStateOf(Calendar.getInstance().time) }
     val isEventCreationDialogVisible = remember { mutableStateOf(false) }
 
     Column(
         modifier = Modifier.fillMaxSize()
     ) {
-        CalendarHeader(selectedDate) { newDate ->
-            selectedDate = newDate.time
+        CalendarHeader(viewModel.selectedDate.value) { newDate ->
+            viewModel.onDateChange(newDate)
         }
 
         DayOfWeekHeader()
 
-        CalendarGrid(selectedDate) { day ->
-            selectedDate = day.time
+        CalendarGrid(viewModel.selectedDate.value) { day ->
+            viewModel.onDateChange(day)
         }
 
-        EventCreationButton(isEventCreationDialogVisible)
+        EventCreationButton(viewModel.isEventCreationDialogVisible)
 
-        if (isEventCreationDialogVisible.value) {
-            EventCreationDialog(onDismiss = { isEventCreationDialogVisible.value = false })
+        if (viewModel.isEventCreationDialogVisible.value) {
+            EventCreationDialog(onDismiss = { viewModel.toggleEventCreationDialogVisibility() })
         }
     }
 }

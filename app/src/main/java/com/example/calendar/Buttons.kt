@@ -44,6 +44,7 @@ fun EventCreationButton(isEventCreationDialogVisible: MutableState<Boolean>) {
     )
 }
 
+
 @Composable
 fun DismissButton(onDismiss: () -> Unit) {
     TextButton(

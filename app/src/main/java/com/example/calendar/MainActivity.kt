@@ -4,6 +4,7 @@ import android.content.Context
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.activity.viewModels
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -38,6 +39,8 @@ fun Context.getStringResource(@StringRes resId: Int): String {
 }
 
 class MainActivity : ComponentActivity() {
+    private val viewModel by viewModels<CalendarViewModel>()
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
@@ -47,10 +50,10 @@ class MainActivity : ComponentActivity() {
                     color = MaterialTheme.colorScheme.background
                 ) {
                     // remove this if wanting to test your event stuff, just uncomment 
-                    CalendarView()
+                    CalendarView(viewModel)
 
-                    Greeting("Android")
-                    CreateEditEventScreen(inputDate = "01/08/2023", inputTime = "9:22")
+                    //Greeting("Android")
+                // CreateEditEventScreen(inputDate = "01/08/2023", inputTime = "9:22")
                 }
             }
         }
