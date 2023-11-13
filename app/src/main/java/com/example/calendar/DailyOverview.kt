@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
@@ -46,9 +47,9 @@ import androidx.compose.foundation.lazy.items
         Column(modifier = Modifier.fillMaxSize()) {
             //temp events list:
             val events = listOf(
-                Event(id = 1, title = "evt 1", description = "description", time = "9:00 AM"),
-                Event(id = 2, title = "evt2", description = "description", time = "12:00 PM"),
-                Event(id = 3, title = "event 3", description = "description", time = "2:00 PM")
+                Event(id = 1, title = "evt 1", description = "description", startTime = "9:00 AM", endTime = "12:00PM"),
+                Event(id = 1, title = "evt 2", description = "description", startTime = "8:00 AM", endTime = "9:00AM"),
+                Event(id = 1, title = "evt 3", description = "description", startTime = "19:00 PM", endTime = "23:00PM")
             )
             Button(
                 onClick = onNavigateToCreateEvent,
@@ -115,68 +116,77 @@ private fun getNextDay(selectedDate: Date): Date {
 }
 @Composable
 fun EventItem(event: Event) {
+    val timeFormatter = SimpleDateFormat("HH:mm", Locale.getDefault())
+    val startTime = timeFormatter.parse(event.startTime)
+    val endTime = timeFormatter.parse(event.endTime)
+    val duration = (endTime.time - startTime.time) / (1000 * 60 * 60)
     Row(modifier = Modifier
         .fillMaxWidth()
-        .padding(8.dp)) {
-        Text(
-            text = event.time,
-            modifier = Modifier.width(80.dp)
-        )
+        .padding(8.dp)
+        .height((duration * 60).toInt().dp))
+    {
         Column(
             modifier = Modifier
                 .padding(start = 8.dp)
                 .align(Alignment.CenterVertically)
         ) {
-            Text(
-                text = event.title
-            )
+            Text(text = "${event.startTime} - ${event.endTime}")
+            Text(text = event.title)
+            Text(text = event.description)
         }
     }
     Divider()
 }
 @Composable
 fun DailyEventsList(events: List<Event>) {
-    val hoursOfDay = (8..24).toList()  //8- midnihgt
-    val timeFormatter = remember { SimpleDateFormat("h:mm a", Locale.getDefault()) }
+    val hoursOfDay = (0..23).toList() 
+    val timeFormatter = remember { SimpleDateFormat("HH:mm", Locale.getDefault()) }
+    val sortedEvents = events.sortedBy { timeFormatter.parse(it.startTime).time }
 
-    //events should be sorted by time later
     LazyColumn {
         items(hoursOfDay) { hour ->
-            val eventsAtThisHour = events.filter {
-                val eventTime = timeFormatter.parse(it.time)
-                val eventCalendar = Calendar.getInstance().apply { time = eventTime }
-                eventCalendar.get(Calendar.HOUR_OF_DAY) == hour
+            // Format hour to "HH:mm"
+            val hourStartString = String.format(Locale.getDefault(), "%02d:00", hour)
+            val hourEndString = String.format(Locale.getDefault(), "%02d:00", hour + 1)
+
+            // Check if this hour is within any evts
+            val eventsThisHour = sortedEvents.filter { event ->
+                val eventStart = timeFormatter.parse(event.startTime)
+                val eventEnd = timeFormatter.parse(event.endTime)
+                val hourStart = timeFormatter.parse(hourStartString)
+                val hourEnd = timeFormatter.parse(hourEndString)
+
+                // Event covers this hour if it starts before hourEnd and ends after hourStart
+                eventStart.before(hourEnd) && eventEnd.after(hourStart)
             }
-            if (eventsAtThisHour.isNotEmpty()) {
-                //if theres an evt, display it
-                eventsAtThisHour.forEach { event ->
-                    EventItem(event)
-                }
+
+            // display an event if present, otherwise show an empty time slot
+            if (eventsThisHour.isNotEmpty()) {
+                val event = eventsThisHour.first()
+                EventItem(event)
             } else {
-                // otherwise just display empty hour
-                TimeSlot(hour)
+                TimeSlot(hourStartString)
             }
         }
     }
 }
+
 @Composable
-fun TimeSlot(hour: Int) {
-    val timeString = remember(hour) {
-        val calendar = Calendar.getInstance().apply {
-            set(Calendar.HOUR_OF_DAY, hour)
-            set(Calendar.MINUTE, 0)
-        }
-        SimpleDateFormat("h:mm a", Locale.getDefault()).format(calendar.time)
-    }
+fun TimeSlot(time: String) {
 
     Row(modifier = Modifier
         .fillMaxWidth()
-        .padding(8.dp)) {
+        .padding(8.dp)
+        .height(60.dp)) {
         Text(
-            text = timeString,
+            text = time,
             modifier = Modifier.width(80.dp)
         )
         Spacer(modifier = Modifier.weight(1f))
     }
     Divider()
+}
+fun getTime(dateStr: String): Date {
+    val format = SimpleDateFormat("HH:mm", Locale.getDefault())
+    return format.parse(dateStr)
 }
