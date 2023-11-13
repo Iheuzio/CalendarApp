@@ -40,7 +40,7 @@ import androidx.navigation.compose.NavHost
 import java.util.*
 
 @Composable
-fun CalendarView(navController: NavController) {
+fun CalendarView(viewModel: EventViewModel, navController: NavController) {
     var selectedDate by remember { mutableStateOf(Calendar.getInstance().time) }
     val isEventCreationDialogVisible = remember { mutableStateOf(false) }
 
@@ -53,7 +53,7 @@ fun CalendarView(navController: NavController) {
 
         DayOfWeekHeader()
 
-        CalendarGrid(selectedDate) { day ->
+        CalendarGrid(viewModel, selectedDate) { day ->
             selectedDate = day.time
         }
 
@@ -106,7 +106,9 @@ fun CalendarHeader(selectedDate: Date, onDateChange: (Calendar) -> Unit) {
 }
 
 @Composable
-fun CalendarGrid(selectedDate: Date, onDateClick: (Calendar) -> Unit) {
+fun CalendarGrid(viewModel: EventViewModel, selectedDate: Date, onDateClick: (Calendar) -> Unit) {
+    //loop over list of events for this given month to make them appear
+
     val calendar = Calendar.getInstance()
     calendar.time = selectedDate
 

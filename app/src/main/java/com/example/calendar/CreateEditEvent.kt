@@ -24,7 +24,8 @@ import com.example.calendar.ui.theme.CalendarTheme
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun CreateEditEventScreen(navController: NavController, inputDate: String, inputTime: String, inputTitle: String = "",
+fun CreateEditEventScreen(viewModel: EventViewModel, navController: NavController, inputDate: String,
+                          inputTime: String, inputTitle: String = "",
                           inputDescription: String = "", inputLocation: String = "") {
 
     // State variables (to be moved into ViewModel)
@@ -96,6 +97,7 @@ fun CreateEditEventScreen(navController: NavController, inputDate: String, input
             //To save changes
         Button(
             onClick = {
+                viewModel.addToList(Event(date, time, title, description, location))
                 //Save changes and pop back navigation to start
                 navController.navigate(NavRoutes.CalendarView.route) {
                     //change so it goes back to the day it was created on
@@ -118,6 +120,7 @@ fun CreateEditEventPreview() {
         val date = "01/08/2023"
         val time = "12:43"
         val navController = rememberNavController()
-        CreateEditEventScreen(navController, date, time)
+        val viewModel = EventViewModel()
+        CreateEditEventScreen(viewModel, navController, date, time)
     }
 }

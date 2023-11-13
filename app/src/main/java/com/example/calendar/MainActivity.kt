@@ -62,14 +62,14 @@ class MainActivity : ComponentActivity() {
     }
 
     @Composable
-    fun CalendarApp(navController: NavHostController = rememberNavController()) {
+    fun CalendarApp(viewModel: EventViewModel = EventViewModel(), navController: NavHostController = rememberNavController()) {
 
         NavHost(navController = navController, startDestination = NavRoutes.CalendarView.route) {
             composable(NavRoutes.CalendarView.route) {
-                CalendarView(navController = navController)
+                CalendarView(viewModel, navController = navController)
             }
             composable(NavRoutes.CreateEditEvent.route) {
-                CreateEditEventScreen(navController = navController, inputDate = "01/08/2023", inputTime = "9:22")
+                CreateEditEventScreen(viewModel, navController = navController, inputDate = "01/08/2023", inputTime = "9:22")
             }
         }
     }
