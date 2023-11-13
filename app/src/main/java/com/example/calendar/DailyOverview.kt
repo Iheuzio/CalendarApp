@@ -133,12 +133,14 @@ fun EventItem(event: Event) {
         Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .height((duration * 60).toInt().dp)
+                .height(80.dp)
                 .background(Color(0xFFE1BEE7), RoundedCornerShape(4.dp)) // A light purple color and rounded corners
                 .padding(8.dp)
         ) {
             Text(text = event.title)
             Text(text = event.description)
+            Text(text = "${event.startTime} - ${event.endTime}")
+
         }
     }
 }
