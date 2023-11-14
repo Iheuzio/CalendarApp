@@ -171,12 +171,27 @@ fun DailyEventsList(events: List<Event>) {
                 .fillMaxWidth()
                 .padding(vertical = 4.dp, horizontal = 8.dp)
             ) {
-                Text(
-                    text = hourStartString,
+                //display hour
+                Column(
                     modifier = Modifier
                         .width(80.dp)
                         .padding(end = 8.dp)
-                )
+                ) {
+                    Text(text = hourStartString)
+                }
+                //display event if any
+                Column(modifier = Modifier.weight(1f)) {
+                    if (eventsThisHour.isNotEmpty()) {
+                        val event = eventsThisHour.first()
+                        EventItem(event)
+                    } else {
+                        Spacer(modifier = Modifier
+                            .fillMaxWidth()
+                            .height(60.dp)
+                        )
+                    }
+                }
+
 
                 if (eventsThisHour.isNotEmpty()) {
                     val event = eventsThisHour.first()
