@@ -29,9 +29,11 @@ import java.util.Locale
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.ui.graphics.Color
+import androidx.navigation.NavController
 
 @Composable
 fun DailyOverviewScreen(
+    navController: NavController,
     selectedDate: Date,
     events: List<Event>,
     onEventSelected: (Event) -> Unit,
@@ -47,6 +49,17 @@ fun DailyOverviewScreen(
                 .padding(16.dp),
             content = {
                 Text("Add Event")
+            }
+        )
+        Button(
+            onClick = {
+                navController.navigate(NavRoutes.MonthView.route)
+            },
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(16.dp),
+            content = {
+                Text("Go to Month View")
             }
         )
 

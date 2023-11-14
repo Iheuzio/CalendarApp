@@ -32,64 +32,70 @@ import androidx.navigation.NavController
 import java.util.*
 
 @Composable
-fun CalendarView(navController: NavController, calendarModel: CalendarViewModel) {
+fun MonthView(navController: NavController, calendarModel: CalendarViewModel) {
     val selectedDate = calendarModel.selectedDate.value
-    val showDailyOverview = calendarModel.showDailyOverview.value
-    val isEventCreationDialogVisible = calendarModel.isEventCreationDialogVisible.value
-    val events = calendarModel.events.value
 
-    if (!showDailyOverview) {
-        Column(modifier = Modifier.fillMaxSize()) {
-            CalendarHeader(selectedDate) { newDate ->
-                calendarModel.onDateChange(newDate)
-            }
-
-            DayOfWeekHeader()
-
-            CalendarGrid(selectedDate) { day ->
-                calendarModel.onDateChange(day)
-            }
-
-            Button(
-                onClick = {
-                    navController.navigate(NavRoutes.CreateEditEvent.route)
-                }
-            ) {
-                Text("Create event")
-            }
-
-//            if (isEventCreationDialogVisible) {
-//                EventCreationDialog(onDismiss = { calendarModel.onDialogDismiss() })
-//            }
+    Column(modifier = Modifier.fillMaxSize()) {
+        CalendarHeader(selectedDate) { newDate ->
+            calendarModel.onDateChange(newDate)
         }
-    } else {
-        val placeholderEvents = listOf(
-            Event(id = 1, title = "Meeting", description = "Team meeting", date = "2023-11-14", time = "10:00", startTime = "10:00", endTime = "11:00"),
-            Event(id = 2, title = "Doctor Appointment", description = "Routine check-up", date = "2023-11-14", time = "12:00", startTime = "12:00", endTime = "13:00"),
-            Event(id = 3, title = "Lunch with Friends", description = "Catch up lunch", date = "2023-11-14", time = "14:00", startTime = "14:00", endTime = "15:30")
-        )
-        calendarModel.events.value = placeholderEvents
-        DailyOverviewScreen(
-            selectedDate = selectedDate,
-            events = calendarModel.events.value,
-            onEventSelected = { event ->
-                // handle event selected action
-            },
-            onAddEvent = {
-                // handle add event action
-            },
-            onChangeDate = { newDate ->
-                val calendar = Calendar.getInstance()
-                calendar.time = newDate
-                calendarModel.onDateChange(calendar)
+
+        DayOfWeekHeader()
+
+        CalendarGrid(selectedDate) { day ->
+            calendarModel.onDateChange(day)
+        }
+
+        Button(
+            onClick = {
+                navController.navigate(NavRoutes.CreateEditEvent.route)
             }
         ) {
-            navController.navigate(NavRoutes.CreateEditEvent.route)
+            Text("Create event")
         }
     }
 }
 
+@Composable
+fun DailyOverview(navController: NavController, calendarModel: CalendarViewModel) {
+    val selectedDate = calendarModel.selectedDate.value
+    val events = calendarModel.events.value
+    val placeholderEvents = listOf(
+        Event(id = "1", title = "Meeting", description = "Team meeting", date = "2023-11-14", time = "10:00", startTime = "10:00", endTime = "11:00"),
+        Event(id = "2", title = "Doctor Appointment", description = "Routine check-up", date = "2023-11-14", time = "12:00", startTime = "12:00", endTime = "13:00"),
+        Event(id = "3", title = "Lunch with Friends", description = "Catch up lunch", date = "2023-11-14", time = "14:00", startTime = "14:00", endTime = "15:30")
+    )
+    calendarModel.events.value = placeholderEvents
+    DailyOverviewScreen(
+        navController = navController,
+        selectedDate = selectedDate,
+        events = calendarModel.events.value,
+        onEventSelected = { event ->
+            // handle event selected action
+        },
+        onAddEvent = {
+            // handle add event action
+        },
+        onChangeDate = { newDate ->
+            val calendar = Calendar.getInstance()
+            calendar.time = newDate
+            calendarModel.onDateChange(calendar)
+        }
+    ) {
+        navController.navigate(NavRoutes.CreateEditEvent.route)
+    }
+}
 
+@Composable
+fun CalendarView(navController: NavController, calendarModel: CalendarViewModel) {
+    val showDailyOverview = calendarModel.showDailyOverview.value
+
+    if (!showDailyOverview) {
+        MonthView(navController, calendarModel)
+    } else {
+        DailyOverview(navController, calendarModel)
+    }
+}
 @Composable
 fun CalendarHeader(selectedDate: Date, onDateChange: (Calendar) -> Unit) {
     val calendar = Calendar.getInstance()
