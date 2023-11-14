@@ -63,14 +63,20 @@ fun CalendarView(navController: NavController, calendarModel: CalendarViewModel)
 //            }
         }
     } else {
+        val placeholderEvents = listOf(
+            Event(id = 1, title = "Meeting", description = "Team meeting", date = "2023-11-14", time = "10:00", startTime = "10:00", endTime = "11:00"),
+            Event(id = 2, title = "Doctor Appointment", description = "Routine check-up", date = "2023-11-14", time = "12:00", startTime = "12:00", endTime = "13:00"),
+            Event(id = 3, title = "Lunch with Friends", description = "Catch up lunch", date = "2023-11-14", time = "14:00", startTime = "14:00", endTime = "15:30")
+        )
+        calendarModel.events.value = placeholderEvents
         DailyOverviewScreen(
             selectedDate = selectedDate,
-            events = events,
+            events = calendarModel.events.value,
             onEventSelected = { event ->
-                // Handle event selected action
+                // handle event selected action
             },
             onAddEvent = {
-                // Handle add event action
+                // handle add event action
             },
             onChangeDate = { newDate ->
                 val calendar = Calendar.getInstance()

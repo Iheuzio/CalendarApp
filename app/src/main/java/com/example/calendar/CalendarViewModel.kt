@@ -24,7 +24,6 @@ class CalendarViewModel : ViewModel() {
     fun onDateChange(newDate: Calendar) {
         _selectedDate.value = newDate.time
         _showDailyOverview.value = true
-        // Implement logic to update events based on new date
     }
 
     fun onDialogDismiss() {
@@ -32,7 +31,6 @@ class CalendarViewModel : ViewModel() {
     }
 
     fun onEventSelected(event: Event) {
-        // Handle event selection logic
     }
 
     fun onAddEvent(event: Event) {
@@ -44,5 +42,4 @@ class CalendarViewModel : ViewModel() {
         _showDailyOverview.value = !_showDailyOverview.value
     }
 
-    // Additional methods as needed
 }
