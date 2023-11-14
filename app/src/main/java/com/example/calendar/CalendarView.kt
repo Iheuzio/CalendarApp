@@ -162,6 +162,13 @@ fun CalendarGrid(viewModel: EventViewModel, selectedDate: Date, onDateClick: (Ca
                             color = if (isSelected) Color.White else MaterialTheme.colorScheme.onBackground,
                             fontSize = 16.sp
                         )
+                        val event = viewModel.findItem(day.toString() + "/" + cellDate.get(Calendar.MONTH).toString()
+                                + "/" + cellDate.get(Calendar.YEAR).toString())
+                        if (event != null) {
+                            Text(
+                                viewModel.selectedEvent.title
+                            )
+                        }
                     }
                 } else {
                     Box(

@@ -94,10 +94,18 @@ fun CreateEditEventScreen(viewModel: EventViewModel, navController: NavControlle
             label = { Text("Location") }
         )
 
-            //To save changes
+        //Button to save changes
         Button(
             onClick = {
-                viewModel.addToList(Event(date, time, title, description, location))
+                //If user is editing an event
+                //if (viewModel.selectedEvent != null) {
+                  //  viewModel.modifyItem(Event(inputDate, inputTime, inputTitle, inputDescription, inputLocation),
+                    //    Event(date, time, title, description, location))
+                //}
+                //If they're creating an event
+                //else {
+                    viewModel.addToList(Event(date, time, title, description, location))
+                //}
                 //Save changes and pop back navigation to start
                 navController.navigate(NavRoutes.CalendarView.route) {
                     //change so it goes back to the day it was created on

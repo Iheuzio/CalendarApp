@@ -20,21 +20,29 @@ class EventViewModel() : ViewModel() {
     fun addToList(item: Event) {
         if (item.title.isNotEmpty() && item.title.isNotBlank()) {
             if (!events.contains(item)) {
-                val updatedFoodItems = events.toMutableList()
-                updatedFoodItems.add(item)
-                events = updatedFoodItems
+                val updatedEventItems = events.toMutableList()
+                updatedEventItems.add(item)
+                events = updatedEventItems
             }
         }
     }
 
     //For deleting an event
     fun removeFromList(item: Event) {
-        val updatedFoodItems = events.toMutableList()
+        val updatedEventItems = events.toMutableList()
         events.remove(item)
-        events = updatedFoodItems
+        events = updatedEventItems
+    }
+
+    fun modifyItem(item: Event, modifiedItem: Event) {
+        val updatedEventItems = events.toMutableList()
+        val index = events.indexOf(item)
+        events[index] = modifiedItem
+        events = updatedEventItems
     }
 
     //Find an event according to a date
+    //replace this by finding with the Event item itself
     fun findItem(date: String) {
         selectedEvent = events.find { it.date == date } ?: Event()
     }
