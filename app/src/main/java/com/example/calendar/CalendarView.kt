@@ -9,21 +9,17 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.KeyboardArrowLeft
 import androidx.compose.material.icons.filled.KeyboardArrowRight
-import androidx.compose.material3.Button
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
@@ -37,7 +33,6 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
-import androidx.navigation.compose.rememberNavController
 import androidx.navigation.compose.NavHost
 import java.util.*
 
@@ -128,7 +123,7 @@ fun CalendarHeader(selectedDate: Date, onDateChange: (Calendar) -> Unit) {
 }
 
 @Composable
-fun CalendarGrid(viewModel: EventViewModel, selectedDate: Date, onDateClick: (Calendar) -> Unit) {
+fun CalendarGrid(viewModel: Date, selectedDate: Date, onDateClick: (Calendar) -> Unit) {
     //loop over list of events for this given month to make them appear
 
     val calendar = Calendar.getInstance()
