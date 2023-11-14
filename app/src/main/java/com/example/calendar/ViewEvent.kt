@@ -11,15 +11,13 @@ import androidx.navigation.compose.rememberNavController
 import com.example.calendar.ui.theme.CalendarTheme
 
 @Composable
-fun ViewEventScreen(viewModel: EventViewModel, navController: NavController,
-                    inputDate: String, inputTime: String, inputTitle: String ,
-                    inputDescription: String, inputLocation: String) {
+fun ViewEventScreen(viewModel: EventViewModel, navController: NavController) {
     Column {
-        Text(inputTitle)
-        Text(inputDate)
-        Text(inputTime)
-        Text(inputDescription)
-        Text(inputLocation)
+        viewModel.selectedEvent?.let { Text(it.title) }
+        viewModel.selectedEvent?.let { Text(it.date) }
+        viewModel.selectedEvent?.let { Text(it.time) }
+        viewModel.selectedEvent?.let { Text(it.description) }
+        viewModel.selectedEvent?.let { Text(it.location) }
 
         Button(
             onClick = {
@@ -62,7 +60,6 @@ fun ViewEventPreview() {
     CalendarTheme {
         val navController = rememberNavController()
         val viewModel = EventViewModel()
-        ViewEventScreen(viewModel, navController, "12/09/2023", "12:45", "title",
-            "description", "location")
+        ViewEventScreen(viewModel, navController)
     }
 }
