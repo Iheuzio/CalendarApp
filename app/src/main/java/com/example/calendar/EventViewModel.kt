@@ -13,7 +13,7 @@ class EventViewModel() : ViewModel() {
     //private val _uiState = MutableStateFlow(EventUiState())
     //val uiState: StateFlow<EventUiState> = _uiState.asStateFlow()
 
-    var selectedEvent by mutableStateOf(Event())
+    var selectedEvent by mutableStateOf<Event?>(null)
     var events by mutableStateOf(mutableListOf<Event>())
 
     //FOr when a new event is created
@@ -37,8 +37,11 @@ class EventViewModel() : ViewModel() {
     fun modifyItem(item: Event, modifiedItem: Event) {
         val updatedEventItems = events.toMutableList()
         val index = events.indexOf(item)
-        events[index] = modifiedItem
-        events = updatedEventItems
+        if (index != -1) {
+            events[index] = modifiedItem
+            events = updatedEventItems
+        }
+        addToList(modifiedItem)
     }
 
     //Find an event according to a date

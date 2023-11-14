@@ -60,6 +60,7 @@ fun CalendarView(viewModel: EventViewModel, navController: NavController) {
         //EventCreationButton(isEventCreationDialogVisible)
         Button(
             onClick = {
+                viewModel.selectedEvent = null
                 navController.navigate(NavRoutes.CreateEditEvent.route)
             }
         ) {
@@ -69,6 +70,12 @@ fun CalendarView(viewModel: EventViewModel, navController: NavController) {
 
         if (isEventCreationDialogVisible.value) {
             EventCreationDialog(onDismiss = { isEventCreationDialogVisible.value = false })
+        }
+
+        for (event in viewModel.events) {
+            Text(
+                event.title
+            )
         }
     }
 }
@@ -165,9 +172,11 @@ fun CalendarGrid(viewModel: EventViewModel, selectedDate: Date, onDateClick: (Ca
                         val event = viewModel.findItem(day.toString() + "/" + cellDate.get(Calendar.MONTH).toString()
                                 + "/" + cellDate.get(Calendar.YEAR).toString())
                         if (event != null) {
-                            Text(
-                                viewModel.selectedEvent.title
-                            )
+                            viewModel.selectedEvent?.let {
+                                Text(
+                                    it.title
+                                )
+                            }
                         }
                     }
                 } else {

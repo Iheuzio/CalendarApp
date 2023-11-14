@@ -12,6 +12,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
@@ -29,11 +30,11 @@ fun CreateEditEventScreen(viewModel: EventViewModel, navController: NavControlle
                           inputDescription: String = "", inputLocation: String = "") {
 
     // State variables (to be moved into ViewModel)
-    var date by remember { mutableStateOf(inputDate) }
-    var time by remember { mutableStateOf(inputTime) }
-    var title by remember { mutableStateOf(inputTitle) }
-    var description by remember { mutableStateOf(inputDescription) }
-    var location by remember { mutableStateOf(inputLocation) }
+    var date by rememberSaveable { mutableStateOf(inputDate) }
+    var time by rememberSaveable { mutableStateOf(inputTime) }
+    var title by rememberSaveable { mutableStateOf(inputTitle) }
+    var description by rememberSaveable { mutableStateOf(inputDescription) }
+    var location by rememberSaveable { mutableStateOf(inputLocation) }
 
     Column {
         //Title input
@@ -98,14 +99,14 @@ fun CreateEditEventScreen(viewModel: EventViewModel, navController: NavControlle
         Button(
             onClick = {
                 //If user is editing an event
-                //if (viewModel.selectedEvent != null) {
-                  //  viewModel.modifyItem(Event(inputDate, inputTime, inputTitle, inputDescription, inputLocation),
-                    //    Event(date, time, title, description, location))
-                //}
+                if (viewModel.selectedEvent != null) {
+                    viewModel.modifyItem(Event(inputDate, inputTime, inputTitle, inputDescription, inputLocation),
+                        Event(date, time, title, description, location))
+                }
                 //If they're creating an event
-                //else {
+                else {
                     viewModel.addToList(Event(date, time, title, description, location))
-                //}
+                }
                 //Save changes and pop back navigation to start
                 navController.navigate(NavRoutes.CalendarView.route) {
                     //change so it goes back to the day it was created on
