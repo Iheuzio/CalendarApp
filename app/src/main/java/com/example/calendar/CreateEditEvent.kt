@@ -11,14 +11,12 @@ import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.navigation.NavController
 import androidx.navigation.NavGraph.Companion.findStartDestination
-import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.calendar.ui.theme.CalendarTheme
@@ -100,7 +98,12 @@ fun CreateEditEventScreen(viewModel: EventViewModel, navController: NavControlle
             onClick = {
                 //If user is editing an event
                 if (viewModel.selectedEvent != null) {
-                    viewModel.modifyItem(Event(inputDate, inputTime, inputTitle, inputDescription, inputLocation),
+                    viewModel.modifyItem(Event(
+                        inputDate,
+                        inputTitle,
+                        inputDescription,
+                        inputLocation
+                    ),
                         Event(date, time, title, description, location))
                 }
                 //If they're creating an event
@@ -109,7 +112,7 @@ fun CreateEditEventScreen(viewModel: EventViewModel, navController: NavControlle
                 }
                 //Save changes and pop back navigation to start
                 navController.navigate(NavRoutes.CalendarView.route) {
-                    //change so it goes back to the day it was created on
+                    //TO DO: change so it goes back to the day it's scheduled to
                     popUpTo(navController.graph.findStartDestination().id) {
                         saveState = true
                         inclusive = true

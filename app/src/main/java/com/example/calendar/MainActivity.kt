@@ -1,9 +1,11 @@
 package com.example.calendar
 
 import android.content.Context
+import android.os.Build
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -36,6 +38,8 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import java.time.LocalDateTime
+import java.time.format.DateTimeFormatter
 
 
 
@@ -44,6 +48,7 @@ fun Context.getStringResource(@StringRes resId: Int): String {
 }
 
 class MainActivity : ComponentActivity() {
+    @RequiresApi(Build.VERSION_CODES.O)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
@@ -61,15 +66,24 @@ class MainActivity : ComponentActivity() {
         }
     }
 
+    @RequiresApi(Build.VERSION_CODES.O)
     @Composable
     fun CalendarApp(viewModel: EventViewModel = EventViewModel(), navController: NavHostController = rememberNavController()) {
+
+        val currentDateTime = LocalDateTime.now()
+        val dateFormatter = DateTimeFormatter.ofPattern("MM/dd/yyyy")
+        val timeFormatter = DateTimeFormatter.ofPattern("H:mm")
+
+        //TO DO: change after so its currently selected date and time (once merged)
+        val currentDate = currentDateTime.format(dateFormatter)
+        val currentTime = currentDateTime.format(timeFormatter)
 
         NavHost(navController = navController, startDestination = NavRoutes.CalendarView.route) {
             composable(NavRoutes.CalendarView.route) {
                 CalendarView(viewModel, navController = navController)
             }
             composable(NavRoutes.CreateEditEvent.route) {
-                CreateEditEventScreen(viewModel, navController = navController, inputDate = "01/08/2023", inputTime = "9:22")
+                CreateEditEventScreen(viewModel, navController = navController, inputDate = currentDate, inputTime = currentTime)
             }
         }
     }

@@ -41,7 +41,9 @@ class EventViewModel() : ViewModel() {
             events[index] = modifiedItem
             events = updatedEventItems
         }
-        addToList(modifiedItem)
+        else {
+            addToList(modifiedItem)
+        }
     }
 
     //Find an event according to a date

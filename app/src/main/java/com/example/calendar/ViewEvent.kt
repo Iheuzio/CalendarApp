@@ -39,6 +39,7 @@ fun ViewEventScreen(viewModel: EventViewModel, navController: NavController,
         }
         Button(
             onClick = {
+                //TO DO: change so it goes back to the day it's scheduled to
                 //Save changes and pop back navigation to start
                 navController.navigate(NavRoutes.CalendarView.route) {
                     //TO DO: change so it goes back to where it was before
@@ -59,8 +60,6 @@ fun ViewEventScreen(viewModel: EventViewModel, navController: NavController,
 @Composable
 fun ViewEventPreview() {
     CalendarTheme {
-        val date = "01/08/2023"
-        val time = "12:43"
         val navController = rememberNavController()
         val viewModel = EventViewModel()
         ViewEventScreen(viewModel, navController, "12/09/2023", "12:45", "title",

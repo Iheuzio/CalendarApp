@@ -42,7 +42,6 @@ import java.util.*
 @Composable
 fun CalendarView(viewModel: EventViewModel, navController: NavController) {
     var selectedDate by remember { mutableStateOf(Calendar.getInstance().time) }
-    val isEventCreationDialogVisible = remember { mutableStateOf(false) }
 
     Column(
         modifier = Modifier.fillMaxSize()
@@ -57,7 +56,7 @@ fun CalendarView(viewModel: EventViewModel, navController: NavController) {
             selectedDate = day.time
         }
 
-        //EventCreationButton(isEventCreationDialogVisible)
+        //Button to create event
         Button(
             onClick = {
                 viewModel.selectedEvent = null
@@ -65,17 +64,6 @@ fun CalendarView(viewModel: EventViewModel, navController: NavController) {
             }
         ) {
             Text("Create event")
-        }
-
-
-        if (isEventCreationDialogVisible.value) {
-            EventCreationDialog(onDismiss = { isEventCreationDialogVisible.value = false })
-        }
-
-        for (event in viewModel.events) {
-            Text(
-                event.title
-            )
         }
     }
 }
@@ -169,15 +157,6 @@ fun CalendarGrid(viewModel: EventViewModel, selectedDate: Date, onDateClick: (Ca
                             color = if (isSelected) Color.White else MaterialTheme.colorScheme.onBackground,
                             fontSize = 16.sp
                         )
-                        val event = viewModel.findItem(day.toString() + "/" + cellDate.get(Calendar.MONTH).toString()
-                                + "/" + cellDate.get(Calendar.YEAR).toString())
-                        if (event != null) {
-                            viewModel.selectedEvent?.let {
-                                Text(
-                                    it.title
-                                )
-                            }
-                        }
                     }
                 } else {
                     Box(
