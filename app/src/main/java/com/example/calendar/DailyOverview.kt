@@ -51,7 +51,7 @@ fun DailyOverviewScreen(
         )
 
         DailyHeader(selectedDate, onChangeDate)
-        DailyEventsList(events = events)
+        DailyEventsList(events = events, selectedDate = selectedDate)
     }
 }
     @Composable
@@ -130,10 +130,15 @@ fun EventItem(event: Event) {
     }
 }
 @Composable
-fun DailyEventsList(events: List<Event>) {
-    val hoursOfDay = (0..23).toList() 
+fun DailyEventsList(events: List<Event>, selectedDate: Date) {
+    val hoursOfDay = (0..23).toList()
+    val dateFormat = remember { SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()) }
     val timeFormatter = remember { SimpleDateFormat("HH:mm", Locale.getDefault()) }
     val sortedEvents = events.sortedBy { timeFormatter.parse(it.startTime).time }
+
+    val eventsOnSelectedDate = events.filter {
+        dateFormat.format(selectedDate) == it.date
+    }
 
     LazyColumn {
         items(hoursOfDay) { hour ->
@@ -142,7 +147,7 @@ fun DailyEventsList(events: List<Event>) {
             val hourEndString = String.format(Locale.getDefault(), "%02d:00", hour + 1)
 
             // Check if this hour is within any evts
-            val eventsThisHour = sortedEvents.filter { event ->
+            val eventsThisHour = eventsOnSelectedDate.filter { event ->
                 val eventStart = timeFormatter.parse(event.startTime)
                 val eventEnd = timeFormatter.parse(event.endTime)
                 val hourStart = timeFormatter.parse(hourStartString)
