@@ -37,9 +37,16 @@ fun DailyOverviewScreen(
     onEventSelected: (Event) -> Unit,
     onAddEvent: () -> Unit,
     onChangeDate: (Date) -> Unit,
-    onNavigateToCreateEvent: () -> Unit
+    onNavigateToCreateEvent: () -> Unit,
+    onBack: () -> Unit
 ) {
     Column(modifier = Modifier.fillMaxSize()) {
+        Button(
+            onClick = onBack,
+            modifier = Modifier.padding(16.dp)
+        ) {
+            Text("Back")
+        }
         Button(
             onClick = onNavigateToCreateEvent,
             modifier = Modifier
