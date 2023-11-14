@@ -203,7 +203,6 @@ fun DailyEventsList(events: List<Event>) {
                     )
                 }
             }
-            Divider()
         }
     }
 }
