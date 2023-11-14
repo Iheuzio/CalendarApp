@@ -33,35 +33,32 @@ import androidx.navigation.NavController
 
 @Composable
 fun DailyOverviewScreen(
-    navController: NavController,
     selectedDate: Date,
     events: List<Event>,
     onEventSelected: (Event) -> Unit,
     onAddEvent: () -> Unit,
     onChangeDate: (Date) -> Unit,
-    onNavigateToCreateEvent: () -> Unit
+    onNavigateToCreateEvent: () -> Unit,
+    onBack: () -> Unit
 ) {
     Column(modifier = Modifier.fillMaxSize()) {
-        Button(
-            onClick = onNavigateToCreateEvent,
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(16.dp),
-            content = {
-                Text("Add Event")
+        Row {
+            Button(
+                onClick = onBack,
+                modifier = Modifier.padding(16.dp)
+            ) {
+                Text("Back")
             }
-        )
-        Button(
-            onClick = {
-                navController.navigate(NavRoutes.MonthView.route)
-            },
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(16.dp),
-            content = {
-                Text("Go to Month View")
-            }
-        )
+            Button(
+                onClick = onNavigateToCreateEvent,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(16.dp),
+                content = {
+                    Text("Add Event")
+                }
+            )
+        }
 
         DailyHeader(selectedDate, onChangeDate)
         DailyEventsList(events = events, selectedDate = selectedDate)
@@ -132,7 +129,10 @@ fun EventItem(event: Event) {
             modifier = Modifier
                 .fillMaxWidth()
                 .height(80.dp)
-                .background(Color(0xFFE1BEE7), RoundedCornerShape(4.dp)) // A light purple color and rounded corners
+                .background(
+                    Color(0xFFE1BEE7),
+                    RoundedCornerShape(4.dp)
+                ) // A light purple color and rounded corners
                 .padding(8.dp)
         ) {
             Text(text = event.title)

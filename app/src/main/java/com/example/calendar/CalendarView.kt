@@ -61,13 +61,36 @@ fun DailyOverview(navController: NavController, calendarModel: CalendarViewModel
     val selectedDate = calendarModel.selectedDate.value
     val events = calendarModel.events.value
     val placeholderEvents = listOf(
-        Event(id = "1", title = "Meeting", description = "Team meeting", date = "2023-11-14", time = "10:00", startTime = "10:00", endTime = "11:00"),
-        Event(id = "2", title = "Doctor Appointment", description = "Routine check-up", date = "2023-11-14", time = "12:00", startTime = "12:00", endTime = "13:00"),
-        Event(id = "3", title = "Lunch with Friends", description = "Catch up lunch", date = "2023-11-14", time = "14:00", startTime = "14:00", endTime = "15:30")
+        Event(
+            id = "1",
+            title = "Meeting",
+            description = "Team meeting",
+            date = "2023-11-14",
+            time = "10:00",
+            startTime = "10:00",
+            endTime = "11:00"
+        ),
+        Event(
+            id = "2",
+            title = "Doctor Appointment",
+            description = "Routine check-up",
+            date = "2023-11-14",
+            time = "12:00",
+            startTime = "12:00",
+            endTime = "13:00"
+        ),
+        Event(
+            id = "3",
+            title = "Lunch with Friends",
+            description = "Catch up lunch",
+            date = "2023-11-14",
+            time = "14:00",
+            startTime = "14:00",
+            endTime = "15:30"
+        )
     )
     calendarModel.events.value = placeholderEvents
     DailyOverviewScreen(
-        navController = navController,
         selectedDate = selectedDate,
         events = calendarModel.events.value,
         onEventSelected = { event ->
@@ -80,10 +103,14 @@ fun DailyOverview(navController: NavController, calendarModel: CalendarViewModel
             val calendar = Calendar.getInstance()
             calendar.time = newDate
             calendarModel.onDateChange(calendar)
+        },
+        onNavigateToCreateEvent = {
+            navController.navigate(NavRoutes.CreateEditEvent.route)
+        },
+        onBack = {
+            calendarModel.toggleShowDailyOverview()
         }
-    ) {
-        navController.navigate(NavRoutes.CreateEditEvent.route)
-    }
+    )
 }
 
 @Composable

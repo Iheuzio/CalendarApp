@@ -9,6 +9,7 @@ import java.util.*
 
 
 class CalendarViewModel : ViewModel() {
+
     private val _selectedDate = mutableStateOf(Calendar.getInstance().time)
     val selectedDate: MutableState<Date> get() = _selectedDate
 
