@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.icons.Icons
@@ -65,8 +66,9 @@ import androidx.navigation.NavController
                 }
             )
 
+
             DailyHeader(selectedDate, onChangeDate)
-            DailyEventsList(events = viewModel.events)
+            DailyEventsList(events = viewModel.events, onEventSelected)
 
         }
     }
@@ -119,34 +121,57 @@ private fun getNextDay(selectedDate: Date): Date {
     return calendar.time
 }
 @Composable
-fun EventItem(event: Event) {
+fun EventItem(event: Event, onEventSelected: (Event?) -> Unit) {
     val timeFormatter = SimpleDateFormat("HH:mm", Locale.getDefault())
     val startTime = timeFormatter.parse(event.startTime)
     val endTime = timeFormatter.parse(event.endTime)
     val duration = (endTime.time - startTime.time) / (1000 * 60 * 60)
-    Row(modifier = Modifier
-        .fillMaxWidth()
-        .padding(8.dp)
-        //.height((duration * 60).toInt().dp)
-    )
-    {
 
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(8.dp)
+    ) {
         Column(
             modifier = Modifier
-                .fillMaxWidth()
+                .weight(1f)
                 .height(80.dp)
-                .background(Color(0xFFE1BEE7), RoundedCornerShape(4.dp)) // A light purple color and rounded corners
+                .background(Color(0xFFE1BEE7), RoundedCornerShape(4.dp))
                 .padding(8.dp)
         ) {
             Text(text = event.title)
             Text(text = event.description)
             Text(text = "${event.startTime} - ${event.endTime}")
+        }
 
+        Column(
+            modifier = Modifier
+                .weight(1f)
+        ) {
+            Button(
+                onClick = {
+                    onEventSelected(event)
+                },
+                modifier = Modifier
+                    .size(100.dp, 40.dp)
+            ) {
+                Text("Details")
+            }
+            Button(
+                onClick = {
+
+                },
+                modifier = Modifier
+                    .size(100.dp, 40.dp)
+            ) {
+                Text("Edit")
+            }
         }
     }
 }
+
 @Composable
-fun DailyEventsList(events: List<Event>) {
+fun DailyEventsList(events: List<Event>, onEventSelected: (Event?) -> Unit) {
     val hoursOfDay = (0..23).toList() 
     val timeFormatter = remember { SimpleDateFormat("HH:mm", Locale.getDefault()) }
     val sortedEvents = events.sortedBy { timeFormatter.parse(it.startTime).time }
@@ -184,7 +209,7 @@ fun DailyEventsList(events: List<Event>) {
                 Column(modifier = Modifier.weight(1f)) {
                     if (eventsThisHour.isNotEmpty()) {
                         val event = eventsThisHour.first()
-                        EventItem(event)
+                        EventItem(event, onEventSelected)
                     } else {
                         Spacer(modifier = Modifier
                             .fillMaxWidth()
@@ -196,7 +221,7 @@ fun DailyEventsList(events: List<Event>) {
 
                 if (eventsThisHour.isNotEmpty()) {
                     val event = eventsThisHour.first()
-                    EventItem(event)
+                    EventItem(event, onEventSelected)
                 } else {
                     Spacer(modifier = Modifier
                         .fillMaxWidth()

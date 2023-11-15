@@ -1,10 +1,13 @@
 package com.example.calendar
 
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.Button
 import androidx.navigation.NavController
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.compose.rememberNavController
@@ -12,7 +15,10 @@ import com.example.calendar.ui.theme.CalendarTheme
 
 @Composable
 fun ViewEventScreen(viewModel: EventViewModel, navController: NavController) {
-    Column {
+    Column(
+        horizontalAlignment = Alignment.CenterHorizontally,
+        modifier = Modifier.fillMaxSize()
+    ) {
         viewModel.selectedEvent?.let { Text("Title: " + it.title) }
         viewModel.selectedEvent?.let { Text("Date: " + it.date) }
         viewModel.selectedEvent?.let { Text("Start time: " + it.startTime) }

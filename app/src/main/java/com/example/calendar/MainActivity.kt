@@ -87,6 +87,9 @@ class MainActivity : ComponentActivity() {
             composable(NavRoutes.CreateEditEvent.route) {
                 CreateEditEventScreen(viewModel, navController = navController, inputDate = currentDate, currentTime, currentTime)
             }
+            composable(NavRoutes.EventView.route) {
+                ViewEventScreen(viewModel, navController = navController)
+            }
         }
     }
 }
