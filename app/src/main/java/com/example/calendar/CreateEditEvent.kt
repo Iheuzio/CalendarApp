@@ -28,12 +28,13 @@ import com.example.calendar.ui.theme.CalendarTheme
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun CreateEditEventScreen(viewModel: EventViewModel, navController: NavController, inputDate: String,
-                          inputTime: String, inputTitle: String = "",
+                          inputStartTime: String = "", inputEndTime: String = "", inputTitle: String = "",
                           inputDescription: String = "", inputLocation: String = "") {
 
     // State variables (to be moved into ViewModel)
     var date by rememberSaveable { mutableStateOf(inputDate) }
-    var time by rememberSaveable { mutableStateOf(inputTime) }
+    var startTime by rememberSaveable { mutableStateOf(inputStartTime) }
+    var endTime by rememberSaveable { mutableStateOf(inputEndTime) }
     var title by rememberSaveable { mutableStateOf(inputTitle) }
     var description by rememberSaveable { mutableStateOf(inputDescription) }
     var location by rememberSaveable { mutableStateOf(inputLocation) }
@@ -66,24 +67,34 @@ fun CreateEditEventScreen(viewModel: EventViewModel, navController: NavControlle
             Text(text = "Select date")
         }
 
-        //Select Time
+        //Select Start Time
         //Assuming that hour is passed in as a string such as "12:45"
-        val timeValues = inputTime.split(":")
+        val time = "12:45"
+        val timeValues = time.split(":")
         val timePicker = TimePickerDialog(
             LocalContext.current,
             { _, selectedHour: Int, selectedMinute: Int ->
-                time = "$selectedHour:$selectedMinute"
+                startTime = "$selectedHour:$selectedMinute"
             }, timeValues[0].toInt(), timeValues[1].toInt(), false
         )
 
         //Button to show TimePickerDialog
-        Text("Time: $time")
+        Text("Start time: $startTime")
         Button(
             onClick = {
                 timePicker.show()
             }
         ) {
-            Text(text = "Select time")
+            Text(text = "Select start time")
+        }
+
+        Text("End time: $endTime")
+        Button(
+            onClick = {
+                timePicker.show()
+            }
+        ) {
+            Text(text = "Select end time")
         }
 
         //Description input
@@ -106,16 +117,19 @@ fun CreateEditEventScreen(viewModel: EventViewModel, navController: NavControlle
                 //If user is editing an event
                 if (viewModel.selectedEvent != null) {
                     viewModel.modifyItem(Event(
+                        0,
                         inputDate,
+                        inputStartTime,
+                        inputEndTime,
                         inputTitle,
                         inputDescription,
                         inputLocation
                     ),
-                        Event(date, time, title, description, location))
+                        Event(0, date, startTime, endTime, title, description, location))
                 }
                 //If they're creating an event
                 else {
-                    viewModel.addToList(Event(date, time, title, description, location))
+                    viewModel.addToList(Event(0, date, startTime, endTime, title, description, location))
                 }
                 //Save changes and pop back navigation to start
                 navController.navigate(NavRoutes.CalendarView.route) {

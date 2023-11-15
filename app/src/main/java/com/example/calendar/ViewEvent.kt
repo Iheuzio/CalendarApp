@@ -13,11 +13,12 @@ import com.example.calendar.ui.theme.CalendarTheme
 @Composable
 fun ViewEventScreen(viewModel: EventViewModel, navController: NavController) {
     Column {
-        viewModel.selectedEvent?.let { Text(it.title) }
-        viewModel.selectedEvent?.let { Text(it.date) }
-        viewModel.selectedEvent?.let { Text(it.time) }
-        viewModel.selectedEvent?.let { Text(it.description) }
-        viewModel.selectedEvent?.let { Text(it.location) }
+        viewModel.selectedEvent?.let { Text("Title: " + it.title) }
+        viewModel.selectedEvent?.let { Text("Date: " + it.date) }
+        viewModel.selectedEvent?.let { Text("Start time: " + it.startTime) }
+        viewModel.selectedEvent?.let { Text("End time: " + it.endTime) }
+        viewModel.selectedEvent?.let { Text("Description: " + it.description) }
+        viewModel.selectedEvent?.let { Text("Location: " + it.location) }
 
         Button(
             onClick = {

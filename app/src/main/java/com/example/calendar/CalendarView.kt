@@ -15,6 +15,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.KeyboardArrowLeft
 import androidx.compose.material.icons.filled.KeyboardArrowRight
+import androidx.compose.material3.Button
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -39,7 +40,6 @@ import java.util.*
 @Composable
 fun CalendarView(viewModel: EventViewModel, navController: NavController) {
     var selectedDate by remember { mutableStateOf(Calendar.getInstance().time) }
-    val isEventCreationDialogVisible = remember { mutableStateOf(false) }
     var showDailyOverview by remember { mutableStateOf(false) }
 
     // temporary placeholder for events
@@ -61,11 +61,14 @@ fun CalendarView(viewModel: EventViewModel, navController: NavController) {
                 showDailyOverview = true
             }
 
-            EventCreationButton(isEventCreationDialogVisible)
-
-            if (isEventCreationDialogVisible.value) {
-                EventCreationDialog(onDismiss = { isEventCreationDialogVisible.value = false })
+            Button(
+                onClick = {
+                    navController.navigate(NavRoutes.CreateEditEvent.route)
+                }
+            ) {
+                Text("Create event")
             }
+
         }
     } else {
         // call DailyOverviewScreen when day is clicked
@@ -123,7 +126,7 @@ fun CalendarHeader(selectedDate: Date, onDateChange: (Calendar) -> Unit) {
 }
 
 @Composable
-fun CalendarGrid(viewModel: Date, selectedDate: Date, onDateClick: (Calendar) -> Unit) {
+fun CalendarGrid(selectedDate: Date, onDateClick: (Calendar) -> Unit) {
     //loop over list of events for this given month to make them appear
 
     val calendar = Calendar.getInstance()

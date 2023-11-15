@@ -48,16 +48,8 @@ class EventViewModel() : ViewModel() {
 
     //Find an event according to a date
     //replace this by finding with the Event item itself
-    fun findItem(date: String) {
-        selectedEvent = events.find { it.date == date } ?: Event()
+    fun findItem(id: Int) {
+        selectedEvent = events.find { it.id == id } ?: Event()
     }
 
 }
-
-class Event(
-    val date: String = "",
-    val time: String = "",
-    val title: String = "",
-    val description: String = "",
-    val location: String = ""
-)
