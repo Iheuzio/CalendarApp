@@ -69,29 +69,39 @@ fun CreateEditEventScreen(viewModel: EventViewModel, navController: NavControlle
 
         //Select Start Time
         //Assuming that hour is passed in as a string such as "12:45"
-        val time = "12:45"
-        val timeValues = time.split(":")
-        val timePicker = TimePickerDialog(
+        val startTimeValues = inputStartTime.split(":")
+        val startTimePicker = TimePickerDialog(
             LocalContext.current,
             { _, selectedHour: Int, selectedMinute: Int ->
                 startTime = "$selectedHour:$selectedMinute"
-            }, timeValues[0].toInt(), timeValues[1].toInt(), false
+            }, startTimeValues[0].toInt(), startTimeValues[1].toInt(), false
         )
 
         //Button to show TimePickerDialog
         Text("Start time: $startTime")
         Button(
             onClick = {
-                timePicker.show()
+                startTimePicker.show()
             }
         ) {
             Text(text = "Select start time")
         }
 
+        //Select End Time
+        //Assuming that hour is passed in as a string such as "12:45"
+        val endTimeValues = inputEndTime.split(":")
+        val endTimePicker = TimePickerDialog(
+            LocalContext.current,
+            { _, selectedHour: Int, selectedMinute: Int ->
+                endTime = "$selectedHour:$selectedMinute"
+            }, endTimeValues[0].toInt(), endTimeValues[1].toInt(), false
+        )
+
+
         Text("End time: $endTime")
         Button(
             onClick = {
-                timePicker.show()
+                endTimePicker.show()
             }
         ) {
             Text(text = "Select end time")
