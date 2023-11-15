@@ -74,20 +74,20 @@ fun CalendarView(viewModel: EventViewModel, navController: NavController) {
         // call DailyOverviewScreen when day is clicked
         DailyOverviewScreen(
             viewModel,
+            navController,
             selectedDate = selectedDate,
             events = events,
             onEventSelected = { event ->
                 // handle event selected action
+                viewModel.selectedEvent = event
+                navController.navigate(NavRoutes.EventView.route)
             },
             onAddEvent = {
-                // handle add event action
+                navController.navigate(NavRoutes.CreateEditEvent.route)
             },
             onChangeDate = { newDate ->
                 selectedDate = newDate
                 // update events list based on newDate
-            },
-            onNavigateToCreateEvent = {
-                //show create event screen
             }
         )
     }

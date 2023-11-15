@@ -36,18 +36,18 @@ import java.util.Locale
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.ui.graphics.Color
+import androidx.navigation.NavController
 
 
 @Composable
     fun DailyOverviewScreen(
         viewModel: EventViewModel,
+        navController: NavController,
         selectedDate: Date,
         events: List<UsageEvents.Event>,
-        onEventSelected: (UsageEvents.Event) -> Unit,
+        onEventSelected: (Event?) -> Unit,
         onAddEvent: () -> Unit,
-        onChangeDate: (Date) -> Unit,
-        onNavigateToCreateEvent: () -> Unit
-        ) {
+        onChangeDate: (Date) -> Unit) {
         Column(modifier = Modifier.fillMaxSize()) {
             //temp events list:
             val events = listOf(
@@ -56,7 +56,7 @@ import androidx.compose.ui.graphics.Color
                 Event(id = 1, title = "evt 3", description = "description", startTime = "19:00 PM", endTime = "23:00PM")
             )
             Button(
-                onClick = onNavigateToCreateEvent,
+                onClick = onAddEvent,
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(16.dp),
