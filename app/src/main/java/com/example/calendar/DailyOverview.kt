@@ -40,6 +40,7 @@ import androidx.compose.ui.graphics.Color
 
 @Composable
     fun DailyOverviewScreen(
+        viewModel: EventViewModel,
         selectedDate: Date,
         events: List<UsageEvents.Event>,
         onEventSelected: (UsageEvents.Event) -> Unit,
@@ -65,7 +66,7 @@ import androidx.compose.ui.graphics.Color
             )
 
             DailyHeader(selectedDate, onChangeDate)
-            DailyEventsList(events = events)
+            DailyEventsList(events = viewModel.events)
 
         }
     }

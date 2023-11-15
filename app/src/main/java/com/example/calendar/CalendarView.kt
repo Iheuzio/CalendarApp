@@ -73,6 +73,7 @@ fun CalendarView(viewModel: EventViewModel, navController: NavController) {
     } else {
         // call DailyOverviewScreen when day is clicked
         DailyOverviewScreen(
+            viewModel,
             selectedDate = selectedDate,
             events = events,
             onEventSelected = { event ->
