@@ -85,7 +85,9 @@ class MainActivity : ComponentActivity() {
                 CalendarView(viewModel, navController = navController)
             }
             composable(NavRoutes.CreateEditEvent.route) {
-                CreateEditEventScreen(viewModel, navController = navController, inputDate = currentDate, currentTime, currentTime)
+                val event = Event(viewModel.idCount, currentDate, currentTime, currentTime)
+                viewModel.incrementId()
+                CreateEditEventScreen(viewModel, navController = navController, inputDate = currentDate, event)
             }
             composable(NavRoutes.EventView.route) {
                 ViewEventScreen(viewModel, navController = navController)

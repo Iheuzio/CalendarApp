@@ -48,7 +48,8 @@ import androidx.navigation.NavController
         events: List<UsageEvents.Event>,
         onEventSelected: (Event?) -> Unit,
         onAddEvent: () -> Unit,
-        onChangeDate: (Date) -> Unit) {
+        onChangeDate: (Date) -> Unit,
+        onEditEvent: (Event) -> Unit) {
         Column(modifier = Modifier.fillMaxSize()) {
             //temp events list:
             val events = listOf(
@@ -68,7 +69,7 @@ import androidx.navigation.NavController
 
 
             DailyHeader(selectedDate, onChangeDate)
-            DailyEventsList(events = viewModel.events, onEventSelected)
+            DailyEventsList(events = viewModel.events, onEventSelected, onEditEvent)
 
         }
     }
@@ -121,7 +122,7 @@ private fun getNextDay(selectedDate: Date): Date {
     return calendar.time
 }
 @Composable
-fun EventItem(event: Event, onEventSelected: (Event?) -> Unit) {
+fun EventItem(event: Event, onEventSelected: (Event?) -> Unit, onEditEvent: (Event) -> Unit) {
     val timeFormatter = SimpleDateFormat("HH:mm", Locale.getDefault())
     val startTime = timeFormatter.parse(event.startTime)
     val endTime = timeFormatter.parse(event.endTime)
@@ -159,7 +160,7 @@ fun EventItem(event: Event, onEventSelected: (Event?) -> Unit) {
             }
             Button(
                 onClick = {
-
+                    onEditEvent(event)
                 },
                 modifier = Modifier
                     .size(100.dp, 40.dp)
@@ -171,7 +172,7 @@ fun EventItem(event: Event, onEventSelected: (Event?) -> Unit) {
 }
 
 @Composable
-fun DailyEventsList(events: List<Event>, onEventSelected: (Event?) -> Unit) {
+fun DailyEventsList(events: List<Event>, onEventSelected: (Event?) -> Unit, onEditEvent: (Event) -> Unit) {
     val hoursOfDay = (0..23).toList() 
     val timeFormatter = remember { SimpleDateFormat("HH:mm", Locale.getDefault()) }
     val sortedEvents = events.sortedBy { timeFormatter.parse(it.startTime).time }
@@ -209,7 +210,7 @@ fun DailyEventsList(events: List<Event>, onEventSelected: (Event?) -> Unit) {
                 Column(modifier = Modifier.weight(1f)) {
                     if (eventsThisHour.isNotEmpty()) {
                         val event = eventsThisHour.first()
-                        EventItem(event, onEventSelected)
+                        EventItem(event, onEventSelected, onEditEvent)
                     } else {
                         Spacer(modifier = Modifier
                             .fillMaxWidth()
@@ -221,7 +222,7 @@ fun DailyEventsList(events: List<Event>, onEventSelected: (Event?) -> Unit) {
 
                 if (eventsThisHour.isNotEmpty()) {
                     val event = eventsThisHour.first()
-                    EventItem(event, onEventSelected)
+                    EventItem(event, onEventSelected, onEditEvent)
                 } else {
                     Spacer(modifier = Modifier
                         .fillMaxWidth()

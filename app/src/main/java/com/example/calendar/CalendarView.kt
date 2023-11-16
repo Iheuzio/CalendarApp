@@ -88,6 +88,10 @@ fun CalendarView(viewModel: EventViewModel, navController: NavController) {
             onChangeDate = { newDate ->
                 selectedDate = newDate
                 // update events list based on newDate
+            },
+            onEditEvent = { event ->
+                viewModel.selectedEvent = event
+                navController.navigate(NavRoutes.CreateEditEvent.route)
             }
         )
     }

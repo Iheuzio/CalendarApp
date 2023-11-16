@@ -15,6 +15,7 @@ class EventViewModel() : ViewModel() {
 
     var selectedEvent by mutableStateOf<Event?>(null)
     var events by mutableStateOf(mutableListOf<Event>())
+    var idCount by mutableStateOf(0)
 
     //FOr when a new event is created
     fun addToList(item: Event) {
@@ -30,7 +31,7 @@ class EventViewModel() : ViewModel() {
     //For deleting an event
     fun removeFromList(item: Event) {
         val updatedEventItems = events.toMutableList()
-        events.remove(item)
+        updatedEventItems.remove(item)
         events = updatedEventItems
     }
 
@@ -38,7 +39,7 @@ class EventViewModel() : ViewModel() {
         val updatedEventItems = events.toMutableList()
         val index = events.indexOf(item)
         if (index != -1) {
-            events[index] = modifiedItem
+            updatedEventItems[index] = modifiedItem
             events = updatedEventItems
         }
         else {
@@ -50,6 +51,10 @@ class EventViewModel() : ViewModel() {
     //replace this by finding with the Event item itself
     fun findItem(id: Int) {
         selectedEvent = events.find { it.id == id } ?: Event()
+    }
+
+    fun incrementId() {
+        idCount++
     }
 
 }
