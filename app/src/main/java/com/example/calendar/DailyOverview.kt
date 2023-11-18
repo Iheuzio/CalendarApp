@@ -29,6 +29,7 @@ import java.util.Locale
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.ui.graphics.Color
+import androidx.navigation.NavController
 
 @Composable
 fun DailyOverviewScreen(
@@ -41,21 +42,23 @@ fun DailyOverviewScreen(
     onBack: () -> Unit
 ) {
     Column(modifier = Modifier.fillMaxSize()) {
-        Button(
-            onClick = onBack,
-            modifier = Modifier.padding(16.dp)
-        ) {
-            Text("Back")
-        }
-        Button(
-            onClick = onNavigateToCreateEvent,
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(16.dp),
-            content = {
-                Text("Add Event")
+        Row {
+            Button(
+                onClick = onBack,
+                modifier = Modifier.padding(16.dp)
+            ) {
+                Text("Back")
             }
-        )
+            Button(
+                onClick = onNavigateToCreateEvent,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(16.dp),
+                content = {
+                    Text("Add Event")
+                }
+            )
+        }
 
         DailyHeader(selectedDate, onChangeDate)
         DailyEventsList(events = events, selectedDate = selectedDate)
@@ -126,7 +129,10 @@ fun EventItem(event: Event) {
             modifier = Modifier
                 .fillMaxWidth()
                 .height(80.dp)
-                .background(Color(0xFFE1BEE7), RoundedCornerShape(4.dp)) // A light purple color and rounded corners
+                .background(
+                    Color(0xFFE1BEE7),
+                    RoundedCornerShape(4.dp)
+                ) // A light purple color and rounded corners
                 .padding(8.dp)
         ) {
             Text(text = event.title)

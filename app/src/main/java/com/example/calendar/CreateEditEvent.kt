@@ -17,8 +17,6 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.navigation.NavController
 import androidx.navigation.NavGraph.Companion.findStartDestination
-import androidx.navigation.compose.NavHost
-import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.calendar.ui.theme.CalendarTheme
 
@@ -97,21 +95,21 @@ fun CreateEditEventScreen(viewModel: EventViewModel, navController: NavControlle
             //To save changes
         Button(
             onClick = {
-//                viewModel.addToList(Event(date, time, title, description, location))
-//                //Save changes and pop back navigation to start
-//                navController.navigate(NavRoutes.CalendarView.route) {
-//                    //change so it goes back to the day it was created on
-//                    popUpTo(navController.graph.findStartDestination().id) {
-//                        saveState = true
-//                        inclusive = true
-//                    }
-//                }
+                viewModel.addToList(Event(date, time, title, description, location))
+                //Save changes and pop back navigation to start
+                navController.navigate(NavRoutes.CalendarView.route) {
+                    //change so it goes back to the day it was created on
+                    popUpTo(navController.graph.findStartDestination().id) {
+                        saveState = true
+                        inclusive = true
+                    }
+                }
             }
         ) {
             Text("Save changes")
         }
-    }
 
+    }
 }
 @Preview(showBackground = true)
 @Composable
