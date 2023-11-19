@@ -47,7 +47,7 @@ fun DailyOverviewScreen(
                 onClick = onBack,
                 modifier = Modifier.padding(16.dp)
             ) {
-                Text("Back")
+                Text(LocalContext.current.getStringResource(R.string.back))
             }
             Button(
                 onClick = onNavigateToCreateEvent,
@@ -55,7 +55,7 @@ fun DailyOverviewScreen(
                     .fillMaxWidth()
                     .padding(16.dp),
                 content = {
-                    Text("Add Event")
+                    Text(LocalContext.current.getStringResource(R.string.create_event))
                 }
             )
         }
@@ -82,7 +82,7 @@ fun DailyOverviewScreen(
             }) {
                 Image(
                     painter = painterResource(id = R.drawable.arrow_back),
-                    contentDescription = "Back"
+                    contentDescription = LocalContext.current.getStringResource(R.string.back)
                 )
             }
 
@@ -93,7 +93,7 @@ fun DailyOverviewScreen(
             }) {
                 Image(
                     painter = painterResource(id = R.drawable.arrow_forward),
-                    contentDescription = "Next"
+                    contentDescription = LocalContext.current.getStringResource(R.string.next)
                 )
             }
         }
