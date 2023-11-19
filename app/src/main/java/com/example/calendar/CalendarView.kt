@@ -37,13 +37,17 @@ fun MonthView(navController: NavController, calendarModel: CalendarViewModel) {
 
     Column(modifier = Modifier.fillMaxSize()) {
         CalendarHeader(selectedDate) { newDate ->
-            calendarModel.onDateChange(newDate)
+            calendarModel.onDateChange(newDate, false)
         }
 
         DayOfWeekHeader()
 
         CalendarGrid(selectedDate) { day ->
-            calendarModel.onDateChange(day)
+            if (calendarModel.isEventCreationDialogVisible.value) {
+                calendarModel.onDateChange(day, true)
+            }
+            calendarModel.onDateChange(day, false)
+            calendarModel.isEventCreationDialogVisible.value = true
         }
 
         Button(
@@ -102,7 +106,7 @@ fun DailyOverview(navController: NavController, calendarModel: CalendarViewModel
         onChangeDate = { newDate ->
             val calendar = Calendar.getInstance()
             calendar.time = newDate
-            calendarModel.onDateChange(calendar)
+            calendarModel.onDateChange(calendar, true)
         },
         onNavigateToCreateEvent = {
             navController.navigate(NavRoutes.CreateEditEvent.route)
@@ -142,7 +146,7 @@ fun CalendarHeader(selectedDate: Date, onDateChange: (Calendar) -> Unit) {
             Icon(imageVector = Icons.Default.KeyboardArrowLeft, contentDescription = LocalContext.current.getStringResource(R.string.previous_month))
         }
 
-        monthYearHeader()
+        monthYearHeader(calendar)
 
         IconButton(
             onClick = {

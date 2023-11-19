@@ -17,8 +17,7 @@ import java.text.SimpleDateFormat
 import java.util.Calendar
 
 @Composable
-fun monthYearHeader() {
-    val calendar = Calendar.getInstance()
+fun monthYearHeader(calendar: Calendar) {
     val dateFormat = SimpleDateFormat("MMMM yyyy")
     val monthYear = dateFormat.format(calendar.time)
 

@@ -22,9 +22,11 @@ class CalendarViewModel : ViewModel() {
     private val _events = mutableStateOf(listOf<Event>())
     val events: MutableState<List<Event>> get() = _events
 
-    fun onDateChange(newDate: Calendar) {
+    fun onDateChange(newDate: Calendar, triggerRoute: Boolean = false) {
         _selectedDate.value = newDate.time
-        _showDailyOverview.value = true
+        if (triggerRoute) {
+            _showDailyOverview.value = true
+        }
     }
 
     fun onDialogDismiss() {
