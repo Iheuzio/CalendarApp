@@ -45,9 +45,12 @@ fun MonthView(navController: NavController, calendarModel: CalendarViewModel) {
         CalendarGrid(selectedDate) { day ->
             if (calendarModel.isEventCreationDialogVisible.value) {
                 calendarModel.onDateChange(day, true)
+                calendarModel.isEventCreationDialogVisible.value = false
             }
-            calendarModel.onDateChange(day, false)
-            calendarModel.isEventCreationDialogVisible.value = true
+            else {
+                calendarModel.onDateChange(day, false)
+                calendarModel.isEventCreationDialogVisible.value = true
+            }
         }
 
         Button(
