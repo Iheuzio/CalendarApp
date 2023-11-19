@@ -37,20 +37,13 @@ fun MonthView(navController: NavController, calendarModel: CalendarViewModel) {
 
     Column(modifier = Modifier.fillMaxSize()) {
         CalendarHeader(selectedDate) { newDate ->
-            calendarModel.onDateChange(newDate, false)
+            calendarModel.onDateChange(newDate)
         }
 
         DayOfWeekHeader()
 
         CalendarGrid(selectedDate) { day ->
-            if (calendarModel.isEventCreationDialogVisible.value) {
-                calendarModel.onDateChange(day, true)
-                calendarModel.isEventCreationDialogVisible.value = false
-            }
-            else {
-                calendarModel.onDateChange(day, false)
-                calendarModel.isEventCreationDialogVisible.value = true
-            }
+            calendarModel.onDateChange(day)
         }
 
         Button(
@@ -58,7 +51,7 @@ fun MonthView(navController: NavController, calendarModel: CalendarViewModel) {
                 navController.navigate(NavRoutes.CreateEditEvent.route)
             }
         ) {
-            Text("Create event")
+            Text(LocalContext.current.getStringResource(R.string.add_event))
         }
     }
 }
