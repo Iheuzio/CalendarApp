@@ -23,8 +23,10 @@ class CalendarViewModel : ViewModel() {
     val events: MutableState<List<Event>> get() = _events
 
     fun onDateChange(newDate: Calendar) {
+        if (_selectedDate.value == newDate.time) {
+            _showDailyOverview.value = true
+        }
         _selectedDate.value = newDate.time
-        _showDailyOverview.value = true
     }
 
     fun onDialogDismiss() {
