@@ -1,13 +1,9 @@
 package com.example.calendar
 
-import android.content.res.Resources
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asStateFlow
 
 class EventViewModel() : ViewModel() {
     //private val _uiState = MutableStateFlow(EventUiState())
@@ -36,15 +32,18 @@ class EventViewModel() : ViewModel() {
 
     //Find an event according to a date
     fun findItem(date: String) {
-        selectedEvent = events.find { it.date == date } ?: Event()
+        //selectedEvent = events.find { it.date == date } ?: Event()
     }
 
 }
 
-class Event(
+data class Event(
+    val id: String = "0",
     val date: String = "",
     val time: String = "",
     val title: String = "",
     val description: String = "",
-    val location: String = ""
+    val location: String = "",
+    val startTime: String = "",
+    val endTime: String = ""
 )

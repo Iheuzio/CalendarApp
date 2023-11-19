@@ -32,7 +32,7 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
-                    // remove this if wanting to test your event stuff, just uncomment 
+                    // remove this if wanting to test your event stuff, just uncomment
 
                     //Greeting("Android")
                 // CreateEditEventScreen(inputDate = "01/08/2023", inputTime = "9:22")
@@ -53,6 +53,9 @@ class MainActivity : ComponentActivity() {
             }
             composable(NavRoutes.CreateEditEvent.route) {
                 CreateEditEventScreen(viewModel, navController = navController, inputDate = "01/08/2023", inputTime = "9:22")
+            }
+            composable(NavRoutes.MonthView.route) {
+                MonthView(navController = navController, calendarModel = calendarModel)
             }
         }
     }

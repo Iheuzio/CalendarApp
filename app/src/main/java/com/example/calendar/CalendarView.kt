@@ -20,6 +20,7 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -31,31 +32,40 @@ import androidx.navigation.NavController
 import java.util.*
 
 @Composable
-fun CalendarView(navController: NavController, calendarModel: CalendarViewModel) {
-    Column(
-        modifier = Modifier.fillMaxSize()
-    ) {
-        CalendarHeader(calendarModel.selectedDate.value) { newDate ->
+fun MonthView(navController: NavController, calendarModel: CalendarViewModel) {
+    val selectedDate = calendarModel.selectedDate.value
+
+    Column(modifier = Modifier.fillMaxSize()) {
+        CalendarHeader(selectedDate) { newDate ->
             calendarModel.onDateChange(newDate)
         }
 
         DayOfWeekHeader()
 
-        CalendarGrid(calendarModel.selectedDate.value) { day ->
+        CalendarGrid(selectedDate) { day ->
             calendarModel.onDateChange(day)
         }
 
-        //EventCreationButton(isEventCreationDialogVisible)
         Button(
             onClick = {
                 navController.navigate(NavRoutes.CreateEditEvent.route)
             }
         ) {
-            Text("Create event")
+            Text(LocalContext.current.getStringResource(R.string.add_event))
         }
     }
 }
 
+@Composable
+fun CalendarView(navController: NavController, calendarModel: CalendarViewModel) {
+    val showDailyOverview = calendarModel.showDailyOverview.value
+
+    if (!showDailyOverview) {
+        MonthView(navController, calendarModel)
+    } else {
+        DailyOverview(navController, calendarModel)
+    }
+}
 @Composable
 fun CalendarHeader(selectedDate: Date, onDateChange: (Calendar) -> Unit) {
     val calendar = Calendar.getInstance()
@@ -75,7 +85,7 @@ fun CalendarHeader(selectedDate: Date, onDateChange: (Calendar) -> Unit) {
             Icon(imageVector = Icons.Default.KeyboardArrowLeft, contentDescription = LocalContext.current.getStringResource(R.string.previous_month))
         }
 
-        monthYearHeader()
+        monthYearHeader(calendar)
 
         IconButton(
             onClick = {

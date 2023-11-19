@@ -16,4 +16,10 @@
 <!--    for event stuff-->
     <string name="cancel">Cancel</string>
     <string name="confirm">Save</string>
+    <string name="previous_day">Previous Day</string>
+    <string name="add_event">Add Event</string>
+
+<!--    day overview-->
+    <string name="back">Back</string>
+    <string name="next">Next</string>
 </resources>

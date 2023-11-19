@@ -17,8 +17,6 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.navigation.NavController
 import androidx.navigation.NavGraph.Companion.findStartDestination
-import androidx.navigation.compose.NavHost
-import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.calendar.ui.theme.CalendarTheme
 
@@ -110,8 +108,8 @@ fun CreateEditEventScreen(viewModel: EventViewModel, navController: NavControlle
         ) {
             Text("Save changes")
         }
-    }
 
+    }
 }
 @Preview(showBackground = true)
 @Composable
