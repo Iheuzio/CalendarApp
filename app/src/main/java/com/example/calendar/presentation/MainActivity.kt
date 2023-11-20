@@ -1,4 +1,4 @@
-package com.example.calendar
+package com.example.calendar.presentation
 
 import android.content.Context
 import android.os.Build
@@ -6,8 +6,6 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.annotation.RequiresApi
-import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.activity.viewModels
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
@@ -19,11 +17,13 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import androidx.navigation.navArgument
+import com.example.calendar.data.Event
+import com.example.calendar.data.NavRoutes
+import com.example.calendar.data.viewmodels.CalendarViewModel
+import com.example.calendar.data.viewmodels.EventViewModel
 import java.text.SimpleDateFormat
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
-import java.util.Calendar
 import java.util.Locale
 
 

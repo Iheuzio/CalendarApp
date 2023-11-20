@@ -1,8 +1,9 @@
-package com.example.calendar
+package com.example.calendar.data.viewmodels
 
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
+import com.example.calendar.data.Event
 import java.util.*
 
 // Define a simple Event class for the calendar events

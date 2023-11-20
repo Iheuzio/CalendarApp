@@ -1,4 +1,4 @@
-package com.example.calendar
+package com.example.calendar.data
 
 data class Event(
     val id: Int = 0,

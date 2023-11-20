@@ -1,6 +1,5 @@
-package com.example.calendar
+package com.example.calendar.presentation
 
-import android.app.usage.UsageEvents
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -31,7 +30,11 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.ui.graphics.Color
 import androidx.navigation.NavController
-import androidx.navigation.NavGraph.Companion.findStartDestination
+import com.example.calendar.data.Event
+import com.example.calendar.R
+import com.example.calendar.data.NavRoutes
+import com.example.calendar.data.viewmodels.CalendarViewModel
+import com.example.calendar.data.viewmodels.EventViewModel
 
 @Composable
 fun DailyOverviewScreen(

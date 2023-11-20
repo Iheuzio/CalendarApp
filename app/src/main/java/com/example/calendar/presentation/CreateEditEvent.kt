@@ -1,4 +1,4 @@
-package com.example.calendar
+package com.example.calendar.presentation
 
 import android.app.DatePickerDialog
 import android.app.TimePickerDialog
@@ -21,12 +21,16 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.navigation.NavController
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.compose.rememberNavController
+import com.example.calendar.data.Event
+import com.example.calendar.data.NavRoutes
+import com.example.calendar.data.viewmodels.EventViewModel
 import com.example.calendar.ui.theme.CalendarTheme
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun CreateEditEventScreen(viewModel: EventViewModel, navController: NavController, inputDate: String,
-                          inputEvent: Event) {
+                          inputEvent: Event
+) {
 
     // State variables (to be moved into ViewModel)
     var date by remember { mutableStateOf(inputDate) }
@@ -130,7 +134,8 @@ fun CreateEditEventScreen(viewModel: EventViewModel, navController: NavControlle
                     viewModel.modifyItem(
                         viewModel.selectedEvent!!
                     ,
-                        Event(inputEvent.id, date, startTime, endTime, title, description, location))
+                        Event(inputEvent.id, date, startTime, endTime, title, description, location)
+                    )
                 }
                 //If they're creating an event
                 else {
