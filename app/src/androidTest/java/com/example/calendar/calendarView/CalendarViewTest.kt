@@ -1,11 +1,17 @@
+package com.example.calendar.calendarView
+
 import androidx.compose.ui.test.*
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.navigation.testing.TestNavHostController
 import androidx.test.platform.app.InstrumentationRegistry
+import com.example.calendar.data.NavRoutes
 import com.example.calendar.presentation.CalendarView
 import com.example.calendar.data.viewmodels.CalendarViewModel
 import com.example.calendar.data.viewmodels.EventViewModel
+import com.example.calendar.presentation.CalendarGrid
+import com.example.calendar.presentation.CalendarHeader
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNotEquals
 import org.junit.Before
 import org.junit.Rule
@@ -55,6 +61,21 @@ class CalendarViewTest {
 
     @Test
     fun calendarGrid_selectsDate_whenDateClicked() {
+        val initialDate = calendarModel.selectedDate.value
+        composeTestRule.onNodeWithText("1").performClick()
+        assertNotEquals(initialDate, calendarModel.selectedDate.value)
+    }
+
+//    @Test
+//    fun monthView_navigatesToCreateEvent_whenAddEventButtonClicked() {
+//        calendarModel.showDailyOverview.value = false
+//        composeTestRule.onNodeWithText("Add Event").performClick()
+//        assertEquals(NavRoutes.CreateEvent.route, navController.currentDestination?.route)
+//    }
+
+    @Test
+    fun calendarView_displaysMonthView_whenShowDailyOverviewIsFalse_andSelectedDateChanges() {
+        calendarModel.showDailyOverview.value = false
         val initialDate = calendarModel.selectedDate.value
         composeTestRule.onNodeWithText("1").performClick()
         assertNotEquals(initialDate, calendarModel.selectedDate.value)
