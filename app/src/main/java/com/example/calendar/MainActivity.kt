@@ -23,6 +23,7 @@ import androidx.navigation.navArgument
 import java.text.SimpleDateFormat
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
+import java.util.Calendar
 import java.util.Locale
 
 
@@ -96,9 +97,10 @@ class MainActivity : ComponentActivity() {
                 val format = SimpleDateFormat("dd-MM-yy", Locale.getDefault())
                 val selectedDate = format.parse(date)
 
-                /*DailyOverviewScreen(
+                DailyOverviewScreen(
                     viewModel,
                     selectedDate = selectedDate,
+                    events = calendarModel.events.value,
                     onEventSelected = { event ->
                         // handle event selected action
                         viewModel.selectedEvent = event
@@ -108,14 +110,20 @@ class MainActivity : ComponentActivity() {
                         navController.navigate(NavRoutes.CreateEvent.route)
                     },
                     onChangeDate = { newDate ->
-                        // Update the date variable when onChangeDate is called
-                        navController.navigate(NavRoutes.DayView.route + "/$newDate")
+                        //navController.navigate(NavRoutes.DayView.route + "/$newDate")
+                        val calendar = Calendar.getInstance()
+                        calendar.time = newDate
+                        calendarModel.onDateChange(calendar)
+                    },
+                    onBack = {
+                        calendarModel.toggleShowDailyOverview()
                     },
                     onEditEvent = { event ->
                         viewModel.selectedEvent = event
                         navController.navigate(NavRoutes.EditEvent.route)
                     }
-                )*/
+
+                )
             }
             composable(NavRoutes.MonthView.route) {
                 MonthView(navController = navController, calendarModel = calendarModel)
