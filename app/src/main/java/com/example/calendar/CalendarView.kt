@@ -35,6 +35,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import androidx.navigation.compose.NavHost
+import java.text.SimpleDateFormat
 import java.util.*
 
 @Composable
@@ -72,29 +73,9 @@ fun CalendarView(viewModel: EventViewModel, navController: NavController) {
 
         }
     } else {
-        // call DailyOverviewScreen when day is clicked
-        DailyOverviewScreen(
-            viewModel,
-            navController,
-            selectedDate = selectedDate,
-            events = events,
-            onEventSelected = { event ->
-                // handle event selected action
-                viewModel.selectedEvent = event
-                navController.navigate(NavRoutes.EventView.route)
-            },
-            onAddEvent = {
-                navController.navigate(NavRoutes.CreateEvent.route)
-            },
-            onChangeDate = { newDate ->
-                selectedDate = newDate
-                // update events list based on newDate
-            },
-            onEditEvent = { event ->
-                viewModel.selectedEvent = event
-                navController.navigate(NavRoutes.EditEvent.route)
-            }
-        )
+        val format = SimpleDateFormat("dd-MM-yy", Locale.getDefault())
+        val date = format.format(selectedDate)
+        navController.navigate(NavRoutes.DayView.route + "/$date")
     }
 
 }

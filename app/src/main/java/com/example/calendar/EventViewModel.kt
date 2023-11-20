@@ -1,6 +1,5 @@
 package com.example.calendar
 
-import android.content.res.Resources
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -17,13 +16,6 @@ class EventViewModel() : ViewModel() {
     var selectedDate by mutableStateOf("")
     var events by mutableStateOf(mutableListOf<Event>())
     var idCount by mutableStateOf(0)
-
-    var date by mutableStateOf("")
-    var startTime by mutableStateOf("")
-    var endTime by mutableStateOf("")
-    var title by mutableStateOf("")
-    var description by mutableStateOf("")
-    var location by mutableStateOf("")
 
     //FOr when a new event is created
     fun addToList(item: Event) {
@@ -54,12 +46,6 @@ class EventViewModel() : ViewModel() {
             removeFromList(item)
             addToList(modifiedItem)
         }
-    }
-
-    //Find an event according to a date
-    //replace this by finding with the Event item itself
-    fun findItem(id: Int) {
-        selectedEvent = events.find { it.id == id } ?: Event()
     }
 
     fun incrementId() {

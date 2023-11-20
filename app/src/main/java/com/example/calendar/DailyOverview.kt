@@ -43,9 +43,7 @@ import androidx.navigation.NavController
 @Composable
     fun DailyOverviewScreen(
         viewModel: EventViewModel,
-        navController: NavController,
         selectedDate: Date,
-        events: List<UsageEvents.Event>,
         onEventSelected: (Event?) -> Unit,
         onAddEvent: () -> Unit,
         onChangeDate: (Date) -> Unit,

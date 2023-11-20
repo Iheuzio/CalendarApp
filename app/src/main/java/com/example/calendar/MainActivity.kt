@@ -38,6 +38,7 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navArgument
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 
@@ -99,6 +100,36 @@ class MainActivity : ComponentActivity() {
             composable(NavRoutes.EventView.route) {
                 ViewEventScreen(viewModel, navController = navController)
             }
+            composable(NavRoutes.DayView.route + "/{date}") { navBackStackEntry ->
+                // Retrieve the date from the route's arguments
+                val date = remember {
+                    navBackStackEntry.arguments?.getString("date") ?: currentDate
+                }
+                val format = SimpleDateFormat("dd-MM-yy", Locale.getDefault())
+                val selectedDate = format.parse(date)
+
+                DailyOverviewScreen(
+                    viewModel,
+                    selectedDate = selectedDate,
+                    onEventSelected = { event ->
+                        // handle event selected action
+                        viewModel.selectedEvent = event
+                        navController.navigate(NavRoutes.EventView.route)
+                    },
+                    onAddEvent = {
+                        navController.navigate(NavRoutes.CreateEvent.route)
+                    },
+                    onChangeDate = { newDate ->
+                        // Update the date variable when onChangeDate is called
+                        navController.navigate(NavRoutes.DayView.route + "/$newDate")
+                    },
+                    onEditEvent = { event ->
+                        viewModel.selectedEvent = event
+                        navController.navigate(NavRoutes.EditEvent.route)
+                    }
+                )
+            }
+
         }
     }
 }
