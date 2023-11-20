@@ -62,7 +62,7 @@ class MainActivity : ComponentActivity() {
     fun CalendarApp(viewModel: EventViewModel = EventViewModel(), navController: NavHostController = rememberNavController()) {
 
         val currentDateTime = LocalDateTime.now()
-        val dateFormatter = DateTimeFormatter.ofPattern("MM/dd/yyyy")
+        val dateFormatter = DateTimeFormatter.ofPattern("MM-dd-yyyy")
         val timeFormatter = DateTimeFormatter.ofPattern("H:mm")
 
         //TO DO: change after so its currently selected date and time (once merged)
@@ -84,7 +84,7 @@ class MainActivity : ComponentActivity() {
             }
             composable(NavRoutes.EditEvent.route) {
                 viewModel.selectedEvent?.let { event ->
-                    CreateEditEventScreen(viewModel, navController = navController, inputDate = currentDate,
+                    CreateEditEventScreen(viewModel, navController = navController, inputDate = viewModel.selectedEvent!!.date,
                         event
                     )
                 }

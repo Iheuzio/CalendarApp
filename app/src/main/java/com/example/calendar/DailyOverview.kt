@@ -179,7 +179,7 @@ fun DailyEventsList(selectedDate: Date, events: List<Event>, onEventSelected: (E
     val eventsOnSelectedDate = events.filter {
         dateFormat.format(selectedDate) == it.date
     }
-    val whatever = 0
+
     LazyColumn {
         items(hoursOfDay) { hour ->
             // Format hour to "HH:mm"
@@ -265,17 +265,17 @@ fun DailyOverview(navController: NavController, calendarModel: CalendarViewModel
 
         },
         onBack = {
-            //calendarModel.toggleShowDailyOverview()
-            navController.navigate(NavRoutes.MonthView.route) {
+            calendarModel.toggleShowDailyOverview()
+            /*navController.navigate(NavRoutes.MonthView.route) {
                 popUpTo(navController.graph.findStartDestination().id) {
                     saveState = true
                     inclusive = true
                 }
-            }
+            }*/
         },
         onEditEvent = { event ->
             eventModel.selectedEvent = event
-            navController.navigate(NavRoutes.CalendarView.route)
+            navController.navigate(NavRoutes.EditEvent.route)
         }
 
     )

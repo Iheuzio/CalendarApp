@@ -49,13 +49,17 @@ fun CreateEditEventScreen(viewModel: EventViewModel, navController: NavControlle
 
         //Date input (date picker or based on what dates there are in calendar?)
         Text("Date: $date")
-        val dateValues = inputDate.split("-")
+        var dateValues = inputDate.split("-")
+        if (dateValues.size == 1) {
+            dateValues = inputDate.split("/")
+        }
         val datePicker = DatePickerDialog(
             LocalContext.current,
             { _: DatePicker, selectedYear: Int, selectedMonth: Int, selectedDayOfMonth: Int ->
-                date = "$selectedDayOfMonth/${selectedMonth + 1}/$selectedYear"
+                date = "$selectedMonth-$selectedDayOfMonth-$selectedYear"
             }, dateValues[2].toInt(), dateValues[0].toInt(), dateValues[1].toInt()
         )
+        val count = 0
         Button(
             onClick = {
                 datePicker.show()
@@ -135,7 +139,6 @@ fun CreateEditEventScreen(viewModel: EventViewModel, navController: NavControlle
                 }
                 //Save changes and pop back navigation to start
                 navController.navigate(NavRoutes.CalendarView.route) {
-                    //TO DO: change so it goes back to the day it's scheduled to
                     popUpTo(navController.graph.findStartDestination().id) {
                         saveState = true
                         inclusive = true

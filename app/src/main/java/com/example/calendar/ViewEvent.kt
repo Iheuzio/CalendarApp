@@ -29,9 +29,7 @@ fun ViewEventScreen(viewModel: EventViewModel, navController: NavController) {
         Button(
             onClick = {
                 viewModel.selectedEvent?.let { viewModel.removeFromList(it) }
-                //Save changes and pop back navigation to start
                 navController.navigate(NavRoutes.CalendarView.route) {
-                    //TO DO: change so it goes back to where it was before
                     popUpTo(navController.graph.findStartDestination().id) {
                         saveState = true
                         inclusive = true
@@ -44,10 +42,7 @@ fun ViewEventScreen(viewModel: EventViewModel, navController: NavController) {
         }
         Button(
             onClick = {
-                //TO DO: change so it goes back to the day it's scheduled to
-                //Save changes and pop back navigation to start
                 navController.navigate(NavRoutes.CalendarView.route) {
-                    //TO DO: change so it goes back to where it was before
                     popUpTo(navController.graph.findStartDestination().id) {
                         saveState = true
                         inclusive = true
