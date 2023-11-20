@@ -37,7 +37,7 @@ import java.text.SimpleDateFormat
 import java.util.*
 
 @Composable
-fun MonthView(navController: NavController, calendarModel: CalendarViewModel) {
+fun MonthView(navController: NavController, calendarModel: CalendarViewModel, eventModel: EventViewModel) {
     val selectedDate = calendarModel.selectedDate.value
 
     Column(modifier = Modifier.fillMaxSize()) {
@@ -47,7 +47,7 @@ fun MonthView(navController: NavController, calendarModel: CalendarViewModel) {
 
         DayOfWeekHeader()
 
-        CalendarGrid(selectedDate) { day ->
+        CalendarGrid(eventModel,selectedDate) { day ->
             calendarModel.onDateChange(day)
         }
 
@@ -66,7 +66,7 @@ fun CalendarView(navController: NavController, calendarModel: CalendarViewModel,
     val showDailyOverview = calendarModel.showDailyOverview.value
 
     if (!showDailyOverview) {
-        MonthView(navController, calendarModel)
+        MonthView(navController, calendarModel, eventModel)
     } else {
 
         val selectedDate = calendarModel.selectedDate.value
@@ -124,7 +124,7 @@ fun NextMonthButton(calendar: Calendar, onDateChange: (Calendar) -> Unit) {
     }
 }
 @Composable
-fun CalendarGrid(selectedDate: Date, onDateClick: (Calendar) -> Unit) {
+fun CalendarGrid(eventModel: EventViewModel, selectedDate: Date, onDateClick: (Calendar) -> Unit) {
     val calendar = Calendar.getInstance()
     calendar.time = selectedDate
 
@@ -156,8 +156,9 @@ fun CalendarGrid(selectedDate: Date, onDateClick: (Calendar) -> Unit) {
 
                     val isCurrentMonth = cellDate.get(Calendar.MONTH) == selectedDate.month
                     val isSelected = cellDate.time == selectedDate
-
-                    DayCell(day, isSelected, isCurrentMonth, cellSize, onDateClick, cellDate)
+                    // check if events exist for this day
+                    val eventBool = eventModel.checkEventsExist(cellDate.time)
+                    DayCell(day, isSelected, isCurrentMonth, cellSize, onDateClick, cellDate, eventBool)
                 } else {
                     EmptyCell(cellSize)
                 }
@@ -167,7 +168,15 @@ fun CalendarGrid(selectedDate: Date, onDateClick: (Calendar) -> Unit) {
 }
 
 @Composable
-fun DayCell(day: Int, isSelected: Boolean, isCurrentMonth: Boolean, cellSize: Dp, onDateClick: (Calendar) -> Unit, cellDate: Calendar) {
+fun DayCell(
+    day: Int,
+    isSelected: Boolean,
+    isCurrentMonth: Boolean,
+    cellSize: Dp,
+    onDateClick: (Calendar) -> Unit,
+    cellDate: Calendar,
+    eventBool: Any
+) {
     val today = Calendar.getInstance()
     val isToday = cellDate.get(Calendar.YEAR) == today.get(Calendar.YEAR) &&
             cellDate.get(Calendar.MONTH) == today.get(Calendar.MONTH) &&
@@ -180,6 +189,7 @@ fun DayCell(day: Int, isSelected: Boolean, isCurrentMonth: Boolean, cellSize: Dp
                 when {
                     isSelected -> MaterialTheme.colorScheme.primary
                     isToday -> Color.Black
+                    eventBool == true -> Color.Red
                     isCurrentMonth -> Color.Transparent
                     else -> Color.Gray
                 }

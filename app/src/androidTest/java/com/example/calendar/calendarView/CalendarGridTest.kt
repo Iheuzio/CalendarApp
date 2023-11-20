@@ -36,7 +36,7 @@ class CalendarGridTest {
         eventViewModel = EventViewModel()
         calendarModel.showDailyOverview.value = false
         composeTestRule.setContent {
-            CalendarGrid(calendarModel.selectedDate.value) { day ->
+            CalendarGrid(eventViewModel,calendarModel.selectedDate.value) { day ->
                 calendarModel.onDateChange(day)
             }
         }

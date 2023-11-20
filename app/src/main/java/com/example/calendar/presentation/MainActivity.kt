@@ -103,7 +103,7 @@ class MainActivity : ComponentActivity() {
                 DailyOverview(navController, calendarModel, viewModel)
             }
             composable(NavRoutes.MonthView.route) {
-                MonthView(navController = navController, calendarModel = calendarModel)
+                MonthView(navController = navController, calendarModel = calendarModel, viewModel)
             }
         }
     }
