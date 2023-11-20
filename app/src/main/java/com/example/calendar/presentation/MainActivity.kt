@@ -6,6 +6,8 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.annotation.RequiresApi
+import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.activity.viewModels
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
@@ -24,6 +26,7 @@ import com.example.calendar.data.viewmodels.EventViewModel
 import java.text.SimpleDateFormat
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
+import java.util.Calendar
 import java.util.Locale
 
 
@@ -63,11 +66,7 @@ class MainActivity : ComponentActivity() {
 
         val currentDateTime = LocalDateTime.now()
         val dateFormatter = DateTimeFormatter.ofPattern("MM-dd-yyyy")
-        val timeFormatter = DateTimeFormatter.ofPattern("H:mm")
-
-        //TO DO: change after so its currently selected date and time (once merged)
         val currentDate = currentDateTime.format(dateFormatter)
-        val currentTime = currentDateTime.format(timeFormatter)
 
        val calendarModel by viewModels<CalendarViewModel>()
         NavHost(navController = navController, startDestination = NavRoutes.CalendarView.route) {

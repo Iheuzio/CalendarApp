@@ -60,10 +60,10 @@ fun CreateEditEventScreen(viewModel: EventViewModel, navController: NavControlle
         val datePicker = DatePickerDialog(
             LocalContext.current,
             { _: DatePicker, selectedYear: Int, selectedMonth: Int, selectedDayOfMonth: Int ->
-                date = "$selectedMonth-$selectedDayOfMonth-$selectedYear"
+                date = "${selectedMonth+1}-$selectedDayOfMonth-$selectedYear"
             }, dateValues[2].toInt(), dateValues[0].toInt(), dateValues[1].toInt()
         )
-        val count = 0
+
         Button(
             onClick = {
                 datePicker.show()
@@ -152,6 +152,19 @@ fun CreateEditEventScreen(viewModel: EventViewModel, navController: NavControlle
             }
         ) {
             Text("Save changes")
+        }
+
+        Button(
+            onClick = {
+                navController.navigate(NavRoutes.CalendarView.route) {
+                    popUpTo(navController.graph.findStartDestination().id) {
+                        saveState = true
+                        inclusive = true
+                    }
+                }
+            }
+        ) {
+            Text("Back")
         }
 
     }

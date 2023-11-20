@@ -37,7 +37,6 @@ fun ViewEventScreen(viewModel: EventViewModel, navController: NavController) {
                         inclusive = true
                     }
                 }
-                //TO DO: Alert that event has been deleted once navigated back
             }
         ) {
             Text("Delete")

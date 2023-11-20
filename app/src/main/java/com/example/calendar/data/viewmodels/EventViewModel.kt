@@ -2,6 +2,7 @@ package com.example.calendar.data.viewmodels
 
 import android.icu.util.Calendar
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
@@ -9,12 +10,9 @@ import com.example.calendar.data.Event
 import java.util.Date
 
 class EventViewModel : ViewModel() {
-    //private val _uiState = MutableStateFlow(EventUiState())
-    //val uiState: StateFlow<EventUiState> = _uiState.asStateFlow()
-
     var selectedEvent by mutableStateOf<Event?>(null)
     var events by mutableStateOf(mutableListOf<Event>())
-    var idCount by mutableStateOf(0)
+    var idCount by mutableIntStateOf(0)
 
     //FOr when a new event is created
     fun addToList(item: Event) {
@@ -61,7 +59,7 @@ class EventViewModel : ViewModel() {
     fun checkEventsExist(time: Date): Any {
         val calendar = Calendar.getInstance()
         calendar.time = time
-        val date = "${calendar.get(Calendar.MONTH)}-${calendar.get(Calendar.DAY_OF_MONTH)}-${calendar.get(Calendar.YEAR)}"
+        val date = "${calendar.get(Calendar.MONTH) + 1}-${calendar.get(Calendar.DAY_OF_MONTH)}-${calendar.get(Calendar.YEAR)}"
         val events = getEventsByDate(date)
         // return true or false if event is found on that day
         return events.isNotEmpty()
