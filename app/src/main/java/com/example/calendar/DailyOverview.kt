@@ -60,14 +60,10 @@ fun DailyOverviewScreen(
                     Text(LocalContext.current.getStringResource(R.string.create_event))
                 }
             )
-
-
-            DailyHeader(selectedDate, onChangeDate)
-            DailyEventsList(selectedDate, events = viewModel.events, onEventSelected, onEditEvent)
         }
 
         DailyHeader(selectedDate, onChangeDate)
-        DailyEventsList(selectedDate, events = events, onEventSelected, onEditEvent)
+        DailyEventsList(selectedDate = selectedDate, events = events, onEventSelected, onEditEvent)
     }
 }
     @Composable
