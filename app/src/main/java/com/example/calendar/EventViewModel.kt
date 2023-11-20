@@ -14,6 +14,7 @@ class EventViewModel() : ViewModel() {
     //val uiState: StateFlow<EventUiState> = _uiState.asStateFlow()
 
     var selectedEvent by mutableStateOf<Event?>(null)
+    var selectedDate by mutableStateOf("")
     var events by mutableStateOf(mutableListOf<Event>())
     var idCount by mutableStateOf(0)
 
