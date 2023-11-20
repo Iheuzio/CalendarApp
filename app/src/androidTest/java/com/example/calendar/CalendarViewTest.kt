@@ -4,6 +4,7 @@ import androidx.navigation.testing.TestNavHostController
 import androidx.test.platform.app.InstrumentationRegistry
 import com.example.calendar.CalendarView
 import com.example.calendar.CalendarViewModel
+import com.example.calendar.EventViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.junit.Assert.assertNotEquals
 import org.junit.Before
@@ -19,13 +20,15 @@ class CalendarViewTest {
 
     private lateinit var navController: TestNavHostController
     private lateinit var calendarModel: CalendarViewModel
+    private lateinit var eventViewModel : EventViewModel
 
     @Before
     fun setup() {
         navController = TestNavHostController(InstrumentationRegistry.getInstrumentation().targetContext)
         calendarModel = CalendarViewModel()
+        eventViewModel = EventViewModel()
         composeTestRule.setContent {
-            CalendarView(navController, calendarModel)
+            CalendarView(navController, calendarModel, eventViewModel)
         }
     }
 
