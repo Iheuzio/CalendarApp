@@ -77,9 +77,43 @@ fun CalendarView(viewModel: EventViewModel, navController: NavController) {
         val date = format.format(selectedDate)
         navController.navigate(NavRoutes.DayView.route + "/$date")
     }
-
 }
 
+@Composable
+fun MonthView(navController: NavController, calendarModel: CalendarViewModel) {
+    val selectedDate = calendarModel.selectedDate.value
+
+    Column(modifier = Modifier.fillMaxSize()) {
+        CalendarHeader(selectedDate) { newDate ->
+            calendarModel.onDateChange(newDate)
+        }
+
+        DayOfWeekHeader()
+
+        CalendarGrid(selectedDate) { day ->
+            calendarModel.onDateChange(day)
+        }
+
+        Button(
+            onClick = {
+                navController.navigate(NavRoutes.CreateEvent.route)
+            }
+        ) {
+            Text(LocalContext.current.getStringResource(R.string.add_event))
+        }
+    }
+}
+
+@Composable
+fun CalendarView(navController: NavController, calendarModel: CalendarViewModel, eventModel: EventViewModel) {
+    val showDailyOverview = calendarModel.showDailyOverview.value
+
+    if (!showDailyOverview) {
+        MonthView(navController, calendarModel)
+    } else {
+        DailyOverview(navController, calendarModel, eventModel)
+    }
+}
 @Composable
 fun CalendarHeader(selectedDate: Date, onDateChange: (Calendar) -> Unit) {
     val calendar = Calendar.getInstance()
@@ -99,7 +133,7 @@ fun CalendarHeader(selectedDate: Date, onDateChange: (Calendar) -> Unit) {
             Icon(imageVector = Icons.Default.KeyboardArrowLeft, contentDescription = LocalContext.current.getStringResource(R.string.previous_month))
         }
 
-        monthYearHeader()
+        monthYearHeader(calendar)
 
         IconButton(
             onClick = {

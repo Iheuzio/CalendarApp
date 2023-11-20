@@ -14,13 +14,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.KeyboardArrowLeft
 import androidx.compose.material3.Button
-import androidx.compose.material3.Divider
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
@@ -28,7 +22,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.semantics.Role.Companion.Image
 import androidx.compose.ui.unit.dp
 import java.text.SimpleDateFormat
 import java.util.Calendar
@@ -39,38 +32,44 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.ui.graphics.Color
 import androidx.navigation.NavController
 
-
 @Composable
-    fun DailyOverviewScreen(
-        viewModel: EventViewModel,
-        selectedDate: Date,
-        onEventSelected: (Event?) -> Unit,
-        onAddEvent: () -> Unit,
-        onChangeDate: (Date) -> Unit,
-        onEditEvent: (Event) -> Unit) {
-        Column(modifier = Modifier.fillMaxSize()) {
-            //temp events list:
-            val events = listOf(
-                Event(id = 1, title = "evt 1", description = "description", startTime = "9:00 AM", endTime = "12:00PM"),
-                Event(id = 1, title = "evt 2", description = "description", startTime = "8:00 AM", endTime = "9:00AM"),
-                Event(id = 1, title = "evt 3", description = "description", startTime = "19:00 PM", endTime = "23:00PM")
-            )
+fun DailyOverviewScreen(
+    viewModel: EventViewModel,
+    selectedDate: Date,
+    events: List<Event>,
+    onEventSelected: (Event?) -> Unit,
+    onAddEvent: () -> Unit,
+    onChangeDate: (Date) -> Unit,
+    onBack: () -> Unit,
+    onEditEvent: (Event) -> Unit
+) {
+    Column(modifier = Modifier.fillMaxSize()) {
+        Row {
+            Button(
+                onClick = onBack,
+                modifier = Modifier.padding(16.dp)
+            ) {
+                Text(LocalContext.current.getStringResource(R.string.back))
+            }
             Button(
                 onClick = onAddEvent,
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(16.dp),
                 content = {
-                    Text("Add Event")
+                    Text(LocalContext.current.getStringResource(R.string.create_event))
                 }
             )
 
 
             DailyHeader(selectedDate, onChangeDate)
-            DailyEventsList(events = viewModel.events, onEventSelected, onEditEvent)
-
+            DailyEventsList(selectedDate, events = viewModel.events, onEventSelected, onEditEvent)
         }
+
+        DailyHeader(selectedDate, onChangeDate)
+        DailyEventsList(selectedDate, events = events, onEventSelected, onEditEvent)
     }
+}
     @Composable
     fun DailyHeader(selectedDate: Date, onChangeDate: (Date) -> Unit) {
         val context = LocalContext.current
@@ -89,7 +88,7 @@ import androidx.navigation.NavController
             }) {
                 Image(
                     painter = painterResource(id = R.drawable.arrow_back),
-                    contentDescription = "Back"
+                    contentDescription = LocalContext.current.getStringResource(R.string.back)
                 )
             }
 
@@ -100,7 +99,7 @@ import androidx.navigation.NavController
             }) {
                 Image(
                     painter = painterResource(id = R.drawable.arrow_forward),
-                    contentDescription = "Next"
+                    contentDescription = LocalContext.current.getStringResource(R.string.next)
                 )
             }
         }
@@ -136,6 +135,10 @@ fun EventItem(event: Event, onEventSelected: (Event?) -> Unit, onEditEvent: (Eve
                 .weight(1f)
                 .height(80.dp)
                 .background(Color(0xFFE1BEE7), RoundedCornerShape(4.dp))
+                .background(
+                    Color(0xFFE1BEE7),
+                    RoundedCornerShape(4.dp)
+                ) // A light purple color and rounded corners
                 .padding(8.dp)
         ) {
             Text(text = event.title)
@@ -170,10 +173,15 @@ fun EventItem(event: Event, onEventSelected: (Event?) -> Unit, onEditEvent: (Eve
 }
 
 @Composable
-fun DailyEventsList(events: List<Event>, onEventSelected: (Event?) -> Unit, onEditEvent: (Event) -> Unit) {
-    val hoursOfDay = (0..23).toList() 
+fun DailyEventsList(selectedDate: Date, events: List<Event>, onEventSelected: (Event?) -> Unit, onEditEvent: (Event) -> Unit) {
+    val hoursOfDay = (0..23).toList()
+    val dateFormat = remember { SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()) }
     val timeFormatter = remember { SimpleDateFormat("HH:mm", Locale.getDefault()) }
     val sortedEvents = events.sortedBy { timeFormatter.parse(it.startTime).time }
+
+    val eventsOnSelectedDate = events.filter {
+        dateFormat.format(selectedDate) == it.date
+    }
 
     LazyColumn {
         items(hoursOfDay) { hour ->
@@ -182,7 +190,7 @@ fun DailyEventsList(events: List<Event>, onEventSelected: (Event?) -> Unit, onEd
             val hourEndString = String.format(Locale.getDefault(), "%02d:00", hour + 1)
 
             // Check if this hour is within any evts
-            val eventsThisHour = sortedEvents.filter { event ->
+            val eventsThisHour = eventsOnSelectedDate.filter { event ->
                 val eventStart = timeFormatter.parse(event.startTime)
                 val eventEnd = timeFormatter.parse(event.endTime)
                 val hourStart = timeFormatter.parse(hourStartString)
@@ -228,9 +236,43 @@ fun DailyEventsList(events: List<Event>, onEventSelected: (Event?) -> Unit, onEd
                     )
                 }
             }
-            Divider()
         }
     }
+}
+
+@Composable
+fun DailyOverview(navController: NavController, calendarModel: CalendarViewModel, eventModel: EventViewModel) {
+    val selectedDate = calendarModel.selectedDate.value
+    val events = calendarModel.events.value
+
+    calendarModel.events.value = eventModel.events
+    DailyOverviewScreen(
+        eventModel,
+        selectedDate = selectedDate,
+        events = calendarModel.events.value,
+        onEventSelected = { event ->
+            // handle event selected action
+            eventModel.selectedEvent = event
+            navController.navigate(NavRoutes.EventView.route)
+        },
+        onAddEvent = {
+            navController.navigate(NavRoutes.CreateEvent.route)
+        },
+        onChangeDate = { newDate ->
+            //navController.navigate(NavRoutes.DayView.route + "/$newDate")
+            val calendar = Calendar.getInstance()
+            calendar.time = newDate
+            calendarModel.onDateChange(calendar)
+        },
+        onBack = {
+            calendarModel.toggleShowDailyOverview()
+        },
+        onEditEvent = { event ->
+            eventModel.selectedEvent = event
+            navController.navigate(NavRoutes.EditEvent.route)
+        }
+
+    )
 }
 
 @Composable

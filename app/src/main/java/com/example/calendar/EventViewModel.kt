@@ -4,9 +4,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asStateFlow
 
 class EventViewModel() : ViewModel() {
     //private val _uiState = MutableStateFlow(EventUiState())
@@ -41,8 +38,7 @@ class EventViewModel() : ViewModel() {
         if (index != -1) {
             updatedEventItems[index] = modifiedItem
             events = updatedEventItems
-        }
-        else {
+        } else {
             removeFromList(item)
             addToList(modifiedItem)
         }
@@ -51,5 +47,4 @@ class EventViewModel() : ViewModel() {
     fun incrementId() {
         idCount++
     }
-
 }

@@ -145,8 +145,8 @@ fun CreateEditEventScreen(viewModel: EventViewModel, navController: NavControlle
         ) {
             Text("Save changes")
         }
-    }
 
+    }
 }
 @Preview(showBackground = true)
 @Composable
