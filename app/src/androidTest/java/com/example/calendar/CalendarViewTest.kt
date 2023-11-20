@@ -32,13 +32,13 @@ class CalendarViewTest {
     @Test
     fun calendarView_displaysMonthView_whenShowDailyOverviewIsFalse() {
         calendarModel.showDailyOverview.value = false
-        composeTestRule.onNodeWithText("Month View").assertIsDisplayed()
+        composeTestRule.onNodeWithText("Add Event").assertIsDisplayed()
     }
 
     @Test
     fun calendarView_displaysDailyOverview_whenShowDailyOverviewIsTrue() {
         calendarModel.showDailyOverview.value = true
-        composeTestRule.onNodeWithText("Daily Overview").assertIsDisplayed()
+        composeTestRule.onNodeWithText("Back").assertIsDisplayed()
     }
 
     @Test
