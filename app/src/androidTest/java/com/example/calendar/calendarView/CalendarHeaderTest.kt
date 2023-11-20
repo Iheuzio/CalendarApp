@@ -10,6 +10,9 @@ import com.example.calendar.data.viewmodels.CalendarViewModel
 import com.example.calendar.data.viewmodels.EventViewModel
 import com.example.calendar.presentation.CalendarGrid
 import com.example.calendar.presentation.CalendarHeader
+import com.example.calendar.presentation.DayNameText
+import com.example.calendar.presentation.DayOfWeekHeader
+import com.example.calendar.presentation.monthYearHeader
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNotEquals
@@ -34,17 +37,53 @@ class CalendarHeaderTest {
             TestNavHostController(InstrumentationRegistry.getInstrumentation().targetContext)
         calendarModel = CalendarViewModel()
         eventViewModel = EventViewModel()
-        composeTestRule.setContent {
-            CalendarHeader(calendarModel.selectedDate.value) { newDate ->
-                calendarModel.onDateChange(newDate)
-            }
-        }
+
     }
 
     @Test
     fun calendarHeader_changesMonth_whenNextMonthButtonClicked() {
         val initialMonth = Calendar.getInstance().get(Calendar.MONTH)
+        composeTestRule.setContent {
+            CalendarHeader(calendarModel.selectedDate.value) { newDate ->
+                calendarModel.onDateChange(newDate)
+            }
+        }
         composeTestRule.onNodeWithContentDescription("Next Month").performClick()
         assertNotEquals(initialMonth, calendarModel.selectedDate.value.month)
+    }
+    @Test
+    fun monthYearHeader_displaysCorrectMonthAndYear() {
+        val calendar = Calendar.getInstance().apply {
+            set(Calendar.YEAR, 2022)
+            set(Calendar.MONTH, Calendar.JANUARY)
+        }
+
+        composeTestRule.setContent {
+            monthYearHeader(calendar)
+        }
+
+        composeTestRule.onNodeWithText("January 2022").assertExists()
+    }
+
+    @Test
+    fun dayOfWeekHeader_displaysAllDaysOfWeek() {
+        composeTestRule.setContent {
+            DayOfWeekHeader()
+        }
+
+        listOf("Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat").forEach { dayName ->
+            composeTestRule.onNodeWithText(dayName).assertExists()
+        }
+    }
+
+    @Test
+    fun dayNameText_displaysCorrectDayName() {
+        val dayName = "Monday"
+
+        composeTestRule.setContent {
+            DayNameText(dayName)
+        }
+
+        composeTestRule.onNodeWithText(dayName).assertExists()
     }
 }
