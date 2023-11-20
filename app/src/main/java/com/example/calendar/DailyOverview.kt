@@ -171,7 +171,7 @@ fun EventItem(event: Event, onEventSelected: (Event?) -> Unit, onEditEvent: (Eve
 @Composable
 fun DailyEventsList(selectedDate: Date, events: List<Event>, onEventSelected: (Event?) -> Unit, onEditEvent: (Event) -> Unit) {
     val hoursOfDay = (0..23).toList()
-    val dateFormat = remember { SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()) }
+    val dateFormat = remember { SimpleDateFormat("MM/dd/yyyy", Locale.getDefault()) }
     val timeFormatter = remember { SimpleDateFormat("HH:mm", Locale.getDefault()) }
     val sortedEvents = events.sortedBy { timeFormatter.parse(it.startTime).time }
 
@@ -239,13 +239,13 @@ fun DailyEventsList(selectedDate: Date, events: List<Event>, onEventSelected: (E
 @Composable
 fun DailyOverview(navController: NavController, calendarModel: CalendarViewModel, eventModel: EventViewModel) {
     val selectedDate = calendarModel.selectedDate.value
-    val events = calendarModel.events.value
+    val events = eventModel.events
 
     calendarModel.events.value = eventModel.events
     DailyOverviewScreen(
         eventModel,
         selectedDate = selectedDate,
-        events = calendarModel.events.value,
+        events = events,
         onEventSelected = { event ->
             // handle event selected action
             eventModel.selectedEvent = event

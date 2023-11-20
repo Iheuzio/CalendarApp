@@ -115,8 +115,8 @@ fun CalendarView(navController: NavController, calendarModel: CalendarViewModel,
         val selectedDate = calendarModel.selectedDate.value
         val format = SimpleDateFormat("dd-MM-yy", Locale.getDefault())
         val date = format.format(selectedDate)
-        navController.navigate(NavRoutes.DayView.route + "/$date")
-        //DailyOverview(navController, calendarModel, eventModel)
+        //navController.navigate(NavRoutes.DayView.route + "/$date")
+        DailyOverview(navController, calendarModel, eventModel)
     }
 }
 @Composable
