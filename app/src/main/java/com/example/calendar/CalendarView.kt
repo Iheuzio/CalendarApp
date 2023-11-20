@@ -1,5 +1,6 @@
 package com.example.calendar
 
+import android.app.usage.UsageEvents
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -20,7 +21,11 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateListOf
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -29,7 +34,50 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import androidx.navigation.compose.NavHost
+import java.text.SimpleDateFormat
 import java.util.*
+
+@Composable
+fun CalendarView(viewModel: EventViewModel, navController: NavController) {
+    var selectedDate by remember { mutableStateOf(Calendar.getInstance().time) }
+    var showDailyOverview by remember { mutableStateOf(false) }
+
+    // temporary placeholder for events
+    val events = remember { mutableStateListOf<UsageEvents.Event>() }
+
+    if (!showDailyOverview) {
+        Column(
+            modifier = Modifier.fillMaxSize()
+        ) {
+            CalendarHeader(selectedDate) { newDate ->
+                selectedDate = newDate.time
+            }
+
+            DayOfWeekHeader()
+
+            CalendarGrid(selectedDate) { day ->
+                selectedDate = day.time
+                //after day is clicked, show day overview
+                showDailyOverview = true
+            }
+
+            Button(
+                onClick = {
+                    viewModel.selectedEvent = null
+                    navController.navigate(NavRoutes.CreateEvent.route)
+                }
+            ) {
+                Text("Create event")
+            }
+
+        }
+    } else {
+        val format = SimpleDateFormat("dd-MM-yy", Locale.getDefault())
+        val date = format.format(selectedDate)
+        navController.navigate(NavRoutes.DayView.route + "/$date")
+    }
+}
 
 @Composable
 fun MonthView(navController: NavController, calendarModel: CalendarViewModel) {
@@ -48,7 +96,7 @@ fun MonthView(navController: NavController, calendarModel: CalendarViewModel) {
 
         Button(
             onClick = {
-                navController.navigate(NavRoutes.CreateEditEvent.route)
+                navController.navigate(NavRoutes.CreateEvent.route)
             }
         ) {
             Text(LocalContext.current.getStringResource(R.string.add_event))
@@ -57,13 +105,18 @@ fun MonthView(navController: NavController, calendarModel: CalendarViewModel) {
 }
 
 @Composable
-fun CalendarView(navController: NavController, calendarModel: CalendarViewModel) {
+fun CalendarView(navController: NavController, calendarModel: CalendarViewModel, eventModel: EventViewModel) {
     val showDailyOverview = calendarModel.showDailyOverview.value
 
     if (!showDailyOverview) {
         MonthView(navController, calendarModel)
     } else {
-        DailyOverview(navController, calendarModel)
+
+        val selectedDate = calendarModel.selectedDate.value
+        val format = SimpleDateFormat("dd-MM-yy", Locale.getDefault())
+        val date = format.format(selectedDate)
+        //navController.navigate(NavRoutes.DayView.route + "/$date")
+        DailyOverview(navController, calendarModel, eventModel)
     }
 }
 @Composable

@@ -4,6 +4,7 @@ import android.app.DatePickerDialog
 import android.app.TimePickerDialog
 import android.widget.DatePicker
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Text
@@ -13,6 +14,8 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.navigation.NavController
@@ -23,17 +26,20 @@ import com.example.calendar.ui.theme.CalendarTheme
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun CreateEditEventScreen(viewModel: EventViewModel, navController: NavController, inputDate: String,
-                          inputTime: String, inputTitle: String = "",
-                          inputDescription: String = "", inputLocation: String = "") {
+                          inputEvent: Event) {
 
     // State variables (to be moved into ViewModel)
     var date by remember { mutableStateOf(inputDate) }
-    var time by remember { mutableStateOf(inputTime) }
-    var title by remember { mutableStateOf(inputTitle) }
-    var description by remember { mutableStateOf(inputDescription) }
-    var location by remember { mutableStateOf(inputLocation) }
+    var startTime by remember { mutableStateOf(inputEvent.startTime) }
+    var endTime by remember { mutableStateOf(inputEvent.endTime) }
+    var title by remember { mutableStateOf(inputEvent.title) }
+    var description by remember { mutableStateOf(inputEvent.description) }
+    var location by remember { mutableStateOf(inputEvent.location) }
 
-    Column {
+    Column(
+        horizontalAlignment = Alignment.CenterHorizontally,
+        modifier = Modifier.fillMaxSize()
+    ) {
         //Title input
         TextField(
             value = title,
@@ -43,13 +49,17 @@ fun CreateEditEventScreen(viewModel: EventViewModel, navController: NavControlle
 
         //Date input (date picker or based on what dates there are in calendar?)
         Text("Date: $date")
-        val dateValues = inputDate.split("/")
+        var dateValues = inputDate.split("-")
+        if (dateValues.size == 1) {
+            dateValues = inputDate.split("/")
+        }
         val datePicker = DatePickerDialog(
             LocalContext.current,
             { _: DatePicker, selectedYear: Int, selectedMonth: Int, selectedDayOfMonth: Int ->
-                date = "$selectedDayOfMonth/${selectedMonth + 1}/$selectedYear"
+                date = "$selectedMonth-$selectedDayOfMonth-$selectedYear"
             }, dateValues[2].toInt(), dateValues[0].toInt(), dateValues[1].toInt()
         )
+        val count = 0
         Button(
             onClick = {
                 datePicker.show()
@@ -58,24 +68,44 @@ fun CreateEditEventScreen(viewModel: EventViewModel, navController: NavControlle
             Text(text = "Select date")
         }
 
-        //Select Time
+        //Select Start Time
         //Assuming that hour is passed in as a string such as "12:45"
-        val timeValues = inputTime.split(":")
-        val timePicker = TimePickerDialog(
+        val startTimeValues = inputEvent.startTime.split(":")
+        val startTimePicker = TimePickerDialog(
             LocalContext.current,
             { _, selectedHour: Int, selectedMinute: Int ->
-                time = "$selectedHour:$selectedMinute"
-            }, timeValues[0].toInt(), timeValues[1].toInt(), false
+                startTime = "$selectedHour:$selectedMinute"
+            }, startTimeValues[0].toInt(), startTimeValues[1].toInt(), false
         )
 
         //Button to show TimePickerDialog
-        Text("Time: $time")
+        Text("Start time: $startTime")
         Button(
             onClick = {
-                timePicker.show()
+                startTimePicker.show()
             }
         ) {
-            Text(text = "Select time")
+            Text(text = "Select start time")
+        }
+
+        //Select End Time
+        //Assuming that hour is passed in as a string such as "12:45"
+        val endTimeValues = inputEvent.endTime.split(":")
+        val endTimePicker = TimePickerDialog(
+            LocalContext.current,
+            { _, selectedHour: Int, selectedMinute: Int ->
+                endTime = "$selectedHour:$selectedMinute"
+            }, endTimeValues[0].toInt(), endTimeValues[1].toInt(), false
+        )
+
+
+        Text("End time: $endTime")
+        Button(
+            onClick = {
+                endTimePicker.show()
+            }
+        ) {
+            Text(text = "Select end time")
         }
 
         //Description input
@@ -92,13 +122,23 @@ fun CreateEditEventScreen(viewModel: EventViewModel, navController: NavControlle
             label = { Text("Location") }
         )
 
-            //To save changes
+        //Button to save changes
         Button(
             onClick = {
-                viewModel.addToList(Event(date, time, title, description, location))
+                //If user is editing an event
+                if (viewModel.selectedEvent != null) {
+                    viewModel.modifyItem(
+                        viewModel.selectedEvent!!
+                    ,
+                        Event(inputEvent.id, date, startTime, endTime, title, description, location))
+                }
+                //If they're creating an event
+                else {
+                    viewModel.addToList(Event(viewModel.idCount, date, startTime, endTime, title, description, location))
+                    viewModel.incrementId()
+                }
                 //Save changes and pop back navigation to start
                 navController.navigate(NavRoutes.CalendarView.route) {
-                    //change so it goes back to the day it was created on
                     popUpTo(navController.graph.findStartDestination().id) {
                         saveState = true
                         inclusive = true
@@ -116,9 +156,9 @@ fun CreateEditEventScreen(viewModel: EventViewModel, navController: NavControlle
 fun CreateEditEventPreview() {
     CalendarTheme {
         val date = "01/08/2023"
-        val time = "12:43"
+        val event = Event(0, date, "12:43", "12:43")
         val navController = rememberNavController()
         val viewModel = EventViewModel()
-        CreateEditEventScreen(viewModel, navController, date, time)
+        CreateEditEventScreen(viewModel, navController, date, event)
     }
 }
