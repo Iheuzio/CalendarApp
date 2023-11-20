@@ -1,4 +1,4 @@
-package com.example.calendar
+package com.example.calendar.presentation
 
 import android.content.Context
 import android.os.Build
@@ -6,6 +6,8 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.annotation.RequiresApi
+import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.activity.viewModels
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
@@ -17,9 +19,14 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.example.calendar.data.Event
+import com.example.calendar.data.NavRoutes
+import com.example.calendar.data.viewmodels.CalendarViewModel
+import com.example.calendar.data.viewmodels.EventViewModel
 import java.text.SimpleDateFormat
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
+import java.util.Calendar
 import java.util.Locale
 
 
@@ -37,7 +44,7 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
-                    // remove this if wanting to test your event stuff, just uncomment
+                    // remove this if wanting to test your event stuff, just uncomment 
                     //CalendarView()
                     //DailyOverviewScreen(null, null, null, null);
                     //Greeting("Android")
@@ -84,8 +91,7 @@ class MainActivity : ComponentActivity() {
             composable(NavRoutes.EventView.route) {
                 ViewEventScreen(viewModel, navController = navController)
             }
-            //Route for day just in case we might need
-            /*composable(NavRoutes.DayView.route + "/{date}") { navBackStackEntry ->
+            composable(NavRoutes.DayView.route + "/{date}") { navBackStackEntry ->
                 // Retrieve the date from the route's arguments
                 val date = remember {
                     navBackStackEntry.arguments?.getString("date") ?: currentDate
@@ -94,9 +100,9 @@ class MainActivity : ComponentActivity() {
                 val selectedDate = format.parse(date)
 
                 DailyOverview(navController, calendarModel, viewModel)
-            }*/
+            }
             composable(NavRoutes.MonthView.route) {
-                MonthView(navController = navController, calendarModel = calendarModel)
+                MonthView(navController = navController, calendarModel = calendarModel, viewModel)
             }
         }
     }

@@ -1,6 +1,5 @@
-package com.example.calendar
+package com.example.calendar.presentation
 
-import android.app.usage.UsageEvents
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -21,66 +20,24 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateListOf
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
-import androidx.navigation.compose.NavHost
+import com.example.calendar.R
+import com.example.calendar.data.NavRoutes
+import com.example.calendar.data.viewmodels.CalendarViewModel
+import com.example.calendar.data.viewmodels.EventViewModel
 import java.text.SimpleDateFormat
 import java.util.*
 
 @Composable
-fun CalendarView(viewModel: EventViewModel, navController: NavController) {
-    var selectedDate by remember { mutableStateOf(Calendar.getInstance().time) }
-    var showDailyOverview by remember { mutableStateOf(false) }
-
-    // temporary placeholder for events
-    val events = remember { mutableStateListOf<UsageEvents.Event>() }
-
-    if (!showDailyOverview) {
-        Column(
-            modifier = Modifier.fillMaxSize()
-        ) {
-            CalendarHeader(selectedDate) { newDate ->
-                selectedDate = newDate.time
-            }
-
-            DayOfWeekHeader()
-
-            CalendarGrid(selectedDate) { day ->
-                selectedDate = day.time
-                //after day is clicked, show day overview
-                showDailyOverview = true
-            }
-
-            Button(
-                onClick = {
-                    viewModel.selectedEvent = null
-                    navController.navigate(NavRoutes.CreateEvent.route)
-                }
-            ) {
-                Text("Create event")
-            }
-
-        }
-    } else {
-        val format = SimpleDateFormat("dd-MM-yy", Locale.getDefault())
-        val date = format.format(selectedDate)
-        navController.navigate(NavRoutes.DayView.route + "/$date")
-    }
-}
-
-@Composable
-fun MonthView(navController: NavController, calendarModel: CalendarViewModel) {
+fun MonthView(navController: NavController, calendarModel: CalendarViewModel, eventModel: EventViewModel) {
     val selectedDate = calendarModel.selectedDate.value
 
     Column(modifier = Modifier.fillMaxSize()) {
@@ -90,7 +47,7 @@ fun MonthView(navController: NavController, calendarModel: CalendarViewModel) {
 
         DayOfWeekHeader()
 
-        CalendarGrid(selectedDate) { day ->
+        CalendarGrid(eventModel,selectedDate) { day ->
             calendarModel.onDateChange(day)
         }
 
@@ -109,7 +66,7 @@ fun CalendarView(navController: NavController, calendarModel: CalendarViewModel,
     val showDailyOverview = calendarModel.showDailyOverview.value
 
     if (!showDailyOverview) {
-        MonthView(navController, calendarModel)
+        MonthView(navController, calendarModel, eventModel)
     } else {
 
         val selectedDate = calendarModel.selectedDate.value
@@ -129,32 +86,45 @@ fun CalendarHeader(selectedDate: Date, onDateChange: (Calendar) -> Unit) {
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically
     ) {
-        IconButton(
-            onClick = {
-                calendar.add(Calendar.MONTH, -1)
-                onDateChange(calendar)
-            }
-        ) {
-            Icon(imageVector = Icons.Default.KeyboardArrowLeft, contentDescription = LocalContext.current.getStringResource(R.string.previous_month))
-        }
+        PreviousMonthButton(calendar = calendar, onDateChange = onDateChange)
 
         monthYearHeader(calendar)
-
-        IconButton(
-            onClick = {
-                calendar.add(Calendar.MONTH, 1)
-                onDateChange(calendar)
-            }
-        ) {
-            Icon(imageVector = Icons.Default.KeyboardArrowRight, contentDescription = LocalContext.current.getStringResource(R.string.next_month))
-        }
+        NextMonthButton(calendar = calendar, onDateChange = onDateChange)
     }
 }
 
 @Composable
-fun CalendarGrid(selectedDate: Date, onDateClick: (Calendar) -> Unit) {
-    //loop over list of events for this given month to make them appear
+fun PreviousMonthButton(calendar: Calendar, onDateChange: (Calendar) -> Unit) {
+    IconButton(
+        onClick = {
+            calendar.add(Calendar.MONTH, -1)
+            onDateChange(calendar)
+        }
+    ) {
+        Icon(
+            imageVector = Icons.Default.KeyboardArrowLeft,
+            contentDescription = LocalContext.current.getStringResource(R.string.previous_month)
+        )
+    }
+}
 
+
+@Composable
+fun NextMonthButton(calendar: Calendar, onDateChange: (Calendar) -> Unit) {
+    IconButton(
+        onClick = {
+            calendar.add(Calendar.MONTH, 1)
+            onDateChange(calendar)
+        }
+    ) {
+        Icon(
+            imageVector = Icons.Default.KeyboardArrowRight,
+            contentDescription = LocalContext.current.getStringResource(R.string.next_month)
+        )
+    }
+}
+@Composable
+fun CalendarGrid(eventModel: EventViewModel, selectedDate: Date, onDateClick: (Calendar) -> Unit) {
     val calendar = Calendar.getInstance()
     calendar.time = selectedDate
 
@@ -186,41 +156,69 @@ fun CalendarGrid(selectedDate: Date, onDateClick: (Calendar) -> Unit) {
 
                     val isCurrentMonth = cellDate.get(Calendar.MONTH) == selectedDate.month
                     val isSelected = cellDate.time == selectedDate
-
-                    Box(
-                        modifier = Modifier
-                            .size(cellSize)
-                            .background(
-                                if (isSelected) MaterialTheme.colorScheme.primary
-                                else if (isCurrentMonth) Color.Transparent
-                                else Color.Gray
-                            )
-                            .clip(CircleShape)
-                            .clickable {
-                                if (isCurrentMonth) {
-                                    onDateClick(cellDate)
-                                }
-                            },
-                        contentAlignment = Alignment.Center
-                    ) {
-                        Text(
-                            text = day.toString(),
-                            color = if (isSelected) Color.White else MaterialTheme.colorScheme.onBackground,
-                            fontSize = 16.sp
-                        )
-                    }
+                    // check if events exist for this day
+                    val eventBool = eventModel.checkEventsExist(cellDate.time)
+                    DayCell(day, isSelected, isCurrentMonth, cellSize, onDateClick, cellDate, eventBool)
                 } else {
-                    Box(
-                        modifier = Modifier.size(cellSize),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        Text(
-                            text = "",
-                            fontSize = 16.sp
-                        )
-                    }
+                    EmptyCell(cellSize)
                 }
             }
         }
+    }
+}
+
+@Composable
+fun DayCell(
+    day: Int,
+    isSelected: Boolean,
+    isCurrentMonth: Boolean,
+    cellSize: Dp,
+    onDateClick: (Calendar) -> Unit,
+    cellDate: Calendar,
+    eventBool: Any
+) {
+    val today = Calendar.getInstance()
+    val isToday = cellDate.get(Calendar.YEAR) == today.get(Calendar.YEAR) &&
+            cellDate.get(Calendar.MONTH) == today.get(Calendar.MONTH) &&
+            cellDate.get(Calendar.DAY_OF_MONTH) == today.get(Calendar.DAY_OF_MONTH)
+
+    Box(
+        modifier = Modifier
+            .size(cellSize)
+            .background(
+                when {
+                    isSelected -> MaterialTheme.colorScheme.primary
+                    isToday -> Color.Black
+                    eventBool == true -> Color.Red
+                    isCurrentMonth -> Color.Transparent
+                    else -> Color.Gray
+                }
+            )
+            .clip(CircleShape)
+            .clickable {
+                if (isCurrentMonth) {
+                    onDateClick(cellDate)
+                }
+            },
+        contentAlignment = Alignment.Center
+    ) {
+        Text(
+            text = day.toString(),
+            color = if (isSelected || isToday) Color.White else MaterialTheme.colorScheme.onBackground,
+            fontSize = 16.sp
+        )
+    }
+}
+
+@Composable
+fun EmptyCell(cellSize: Dp) {
+    Box(
+        modifier = Modifier.size(cellSize),
+        contentAlignment = Alignment.Center
+    ) {
+        Text(
+            text = "",
+            fontSize = 16.sp
+        )
     }
 }

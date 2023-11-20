@@ -1,4 +1,4 @@
-package com.example.calendar
+package com.example.calendar.data
 
 sealed class NavRoutes (val route: String) {
     object CalendarView : NavRoutes("calendar-view")

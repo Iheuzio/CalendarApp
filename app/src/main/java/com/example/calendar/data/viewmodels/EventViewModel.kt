@@ -1,10 +1,13 @@
-package com.example.calendar
+package com.example.calendar.data.viewmodels
 
+import android.icu.util.Calendar
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
+import com.example.calendar.data.Event
+import java.util.Date
 
 class EventViewModel : ViewModel() {
     var selectedEvent by mutableStateOf<Event?>(null)
@@ -41,7 +44,25 @@ class EventViewModel : ViewModel() {
         }
     }
 
+    fun getEventById(id: Int): Event? {
+        return events.find { it.id == id }
+    }
+
     fun incrementId() {
         idCount++
     }
+
+    private fun getEventsByDate(date: String): List<Event> {
+        return events.filter { it.date == date }
+    }
+
+    fun checkEventsExist(time: Date): Any {
+        val calendar = Calendar.getInstance()
+        calendar.time = time
+        val date = "${calendar.get(Calendar.MONTH) + 1}-${calendar.get(Calendar.DAY_OF_MONTH)}-${calendar.get(Calendar.YEAR)}"
+        val events = getEventsByDate(date)
+        // return true or false if event is found on that day
+        return events.isNotEmpty()
+    }
+
 }

@@ -1,4 +1,4 @@
-package com.example.calendar
+package com.example.calendar.presentation
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -11,6 +11,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.compose.rememberNavController
+import com.example.calendar.data.NavRoutes
+import com.example.calendar.data.viewmodels.EventViewModel
 import com.example.calendar.ui.theme.CalendarTheme
 
 @Composable
