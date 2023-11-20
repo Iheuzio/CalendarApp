@@ -168,7 +168,7 @@ fun CreateEditEventScreen(viewModel: EventViewModel, navController: NavControlle
 @Composable
 fun CreateEditEventPreview() {
     CalendarTheme {
-        val date = "01/08/2023"
+        val date = "01-08-2023"
         val event = Event(0, date, "12:43", "12:43")
         val navController = rememberNavController()
         val viewModel = EventViewModel()
