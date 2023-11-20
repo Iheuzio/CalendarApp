@@ -149,6 +149,19 @@ fun CreateEditEventScreen(viewModel: EventViewModel, navController: NavControlle
             Text("Save changes")
         }
 
+        Button(
+            onClick = {
+                navController.navigate(NavRoutes.CalendarView.route) {
+                    popUpTo(navController.graph.findStartDestination().id) {
+                        saveState = true
+                        inclusive = true
+                    }
+                }
+            }
+        ) {
+            Text("Back")
+        }
+
     }
 }
 @Preview(showBackground = true)
