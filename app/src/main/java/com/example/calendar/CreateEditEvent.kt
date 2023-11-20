@@ -49,7 +49,7 @@ fun CreateEditEventScreen(viewModel: EventViewModel, navController: NavControlle
 
         //Date input (date picker or based on what dates there are in calendar?)
         Text("Date: $date")
-        val dateValues = inputDate.split("/")
+        val dateValues = inputDate.split("-")
         val datePicker = DatePickerDialog(
             LocalContext.current,
             { _: DatePicker, selectedYear: Int, selectedMonth: Int, selectedDayOfMonth: Int ->

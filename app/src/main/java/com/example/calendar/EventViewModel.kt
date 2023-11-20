@@ -5,12 +5,11 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 
-class EventViewModel() : ViewModel() {
+class EventViewModel : ViewModel() {
     //private val _uiState = MutableStateFlow(EventUiState())
     //val uiState: StateFlow<EventUiState> = _uiState.asStateFlow()
 
     var selectedEvent by mutableStateOf<Event?>(null)
-    var selectedDate by mutableStateOf("")
     var events by mutableStateOf(mutableListOf<Event>())
     var idCount by mutableStateOf(0)
 
@@ -34,7 +33,7 @@ class EventViewModel() : ViewModel() {
 
     fun modifyItem(item: Event, modifiedItem: Event) {
         val updatedEventItems = events.toMutableList()
-        var index = events.indexOf(item)
+        val index = events.indexOf(item)
         if (index != -1) {
             updatedEventItems[index] = modifiedItem
             events = updatedEventItems

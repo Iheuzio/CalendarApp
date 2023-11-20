@@ -31,6 +31,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.ui.graphics.Color
 import androidx.navigation.NavController
+import androidx.navigation.NavGraph.Companion.findStartDestination
 
 @Composable
 fun DailyOverviewScreen(
@@ -171,14 +172,14 @@ fun EventItem(event: Event, onEventSelected: (Event?) -> Unit, onEditEvent: (Eve
 @Composable
 fun DailyEventsList(selectedDate: Date, events: List<Event>, onEventSelected: (Event?) -> Unit, onEditEvent: (Event) -> Unit) {
     val hoursOfDay = (0..23).toList()
-    val dateFormat = remember { SimpleDateFormat("MM/dd/yyyy", Locale.getDefault()) }
+    val dateFormat = remember { SimpleDateFormat("MM-dd-yyyy", Locale.getDefault()) }
     val timeFormatter = remember { SimpleDateFormat("HH:mm", Locale.getDefault()) }
     val sortedEvents = events.sortedBy { timeFormatter.parse(it.startTime).time }
 
     val eventsOnSelectedDate = events.filter {
         dateFormat.format(selectedDate) == it.date
     }
-
+    val whatever = 0
     LazyColumn {
         items(hoursOfDay) { hour ->
             // Format hour to "HH:mm"
@@ -255,17 +256,26 @@ fun DailyOverview(navController: NavController, calendarModel: CalendarViewModel
             navController.navigate(NavRoutes.CreateEvent.route)
         },
         onChangeDate = { newDate ->
-            //navController.navigate(NavRoutes.DayView.route + "/$newDate")
             val calendar = Calendar.getInstance()
             calendar.time = newDate
             calendarModel.onDateChange(calendar)
+            /*val format = SimpleDateFormat("dd-MM-yy", Locale.getDefault())
+            val date = format.format(selectedDate)
+            navController.navigate(NavRoutes.DayView.route + "/$date")*/
+
         },
         onBack = {
-            calendarModel.toggleShowDailyOverview()
+            //calendarModel.toggleShowDailyOverview()
+            navController.navigate(NavRoutes.MonthView.route) {
+                popUpTo(navController.graph.findStartDestination().id) {
+                    saveState = true
+                    inclusive = true
+                }
+            }
         },
         onEditEvent = { event ->
             eventModel.selectedEvent = event
-            navController.navigate(NavRoutes.EditEvent.route)
+            navController.navigate(NavRoutes.CalendarView.route)
         }
 
     )

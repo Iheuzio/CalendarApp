@@ -74,10 +74,13 @@ class MainActivity : ComponentActivity() {
             composable(NavRoutes.CalendarView.route) {
                 CalendarView(navController = navController, calendarModel = calendarModel, viewModel)
             }
-            composable(NavRoutes.CreateEvent.route) {
+            composable(NavRoutes.CreateEvent.route)
+            {
                 val event = Event(viewModel.idCount, currentDate, "12:00", "12:00")
                 viewModel.incrementId()
-                CreateEditEventScreen(viewModel, navController = navController, inputDate = currentDate, event)
+                val format = SimpleDateFormat("MM-dd-yyyy", Locale.getDefault())
+                val date = format.format(calendarModel.selectedDate.value)
+                CreateEditEventScreen(viewModel, navController = navController, inputDate = date, event)
             }
             composable(NavRoutes.EditEvent.route) {
                 viewModel.selectedEvent?.let { event ->
@@ -97,33 +100,7 @@ class MainActivity : ComponentActivity() {
                 val format = SimpleDateFormat("dd-MM-yy", Locale.getDefault())
                 val selectedDate = format.parse(date)
 
-                DailyOverviewScreen(
-                    viewModel,
-                    selectedDate = selectedDate,
-                    events = calendarModel.events.value,
-                    onEventSelected = { event ->
-                        // handle event selected action
-                        viewModel.selectedEvent = event
-                        navController.navigate(NavRoutes.EventView.route)
-                    },
-                    onAddEvent = {
-                        navController.navigate(NavRoutes.CreateEvent.route)
-                    },
-                    onChangeDate = { newDate ->
-                        //navController.navigate(NavRoutes.DayView.route + "/$newDate")
-                        val calendar = Calendar.getInstance()
-                        calendar.time = newDate
-                        calendarModel.onDateChange(calendar)
-                    },
-                    onBack = {
-                        calendarModel.toggleShowDailyOverview()
-                    },
-                    onEditEvent = { event ->
-                        viewModel.selectedEvent = event
-                        navController.navigate(NavRoutes.EditEvent.route)
-                    }
-
-                )
+                DailyOverview(navController, calendarModel, viewModel)
             }
             composable(NavRoutes.MonthView.route) {
                 MonthView(navController = navController, calendarModel = calendarModel)
