@@ -17,6 +17,13 @@ class EventViewModel() : ViewModel() {
     var events by mutableStateOf(mutableListOf<Event>())
     var idCount by mutableStateOf(0)
 
+    var date by mutableStateOf("")
+    var startTime by mutableStateOf("")
+    var endTime by mutableStateOf("")
+    var title by mutableStateOf("")
+    var description by mutableStateOf("")
+    var location by mutableStateOf("")
+
     //FOr when a new event is created
     fun addToList(item: Event) {
         if (item.title.isNotEmpty() && item.title.isNotBlank()) {
@@ -37,12 +44,13 @@ class EventViewModel() : ViewModel() {
 
     fun modifyItem(item: Event, modifiedItem: Event) {
         val updatedEventItems = events.toMutableList()
-        val index = events.indexOf(item)
+        var index = events.indexOf(item)
         if (index != -1) {
             updatedEventItems[index] = modifiedItem
             events = updatedEventItems
         }
         else {
+            removeFromList(item)
             addToList(modifiedItem)
         }
     }

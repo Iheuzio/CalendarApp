@@ -13,6 +13,7 @@ import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -31,12 +32,12 @@ fun CreateEditEventScreen(viewModel: EventViewModel, navController: NavControlle
                           inputEvent: Event) {
 
     // State variables (to be moved into ViewModel)
-    var date by rememberSaveable { mutableStateOf(inputDate) }
-    var startTime by rememberSaveable { mutableStateOf(inputEvent.startTime) }
-    var endTime by rememberSaveable { mutableStateOf(inputEvent.endTime) }
-    var title by rememberSaveable { mutableStateOf(inputEvent.title) }
-    var description by rememberSaveable { mutableStateOf(inputEvent.description) }
-    var location by rememberSaveable { mutableStateOf(inputEvent.location) }
+    var date by remember { mutableStateOf(inputDate) }
+    var startTime by remember { mutableStateOf(inputEvent.startTime) }
+    var endTime by remember { mutableStateOf(inputEvent.endTime) }
+    var title by remember { mutableStateOf(inputEvent.title) }
+    var description by remember { mutableStateOf(inputEvent.description) }
+    var location by remember { mutableStateOf(inputEvent.location) }
 
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
@@ -125,17 +126,10 @@ fun CreateEditEventScreen(viewModel: EventViewModel, navController: NavControlle
             onClick = {
                 //If user is editing an event
                 if (viewModel.selectedEvent != null) {
-                    viewModel.modifyItem(Event(
-                        inputEvent.id,
-                        inputDate,
-                        inputEvent.startTime,
-                        inputEvent.endTime,
-                        inputEvent.title,
-                        inputEvent.description,
-                        inputEvent.location
-                    ),
-                        Event(viewModel.idCount, date, startTime, endTime, title, description, location))
-                    viewModel.incrementId()
+                    viewModel.modifyItem(
+                        viewModel.selectedEvent!!
+                    ,
+                        Event(inputEvent.id, date, startTime, endTime, title, description, location))
                 }
                 //If they're creating an event
                 else {
