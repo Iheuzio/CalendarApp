@@ -59,7 +59,7 @@ fun CreateEditEventScreen(viewModel: EventViewModel, navController: NavControlle
                 date = "${selectedMonth+1}-$selectedDayOfMonth-$selectedYear"
             }, dateValues[2].toInt(), dateValues[0].toInt(), dateValues[1].toInt()
         )
-        val count = 0
+
         Button(
             onClick = {
                 datePicker.show()
