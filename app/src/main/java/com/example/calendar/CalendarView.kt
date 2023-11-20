@@ -63,7 +63,8 @@ fun CalendarView(viewModel: EventViewModel, navController: NavController) {
 
             Button(
                 onClick = {
-                    navController.navigate(NavRoutes.CreateEditEvent.route)
+                    viewModel.selectedEvent = null
+                    navController.navigate(NavRoutes.CreateEvent.route)
                 }
             ) {
                 Text("Create event")
@@ -83,7 +84,7 @@ fun CalendarView(viewModel: EventViewModel, navController: NavController) {
                 navController.navigate(NavRoutes.EventView.route)
             },
             onAddEvent = {
-                navController.navigate(NavRoutes.CreateEditEvent.route)
+                navController.navigate(NavRoutes.CreateEvent.route)
             },
             onChangeDate = { newDate ->
                 selectedDate = newDate
@@ -91,7 +92,7 @@ fun CalendarView(viewModel: EventViewModel, navController: NavController) {
             },
             onEditEvent = { event ->
                 viewModel.selectedEvent = event
-                navController.navigate(NavRoutes.CreateEditEvent.route)
+                navController.navigate(NavRoutes.EditEvent.route)
             }
         )
     }
