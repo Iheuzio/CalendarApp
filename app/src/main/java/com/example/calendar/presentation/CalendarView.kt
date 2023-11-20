@@ -168,13 +168,21 @@ fun CalendarGrid(selectedDate: Date, onDateClick: (Calendar) -> Unit) {
 
 @Composable
 fun DayCell(day: Int, isSelected: Boolean, isCurrentMonth: Boolean, cellSize: Dp, onDateClick: (Calendar) -> Unit, cellDate: Calendar) {
+    val today = Calendar.getInstance()
+    val isToday = cellDate.get(Calendar.YEAR) == today.get(Calendar.YEAR) &&
+            cellDate.get(Calendar.MONTH) == today.get(Calendar.MONTH) &&
+            cellDate.get(Calendar.DAY_OF_MONTH) == today.get(Calendar.DAY_OF_MONTH)
+
     Box(
         modifier = Modifier
             .size(cellSize)
             .background(
-                if (isSelected) MaterialTheme.colorScheme.primary
-                else if (isCurrentMonth) Color.Transparent
-                else Color.Gray
+                when {
+                    isSelected -> MaterialTheme.colorScheme.primary
+                    isToday -> Color.Black
+                    isCurrentMonth -> Color.Transparent
+                    else -> Color.Gray
+                }
             )
             .clip(CircleShape)
             .clickable {
@@ -186,7 +194,7 @@ fun DayCell(day: Int, isSelected: Boolean, isCurrentMonth: Boolean, cellSize: Dp
     ) {
         Text(
             text = day.toString(),
-            color = if (isSelected) Color.White else MaterialTheme.colorScheme.onBackground,
+            color = if (isSelected || isToday) Color.White else MaterialTheme.colorScheme.onBackground,
             fontSize = 16.sp
         )
     }
