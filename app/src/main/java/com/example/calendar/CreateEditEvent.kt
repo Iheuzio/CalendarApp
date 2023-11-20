@@ -56,7 +56,7 @@ fun CreateEditEventScreen(viewModel: EventViewModel, navController: NavControlle
         val datePicker = DatePickerDialog(
             LocalContext.current,
             { _: DatePicker, selectedYear: Int, selectedMonth: Int, selectedDayOfMonth: Int ->
-                date = "$selectedMonth-$selectedDayOfMonth-$selectedYear"
+                date = "${selectedMonth+1}-$selectedDayOfMonth-$selectedYear"
             }, dateValues[2].toInt(), dateValues[0].toInt(), dateValues[1].toInt()
         )
         val count = 0
