@@ -1,4 +1,4 @@
-package com.example.calendar.presentation
+package com.example.calendar.presentation.screen
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
@@ -14,6 +14,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.calendar.R
+import com.example.calendar.presentation.getStringResource
 import java.text.SimpleDateFormat
 import java.util.Calendar
 

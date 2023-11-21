@@ -1,4 +1,4 @@
-package com.example.calendar.presentation
+package com.example.calendar.presentation.screen
 
 import android.app.DatePickerDialog
 import android.app.TimePickerDialog
