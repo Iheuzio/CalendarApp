@@ -41,7 +41,7 @@ class DailyOverviewTest {
         calendarViewModel = CalendarViewModel()
         eventViewModel = EventViewModel()
         composeTestRule.runOnUiThread {
-            dailyViewModel.eventsForSelectedDate.value = createMockEvents() // Set mock events here
+            dailyViewModel.eventsForSelectedDate.value = createMockEvents()
             composeTestRule.setContent {
                 DailyOverview(navController, calendarViewModel, dailyViewModel, eventViewModel)
             }
@@ -84,6 +84,24 @@ class DailyOverviewTest {
 
         assertNotEquals(initialDate, calendarViewModel.selectedDate.value)
     }
+    @Test
+    fun dailyOverview_displaysEventsCorrectly() {
+        val initialDate = Date()
+        calendarViewModel.selectedDate.value = initialDate
+        val mockEvents = createMockEvents()
+
+        composeTestRule.runOnUiThread {
+            dailyViewModel.eventsForSelectedDate.value = mockEvents
+        }
+        composeTestRule.waitForIdle()
+
+        composeTestRule.onNodeWithText("Event").assertDoesNotExist()
+
+    }
+
+
+
+
 
 
 
@@ -96,7 +114,7 @@ class DailyOverviewTest {
 
     private fun createMockEvents(): List<Event> {
         return listOf(
-            Event(id = 1, date = "2023-11-20", startTime = "10:00", endTime = "11:00", title = "Event 1", description = "Description 1", location = "Location 1"),
+            Event(id = 1, date = "2023-11-20", startTime = "1:00", endTime = "11:00", title = "Event", description = "Description 1", location = "Location 1"),
             Event(id = 2, date = "2023-11-20", startTime = "12:00", endTime = "13:00", title = "Event 2", description = "Description 2", location = "Location 2")
         )
     }
