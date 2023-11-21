@@ -55,11 +55,26 @@ class DailyOverviewTest {
         composeTestRule.onNodeWithText(expectedDate).assertIsDisplayed()
     }
     @Test
-    fun dailyOverview_changesDateOnNavigation() {
+    fun dailyOverview_changesDateOnNavigation_Next() {
         val initialDate = Date()
         calendarViewModel.selectedDate.value = initialDate
 
         val contentDescription = "Next"
+
+        composeTestRule.waitForIdle()
+
+        composeTestRule.onNodeWithContentDescription(contentDescription).performClick()
+
+        composeTestRule.waitForIdle()
+
+        assertNotEquals(initialDate, calendarViewModel.selectedDate.value)
+    }
+    @Test
+    fun dailyOverview_changesDateOnNavigation_Previous() {
+        val initialDate = Date()
+        calendarViewModel.selectedDate.value = initialDate
+
+        val contentDescription = "Back"
 
         composeTestRule.waitForIdle()
 
