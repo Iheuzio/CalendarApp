@@ -25,24 +25,17 @@ import com.example.calendar.data.Event
 import com.example.calendar.data.NavRoutes
 import com.example.calendar.presentation.viewmodels.EventViewModel
 import com.example.calendar.ui.theme.CalendarTheme
-import android.content.Context
-import androidx.compose.foundation.layout.Column
-import androidx.compose.material3.Button
-import androidx.compose.material3.Text
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Surface
 import androidx.compose.runtime.*
-import androidx.compose.ui.platform.LocalContext
 import java.text.SimpleDateFormat
 import java.util.*
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun CreateEditEventScreen(viewModel: EventViewModel, navController: NavController, inputDate: String,
-                          inputEvent: Event
+fun CreateEditEventScreen(
+    viewModel: EventViewModel,
+    navController: NavController,
+    inputDate: String,
+    inputEvent: Event
 ) {
-
-    // State variables (to be moved into ViewModel)
     var date by remember { mutableStateOf(inputDate) }
     var startTime by remember { mutableStateOf(inputEvent.startTime) }
     var endTime by remember { mutableStateOf(inputEvent.endTime) }
@@ -54,138 +47,254 @@ fun CreateEditEventScreen(viewModel: EventViewModel, navController: NavControlle
         horizontalAlignment = Alignment.CenterHorizontally,
         modifier = Modifier.fillMaxSize()
     ) {
-        //Title input
-        TextField(
-            value = title,
-            onValueChange = { title = it },
-            label = { Text("Title") }
+        //ALl fields for creating/editing events
+        TitleInput(title) { title = it }
+        DateInput(date) { date = it }
+        StartTimePicker(inputEvent.startTime) { startTime = it }
+        EndTimePicker(inputEvent.endTime, startTime) { endTime = it }
+        DescriptionInput(description) { description = it }
+        LocationInput(location) { location = it }
+
+        //Button for saving changes/creating event
+        SaveChangesButton(
+            viewModel,
+            navController,
+            inputEvent,
+            date,
+            startTime,
+            endTime,
+            title,
+            description,
+            location
         )
 
-        //Date input (date picker or based on what dates there are in calendar?)
-        Text("Date: $date")
-        var dateValues = inputDate.split("-")
-        if (dateValues.size == 1) {
-            dateValues = inputDate.split("/")
-        }
-        val datePicker = DatePickerDialog(
-            LocalContext.current,
-            { _: DatePicker, selectedYear: Int, selectedMonth: Int, selectedDayOfMonth: Int ->
-                date = "${selectedMonth+1}-$selectedDayOfMonth-$selectedYear"
-            }, dateValues[2].toInt(), dateValues[0].toInt(), dateValues[1].toInt()
-        )
-
-        Button(
-            onClick = {
-                datePicker.show()
-            }
-        ) {
-            Text(text = "Select date")
-        }
-
-        //Select Start Time
-        //Assuming that hour is passed in as a string such as "12:45"
-        val startTimeValues = inputEvent.startTime.split(":")
-        val startTimePicker = TimePickerDialog(
-            LocalContext.current,
-            { _, selectedHour: Int, selectedMinute: Int ->
-                startTime = "$selectedHour:$selectedMinute"
-            }, startTimeValues[0].toInt(), startTimeValues[1].toInt(), false
-        )
-
-        //Button to show TimePickerDialog
-        Text("Start time: $startTime")
-        Button(
-            onClick = {
-                startTimePicker.show()
-            }
-        ) {
-            Text(text = "Select start time")
-        }
-
-        //Select End Time
-        //Assuming that hour is passed in as a string such as "12:45"
-        val endTimeValues = inputEvent.endTime.split(":")
-        val endTimePicker = TimePickerDialog(
-            LocalContext.current,
-            { _, selectedHour: Int, selectedMinute: Int ->
-                val selectedEndTime = "$selectedHour:$selectedMinute"
-                if (isValidEndTime(startTime, selectedEndTime)) {
-                    endTime = selectedEndTime
-                }
-            },
-            endTimeValues[0].toInt(),
-            endTimeValues[1].toInt(),
-            false
-        )
-
-
-        Text("End time: $endTime")
-        Button(
-            onClick = {
-                endTimePicker.show()
-            }
-        ) {
-            Text(text = "Select end time")
-        }
-
-        //Description input
-        TextField(
-            value = description,
-            onValueChange = { description = it },
-            label = { Text("Description") }
-        )
-
-        //Location input
-        TextField(
-            value = location,
-            onValueChange = { location = it },
-            label = { Text("Location") }
-        )
-
-        //Button to save changes
-        Button(
-            onClick = {
-                //If user is editing an event
-                if (viewModel.selectedEvent != null) {
-                    viewModel.modifyItem(
-                        viewModel.selectedEvent!!
-                    ,
-                        Event(inputEvent.id, date, startTime, endTime, title, description, location)
-                    )
-                }
-                //If they're creating an event
-                else {
-                    viewModel.addToList(Event(viewModel.idCount, date, startTime, endTime, title, description, location))
-                    viewModel.incrementId()
-                }
-                //Save changes and pop back navigation to start
-                navController.navigate(NavRoutes.CalendarView.route) {
-                    popUpTo(navController.graph.findStartDestination().id) {
-                        saveState = true
-                        inclusive = true
-                    }
-                }
-            }
-        ) {
-            Text("Save changes")
-        }
-
-        Button(
-            onClick = {
-                navController.navigate(NavRoutes.CalendarView.route) {
-                    popUpTo(navController.graph.findStartDestination().id) {
-                        saveState = true
-                        inclusive = true
-                    }
-                }
-            }
-        ) {
-            Text("Back")
-        }
-
+        //To go back to day view or month view
+        BackButton(navController)
     }
 }
 
+/**
+ * Text field for title of event
+ * @param title
+ * @param onTitleChange
+ */
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun TitleInput(title: String, onTitleChange: (String) -> Unit) {
+    TextField(
+        value = title,
+        onValueChange = { onTitleChange(it) },
+        label = { Text("Title") }
+    )
+}
+
+/**
+ * To select a different date for an event
+ * @param date
+ * @param onDateChange
+ */
+@Composable
+fun DateInput(date: String, onDateChange: (String) -> Unit) {
+    Text("Date: $date")
+
+    //Format the date string into array
+    var dateValues = date.split("-")
+    if (dateValues.size == 1) {
+        dateValues = date.split("/")
+    }
+    //Create dialog to use for picking date
+    val datePicker = DatePickerDialog(
+        LocalContext.current,
+        { _: DatePicker, selectedYear: Int, selectedMonth: Int, selectedDayOfMonth: Int ->
+            onDateChange("${selectedMonth + 1}-$selectedDayOfMonth-$selectedYear")
+        }, dateValues[2].toInt(), dateValues[0].toInt(), dateValues[1].toInt()
+    )
+
+    Button(
+        onClick = {
+            datePicker.show()
+        }
+    ) {
+        Text(text = "Select date")
+    }
+}
+
+/**
+ * To select a different start time for event
+ * @param initialStartTime
+ * @param onStartTimeChange
+ */
+@Composable
+fun StartTimePicker(initialStartTime: String, onStartTimeChange: (String) -> Unit) {
+    var startTime by remember { mutableStateOf(initialStartTime) }
+
+    val startTimeValues = initialStartTime.split(":")
+    //Create dialog to use for picking start time
+    val startTimePicker = TimePickerDialog(
+        LocalContext.current,
+        { _, selectedHour: Int, selectedMinute: Int ->
+            startTime = "$selectedHour:$selectedMinute"
+            onStartTimeChange(startTime) // Update the callback with the new value
+        }, startTimeValues[0].toInt(), startTimeValues[1].toInt(), false
+    )
+
+    Text("Start time: $startTime")
+    Button(
+        onClick = {
+            startTimePicker.show()
+        }
+    ) {
+        Text(text = "Select start time")
+    }
+}
+
+/**
+ * To select a different end time for event
+ * @param initialEndTime
+ * @param onEndTimeChange
+ */
+@Composable
+fun EndTimePicker(initialEndTime: String, startTime: String, onEndTimeChange: (String) -> Unit) {
+    var endTime by remember { mutableStateOf(initialEndTime) }
+
+    val endTimeValues = initialEndTime.split(":")
+    //Create dialog to use for picking date
+    val endTimePicker = TimePickerDialog(
+        LocalContext.current,
+        { _, selectedHour: Int, selectedMinute: Int ->
+            val selectedEndTime = "$selectedHour:$selectedMinute"
+            if (isValidEndTime(startTime, selectedEndTime)) {
+                endTime = selectedEndTime
+                onEndTimeChange(endTime) // Update the callback with the new value
+            }
+        },
+        endTimeValues[0].toInt(),
+        endTimeValues[1].toInt(),
+        false
+    )
+
+    Text("End time: $endTime")
+    Button(
+        onClick = {
+            endTimePicker.show()
+        }
+    ) {
+        Text(text = "Select end time")
+    }
+}
+
+/**
+ * Text field to input description
+ * @param description
+ * @param onDescriptionChange
+ */
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun DescriptionInput(description: String, onDescriptionChange: (String) -> Unit) {
+    TextField(
+        value = description,
+        onValueChange = { onDescriptionChange(it) },
+        label = { Text("Description") }
+    )
+}
+
+/**
+ * Text field to input location
+ * @param location
+ * @param onLocationChange
+ */
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun LocationInput(location: String, onLocationChange: (String) -> Unit) {
+    TextField(
+        value = location,
+        onValueChange = { onLocationChange(it) },
+        label = { Text("Location") }
+    )
+}
+
+/**
+ * Button to save changes
+ * @param viewModel
+ * @param navController
+ * @param inputEvent
+ * @param date
+ * @param startTime
+ * @param endTime
+ * @param title
+ * @param description
+ * @param location
+ */
+@Composable
+fun SaveChangesButton(
+    viewModel: EventViewModel,
+    navController: NavController,
+    inputEvent: Event,
+    date: String,
+    startTime: String,
+    endTime: String,
+    title: String,
+    description: String,
+    location: String
+) {
+    Button(
+        onClick = {
+            //Check if there is a selected event to modify event
+            if (viewModel.selectedEvent != null) {
+                viewModel.modifyItem(
+                    viewModel.selectedEvent!!,
+                    Event(inputEvent.id, date, startTime, endTime, title, description, location)
+                )
+            } else {
+                //Otherwise create an event
+                viewModel.addToList(
+                    Event(
+                        viewModel.idCount,
+                        date,
+                        startTime,
+                        endTime,
+                        title,
+                        description,
+                        location
+                    )
+                )
+                //Increment id for next event creation
+                viewModel.incrementId()
+            }
+            //Navigate back to where the user was when pressing the create/edit event button
+            navController.navigate(NavRoutes.CalendarView.route) {
+                popUpTo(navController.graph.findStartDestination().id) {
+                    saveState = true
+                    inclusive = true
+                }
+            }
+        }
+    ) {
+        Text("Save changes")
+    }
+}
+
+/**
+ * To navigate back to where the user was when pressing the create/edit event button
+ * @param navController
+ */
+@Composable
+fun BackButton(navController: NavController) {
+    Button(
+        onClick = {
+            navController.navigate(NavRoutes.CalendarView.route) {
+                popUpTo(navController.graph.findStartDestination().id) {
+                    saveState = true
+                    inclusive = true
+                }
+            }
+        }
+    ) {
+        Text("Back")
+    }
+}
+
+//Checks if the end time is before the start time to validate
 fun isValidEndTime(startTime: String, endTime: String): Boolean {
     val sdf = SimpleDateFormat("HH:mm", Locale.getDefault())
     val startCalendar = Calendar.getInstance()

@@ -6,10 +6,8 @@ import androidx.compose.ui.test.onNodeWithText
 import androidx.navigation.testing.TestNavHostController
 import androidx.test.platform.app.InstrumentationRegistry
 import com.example.calendar.data.Event
-import com.example.calendar.data.viewmodels.CalendarViewModel
-import com.example.calendar.data.viewmodels.EventViewModel
-import com.example.calendar.presentation.CalendarGrid
-import com.example.calendar.presentation.CreateEditEventScreen
+import com.example.calendar.presentation.screen.CreateEditEventScreen
+import com.example.calendar.presentation.viewmodels.EventViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.junit.Assert
 import org.junit.Before
