@@ -34,6 +34,13 @@ import com.example.calendar.R
 import java.text.SimpleDateFormat
 import java.util.*
 
+/**
+ * Screen to create or edit an event depending on if an event is passed
+ * @param viewModel EventViewModel
+ * @param navController
+ * @param inputDate
+ * @param inputEvent
+ */
 @Composable
 fun CreateEditEventScreen(
     viewModel: EventViewModel,
@@ -58,7 +65,7 @@ fun CreateEditEventScreen(
         //ALl fields for creating/editing events
         TitleInput(title) { title = it }
         DateInput(date) { date = it }
-        StartTimePicker(inputEvent.startTime) { startTime = it }
+        StartTimePicker(inputEvent.startTime, { startTime = it }, { endTime = it })
         EndTimePicker(inputEvent.endTime, startTime) { endTime = it }
         DescriptionInput(description) { description = it }
         LocationInput(location) { location = it }
@@ -109,7 +116,7 @@ fun DateInput(date: String, onDateChange: (String) -> Unit) {
         LocalContext.current,
         { _: DatePicker, selectedYear: Int, selectedMonth: Int, selectedDayOfMonth: Int ->
             onDateChange("${selectedMonth + 1}-$selectedDayOfMonth-$selectedYear")
-        }, dateValues[2].toInt(), dateValues[0].toInt(), dateValues[1].toInt()
+        }, dateValues[2].toInt(), dateValues[0].toInt() - 1, dateValues[1].toInt()
     )
 
     Button(
@@ -127,7 +134,7 @@ fun DateInput(date: String, onDateChange: (String) -> Unit) {
  * @param onStartTimeChange
  */
 @Composable
-fun StartTimePicker(initialStartTime: String, onStartTimeChange: (String) -> Unit) {
+fun StartTimePicker(initialStartTime: String, onStartTimeChange: (String) -> Unit, onEndTimeChange: (String) -> Unit) {
     var startTime by remember { mutableStateOf(initialStartTime) }
 
     val startTimeValues = initialStartTime.split(":")
@@ -137,6 +144,7 @@ fun StartTimePicker(initialStartTime: String, onStartTimeChange: (String) -> Uni
         { _, selectedHour: Int, selectedMinute: Int ->
             startTime = "$selectedHour:$selectedMinute"
             onStartTimeChange(startTime) // Update the callback with the new value
+            onEndTimeChange(startTime) // Update end time as well so it's not less than start time
         }, startTimeValues[0].toInt(), startTimeValues[1].toInt(), false
     )
 
@@ -246,6 +254,8 @@ fun SaveChangesButton(
     date: String, startTime: String, endTime: String, title: String,
     description: String, location: String, course: String
 ) {
+    val isSaveEnabled = (!(startTime == "12:00" && endTime == "12:00") && isValidEndTime(startTime, endTime))
+
     Button(
         onClick = {
             //Check if there is a selected event to modify event
@@ -270,7 +280,8 @@ fun SaveChangesButton(
                     inclusive = true
                 }
             }
-        }
+        },
+        enabled = isSaveEnabled
     ) {
         Text(stringResource(R.string.save_changes))
     }

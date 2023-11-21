@@ -19,6 +19,11 @@ import com.example.calendar.data.NavRoutes
 import com.example.calendar.presentation.viewmodels.EventViewModel
 import com.example.calendar.ui.theme.CalendarTheme
 
+/**
+ * Screen to view a single event's details and be able to delete it
+ * @param viewModel EventViewModel
+ * @param navController
+ */
 @Composable
 fun ViewEventScreen(viewModel: EventViewModel, navController: NavController) {
     Column(
