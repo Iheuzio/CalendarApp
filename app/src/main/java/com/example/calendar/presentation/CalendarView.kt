@@ -24,6 +24,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
@@ -36,30 +37,6 @@ import com.example.calendar.data.viewmodels.EventViewModel
 import java.text.SimpleDateFormat
 import java.util.*
 
-@Composable
-fun MonthView(navController: NavController, calendarModel: CalendarViewModel, eventModel: EventViewModel) {
-    val selectedDate = calendarModel.selectedDate.value
-
-    Column(modifier = Modifier.fillMaxSize()) {
-        CalendarHeader(selectedDate) { newDate ->
-            calendarModel.onDateChange(newDate)
-        }
-
-        DayOfWeekHeader()
-
-        CalendarGrid(eventModel,selectedDate) { day ->
-            calendarModel.onDateChange(day)
-        }
-
-        Button(
-            onClick = {
-                navController.navigate(NavRoutes.CreateEvent.route)
-            }
-        ) {
-            Text(LocalContext.current.getStringResource(R.string.add_event))
-        }
-    }
-}
 
 @Composable
 fun CalendarView(navController: NavController, calendarModel: CalendarViewModel, eventModel: EventViewModel) {
@@ -68,59 +45,60 @@ fun CalendarView(navController: NavController, calendarModel: CalendarViewModel,
     if (!showDailyOverview) {
         MonthView(navController, calendarModel, eventModel)
     } else {
-
-        val selectedDate = calendarModel.selectedDate.value
-        val format = SimpleDateFormat("dd-MM-yy", Locale.getDefault())
-        val date = format.format(selectedDate)
-        //navController.navigate(NavRoutes.DayView.route + "/$date")
         DailyOverview(navController, calendarModel, eventModel)
     }
 }
+
+@Composable
+fun MonthView(navController: NavController, calendarModel: CalendarViewModel, eventModel: EventViewModel) {
+    val selectedDate = calendarModel.selectedDate.value
+
+    Column(modifier = Modifier.fillMaxSize()) {
+        CalendarHeader(selectedDate, calendarModel::onDateChange)
+        DayOfWeekHeader()
+        CalendarGrid(eventModel, selectedDate, calendarModel::onDateChange)
+        AddEventButton(navController)
+    }
+}
+
 @Composable
 fun CalendarHeader(selectedDate: Date, onDateChange: (Calendar) -> Unit) {
-    val calendar = Calendar.getInstance()
-    calendar.time = selectedDate
+    val calendar = Calendar.getInstance().apply { time = selectedDate }
 
     Row(
         modifier = Modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically
     ) {
-        PreviousMonthButton(calendar = calendar, onDateChange = onDateChange)
-
+        MonthChangeButton(calendar, onDateChange, Icons.Default.KeyboardArrowLeft, -1, R.string.previous_month)
         monthYearHeader(calendar)
-        NextMonthButton(calendar = calendar, onDateChange = onDateChange)
+        MonthChangeButton(calendar, onDateChange, Icons.Default.KeyboardArrowRight, 1, R.string.next_month)
     }
 }
 
 @Composable
-fun PreviousMonthButton(calendar: Calendar, onDateChange: (Calendar) -> Unit) {
+fun MonthChangeButton(calendar: Calendar, onDateChange: (Calendar) -> Unit, icon: ImageVector, monthChange: Int, descriptionId: Int) {
     IconButton(
         onClick = {
-            calendar.add(Calendar.MONTH, -1)
+            calendar.add(Calendar.MONTH, monthChange)
             onDateChange(calendar)
         }
     ) {
         Icon(
-            imageVector = Icons.Default.KeyboardArrowLeft,
-            contentDescription = LocalContext.current.getStringResource(R.string.previous_month)
+            imageVector = icon,
+            contentDescription = LocalContext.current.getStringResource(descriptionId)
         )
     }
 }
 
-
 @Composable
-fun NextMonthButton(calendar: Calendar, onDateChange: (Calendar) -> Unit) {
-    IconButton(
+fun AddEventButton(navController: NavController) {
+    Button(
         onClick = {
-            calendar.add(Calendar.MONTH, 1)
-            onDateChange(calendar)
+            navController.navigate(NavRoutes.CreateEvent.route)
         }
     ) {
-        Icon(
-            imageVector = Icons.Default.KeyboardArrowRight,
-            contentDescription = LocalContext.current.getStringResource(R.string.next_month)
-        )
+        Text(LocalContext.current.getStringResource(R.string.add_event))
     }
 }
 @Composable
