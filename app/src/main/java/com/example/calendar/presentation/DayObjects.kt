@@ -17,6 +17,10 @@ import com.example.calendar.R
 import java.text.SimpleDateFormat
 import java.util.Calendar
 
+/**
+ * This is the view for the month header. It displays the month and year.
+ * @param calendar The calendar object used to get the month and year.
+ */
 @Composable
 fun monthYearHeader(calendar: Calendar) {
     val dateFormat = SimpleDateFormat("MMMM yyyy")
@@ -34,6 +38,9 @@ fun monthYearHeader(calendar: Calendar) {
     )
 }
 
+/**
+ * This is the view for the day of the week header. It displays the day of the week names.
+ */
 @Composable
 fun DayOfWeekHeader() {
     // use localContext to get string resources for each day of the week
@@ -57,6 +64,10 @@ fun DayOfWeekHeader() {
     }
 }
 
+/**
+ * This is the view for the day of the week header. It displays the day of the week names.
+ * @param dayName The name of the day of the week.
+ */
 @Composable
 fun DayNameText(dayName: String) {
     Text(
