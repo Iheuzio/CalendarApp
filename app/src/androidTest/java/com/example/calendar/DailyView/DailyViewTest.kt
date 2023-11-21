@@ -1,6 +1,7 @@
 package com.example.calendar.DailyView
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.junit4.createComposeRule
+import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
@@ -15,6 +16,7 @@ import com.example.calendar.presentation.screen.DailyOverview
 import com.example.calendar.presentation.viewmodels.DailyViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertNotEquals
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
@@ -52,6 +54,26 @@ class DailyOverviewTest {
         val expectedDate = expectedDateFormat.format(calendarViewModel.selectedDate.value)
         composeTestRule.onNodeWithText(expectedDate).assertIsDisplayed()
     }
+    @Test
+    fun dailyOverview_changesDateOnNavigation() {
+        val initialDate = Date()
+        calendarViewModel.selectedDate.value = initialDate
+
+        val contentDescription = "Next"
+
+        composeTestRule.waitForIdle()
+
+        composeTestRule.onNodeWithContentDescription(contentDescription).performClick()
+
+        composeTestRule.waitForIdle()
+
+        assertNotEquals(initialDate, calendarViewModel.selectedDate.value)
+    }
+
+
+
+
+
 
 
 
