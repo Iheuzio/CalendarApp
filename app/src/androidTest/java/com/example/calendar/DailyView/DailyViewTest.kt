@@ -98,20 +98,6 @@ class DailyOverviewTest {
         composeTestRule.onNodeWithText("Event").assertDoesNotExist()
 
     }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
     private fun createMockEvents(): List<Event> {
         return listOf(
             Event(id = 1, date = "2023-11-20", startTime = "1:00", endTime = "11:00", title = "Event", description = "Description 1", location = "Location 1"),

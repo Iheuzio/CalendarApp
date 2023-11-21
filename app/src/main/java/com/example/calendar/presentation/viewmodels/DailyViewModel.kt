@@ -5,9 +5,5 @@ import androidx.lifecycle.ViewModel
 import com.example.calendar.data.Event
 
 class DailyViewModel : ViewModel() {
-
     val eventsForSelectedDate = MutableLiveData<List<Event>>()
-
-
-
 }

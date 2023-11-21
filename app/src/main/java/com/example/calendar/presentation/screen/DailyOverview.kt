@@ -40,6 +40,7 @@ import com.example.calendar.presentation.viewmodels.CalendarViewModel
 import com.example.calendar.presentation.viewmodels.EventViewModel
 import com.example.calendar.presentation.getStringResource
 import com.example.calendar.presentation.viewmodels.DailyViewModel
+import androidx.compose.runtime.*
 
 
 @Composable
@@ -54,7 +55,7 @@ fun DailyOverviewScreen(
     onBack: () -> Unit,
     onEditEvent: (Event) -> Unit
 ) {
-    //val events = dailyViewModel.eventsForSelectedDate.observeAsState(listOf())
+    //dailyViewModel.eventsForSelectedDate.observeAsState(listOf())
 
     Column(modifier = Modifier.fillMaxSize()) {
         Row {
