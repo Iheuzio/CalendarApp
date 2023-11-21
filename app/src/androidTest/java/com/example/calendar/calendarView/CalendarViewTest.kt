@@ -62,13 +62,6 @@ class CalendarViewTest {
         assertNotEquals(initialDate, calendarModel.selectedDate.value)
     }
 
-//    @Test
-//    fun monthView_navigatesToCreateEvent_whenAddEventButtonClicked() {
-//        calendarModel.showDailyOverview.value = false
-//        composeTestRule.onNodeWithText("Add Event").performClick()
-//        assertEquals(NavRoutes.CreateEvent.route, navController.currentDestination?.route)
-//    }
-
     @Test
     fun calendarView_displaysMonthView_whenShowDailyOverviewIsFalse_andSelectedDateChanges() {
         calendarModel.showDailyOverview.value = false
