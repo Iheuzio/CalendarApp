@@ -25,6 +25,16 @@ import com.example.calendar.data.Event
 import com.example.calendar.data.NavRoutes
 import com.example.calendar.data.viewmodels.EventViewModel
 import com.example.calendar.ui.theme.CalendarTheme
+import android.content.Context
+import androidx.compose.foundation.layout.Column
+import androidx.compose.material3.Button
+import androidx.compose.material3.Text
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
+import androidx.compose.runtime.*
+import androidx.compose.ui.platform.LocalContext
+import java.text.SimpleDateFormat
+import java.util.*
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -98,8 +108,14 @@ fun CreateEditEventScreen(viewModel: EventViewModel, navController: NavControlle
         val endTimePicker = TimePickerDialog(
             LocalContext.current,
             { _, selectedHour: Int, selectedMinute: Int ->
-                endTime = "$selectedHour:$selectedMinute"
-            }, endTimeValues[0].toInt(), endTimeValues[1].toInt(), false
+                val selectedEndTime = "$selectedHour:$selectedMinute"
+                if (isValidEndTime(startTime, selectedEndTime)) {
+                    endTime = selectedEndTime
+                }
+            },
+            endTimeValues[0].toInt(),
+            endTimeValues[1].toInt(),
+            false
         )
 
 
@@ -169,6 +185,18 @@ fun CreateEditEventScreen(viewModel: EventViewModel, navController: NavControlle
 
     }
 }
+
+fun isValidEndTime(startTime: String, endTime: String): Boolean {
+    val sdf = SimpleDateFormat("HH:mm", Locale.getDefault())
+    val startCalendar = Calendar.getInstance()
+    val endCalendar = Calendar.getInstance()
+
+    startCalendar.time = sdf.parse(startTime)!!
+    endCalendar.time = sdf.parse(endTime)!!
+
+    return startCalendar.before(endCalendar)
+}
+
 @Preview(showBackground = true)
 @Composable
 fun CreateEditEventPreview() {
