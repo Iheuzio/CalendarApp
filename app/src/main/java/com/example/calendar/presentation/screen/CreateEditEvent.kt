@@ -26,6 +26,7 @@ import com.example.calendar.data.NavRoutes
 import com.example.calendar.presentation.viewmodels.EventViewModel
 import com.example.calendar.ui.theme.CalendarTheme
 import androidx.compose.runtime.*
+import androidx.compose.ui.platform.testTag
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -58,17 +59,8 @@ fun CreateEditEventScreen(
         CourseInput(course) { course = it }
 
         //Button for saving changes/creating event
-        SaveChangesButton(
-            viewModel,
-            navController,
-            inputEvent,
-            date,
-            startTime,
-            endTime,
-            title,
-            description,
-            location,
-            course
+        SaveChangesButton(viewModel, navController, inputEvent,
+            date, startTime, endTime, title, description, location, course
         )
 
         //To go back to day view or month view
@@ -86,6 +78,7 @@ fun CreateEditEventScreen(
 fun TitleInput(title: String, onTitleChange: (String) -> Unit) {
     TextField(
         value = title,
+        modifier = Modifier.testTag("TITLE"),
         onValueChange = { onTitleChange(it) },
         label = { Text("Title") }
     )
@@ -196,6 +189,7 @@ fun EndTimePicker(initialEndTime: String, startTime: String, onEndTimeChange: (S
 fun DescriptionInput(description: String, onDescriptionChange: (String) -> Unit) {
     TextField(
         value = description,
+        modifier = Modifier.testTag("DESCRIPTION"),
         onValueChange = { onDescriptionChange(it) },
         label = { Text("Description") }
     )
@@ -211,6 +205,7 @@ fun DescriptionInput(description: String, onDescriptionChange: (String) -> Unit)
 fun LocationInput(location: String, onLocationChange: (String) -> Unit) {
     TextField(
         value = location,
+        modifier = Modifier.testTag("LOCATION"),
         onValueChange = { onLocationChange(it) },
         label = { Text("Location") }
     )
@@ -226,6 +221,7 @@ fun LocationInput(location: String, onLocationChange: (String) -> Unit) {
 fun CourseInput(course: String, onCourseChange: (String) -> Unit) {
     TextField(
         value = course,
+        modifier = Modifier.testTag("COURSE"),
         onValueChange = { onCourseChange(it) },
         label = { Text("Course") }
     )
@@ -236,13 +232,7 @@ fun CourseInput(course: String, onCourseChange: (String) -> Unit) {
  * @param viewModel
  * @param navController
  * @param inputEvent
- * @param date
- * @param startTime
- * @param endTime
- * @param title
- * @param description
- * @param location
- * @param course
+ * @param date, startTime, endTime, title, description, location, course for creating/editing event
  */
 @Composable
 fun SaveChangesButton(
