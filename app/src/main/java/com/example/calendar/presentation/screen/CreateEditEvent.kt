@@ -5,6 +5,8 @@ import android.app.TimePickerDialog
 import android.widget.DatePicker
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Text
@@ -48,6 +50,7 @@ fun CreateEditEventScreen(
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
         modifier = Modifier.fillMaxSize()
+            .verticalScroll(rememberScrollState())
     ) {
         //ALl fields for creating/editing events
         TitleInput(title) { title = it }

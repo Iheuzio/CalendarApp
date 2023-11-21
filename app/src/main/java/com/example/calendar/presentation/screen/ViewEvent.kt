@@ -2,6 +2,8 @@ package com.example.calendar.presentation.screen
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.navigation.NavController
 import androidx.compose.material3.Text
@@ -20,6 +22,7 @@ fun ViewEventScreen(viewModel: EventViewModel, navController: NavController) {
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
         modifier = Modifier.fillMaxSize()
+            .verticalScroll(rememberScrollState())
     ) {
         viewModel.selectedEvent?.let { Text("Title: " + it.title) }
         viewModel.selectedEvent?.let { Text("Date: " + it.date) }
