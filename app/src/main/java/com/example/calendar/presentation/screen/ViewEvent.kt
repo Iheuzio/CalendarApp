@@ -12,7 +12,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.compose.rememberNavController
 import com.example.calendar.data.NavRoutes
-import com.example.calendar.data.viewmodels.EventViewModel
+import com.example.calendar.presentation.viewmodels.EventViewModel
 import com.example.calendar.ui.theme.CalendarTheme
 
 @Composable

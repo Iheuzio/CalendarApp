@@ -1,4 +1,4 @@
-package com.example.calendar.data.viewmodels
+package com.example.calendar.presentation.viewmodels
 
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf

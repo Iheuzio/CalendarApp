@@ -32,8 +32,8 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.calendar.R
 import com.example.calendar.data.NavRoutes
-import com.example.calendar.data.viewmodels.CalendarViewModel
-import com.example.calendar.data.viewmodels.EventViewModel
+import com.example.calendar.presentation.viewmodels.CalendarViewModel
+import com.example.calendar.presentation.viewmodels.EventViewModel
 import com.example.calendar.presentation.getStringResource
 import java.util.*
 

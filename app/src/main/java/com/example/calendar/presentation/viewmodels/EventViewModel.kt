@@ -1,4 +1,4 @@
-package com.example.calendar.data.viewmodels
+package com.example.calendar.presentation.viewmodels
 
 import android.icu.util.Calendar
 import androidx.compose.runtime.getValue

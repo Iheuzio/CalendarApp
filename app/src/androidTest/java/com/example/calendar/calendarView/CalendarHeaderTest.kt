@@ -4,8 +4,8 @@ import androidx.compose.ui.test.*
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.navigation.testing.TestNavHostController
 import androidx.test.platform.app.InstrumentationRegistry
-import com.example.calendar.data.viewmodels.CalendarViewModel
-import com.example.calendar.data.viewmodels.EventViewModel
+import com.example.calendar.presentation.viewmodels.CalendarViewModel
+import com.example.calendar.presentation.viewmodels.EventViewModel
 import com.example.calendar.presentation.screen.CalendarHeader
 import com.example.calendar.presentation.screen.DayNameText
 import com.example.calendar.presentation.screen.DayOfWeekHeader
