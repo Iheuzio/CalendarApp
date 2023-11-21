@@ -29,6 +29,7 @@ import java.util.Locale
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.testTag
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.navigation.NavController
@@ -135,6 +136,7 @@ fun EventItem(event: Event, onEventSelected: (Event?) -> Unit, onEditEvent: (Eve
 
     Row(
         modifier = Modifier
+            .testTag("EventItem-${event.id}")
             .fillMaxWidth()
             .padding(8.dp)
     ) {
