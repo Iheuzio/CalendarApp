@@ -35,6 +35,7 @@ import com.example.calendar.data.NavRoutes
 import com.example.calendar.presentation.viewmodels.CalendarViewModel
 import com.example.calendar.presentation.viewmodels.EventViewModel
 import com.example.calendar.presentation.getStringResource
+import com.example.calendar.presentation.viewmodels.DailyViewModel
 import java.util.*
 
 /**
@@ -45,13 +46,13 @@ import java.util.*
  * @param eventModel The ViewModel that holds the state of the events.
  */
 @Composable
-fun CalendarView(navController: NavController, calendarModel: CalendarViewModel, eventModel: EventViewModel) {
+fun CalendarView(navController: NavController, calendarModel: CalendarViewModel, eventModel: EventViewModel, dayModel: DailyViewModel) {
     val showDailyOverview = calendarModel.showDailyOverview.value
 
     if (!showDailyOverview) {
         MonthView(navController, calendarModel, eventModel)
     } else {
-        DailyOverview(navController, calendarModel, eventModel)
+        DailyOverview(navController, calendarModel, dayModel, eventModel)
     }
 }
 

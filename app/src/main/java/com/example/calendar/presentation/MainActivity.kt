@@ -24,6 +24,7 @@ import com.example.calendar.presentation.viewmodels.EventViewModel
 import com.example.calendar.presentation.screen.CalendarView
 import com.example.calendar.presentation.screen.CreateEditEventScreen
 import com.example.calendar.presentation.screen.DailyOverview
+import com.example.calendar.presentation.viewmodels.DailyViewModel
 import com.example.calendar.presentation.screen.MonthView
 import com.example.calendar.presentation.screen.ViewEventScreen
 import java.text.SimpleDateFormat
@@ -64,7 +65,7 @@ class MainActivity : ComponentActivity() {
 
     @RequiresApi(Build.VERSION_CODES.O)
     @Composable
-    fun CalendarApp(viewModel: EventViewModel = EventViewModel(), navController: NavHostController = rememberNavController()) {
+    fun CalendarApp(eventviewModel: EventViewModel = EventViewModel(), dayviewModel: DailyViewModel = DailyViewModel(), navController: NavHostController = rememberNavController()) {
 
         val currentDateTime = LocalDateTime.now()
         val dateFormatter = DateTimeFormatter.ofPattern("MM-dd-yyyy")
@@ -73,25 +74,25 @@ class MainActivity : ComponentActivity() {
        val calendarModel by viewModels<CalendarViewModel>()
         NavHost(navController = navController, startDestination = NavRoutes.CalendarView.route) {
             composable(NavRoutes.CalendarView.route) {
-                CalendarView(navController = navController, calendarModel = calendarModel, viewModel)
+                CalendarView(navController = navController, calendarModel = calendarModel, eventviewModel, dayviewModel)
             }
             composable(NavRoutes.CreateEvent.route)
             {
-                val event = Event(viewModel.idCount, currentDate, "12:00", "12:00")
-                viewModel.incrementId()
+                val event = Event(eventviewModel.idCount, currentDate, "12:00", "12:00")
+                eventviewModel.incrementId()
                 val format = SimpleDateFormat("MM-dd-yyyy", Locale.getDefault())
                 val date = format.format(calendarModel.selectedDate.value)
-                CreateEditEventScreen(viewModel, navController = navController, inputDate = date, event)
+                CreateEditEventScreen(eventviewModel, navController = navController, inputDate = date, event)
             }
             composable(NavRoutes.EditEvent.route) {
-                viewModel.selectedEvent?.let { event ->
-                    CreateEditEventScreen(viewModel, navController = navController, inputDate = viewModel.selectedEvent!!.date,
+                eventviewModel.selectedEvent?.let { event ->
+                    CreateEditEventScreen(eventviewModel, navController = navController, inputDate = eventviewModel.selectedEvent!!.date,
                         event
                     )
                 }
             }
             composable(NavRoutes.EventView.route) {
-                ViewEventScreen(viewModel, navController = navController)
+                ViewEventScreen(eventviewModel, navController = navController)
             }
             composable(NavRoutes.DayView.route + "/{date}") { navBackStackEntry ->
                 // Retrieve the date from the route's arguments
@@ -101,10 +102,10 @@ class MainActivity : ComponentActivity() {
                 val format = SimpleDateFormat("dd-MM-yy", Locale.getDefault())
                 val selectedDate = format.parse(date)
 
-                DailyOverview(navController, calendarModel, viewModel)
+                DailyOverview(navController, calendarModel,dayviewModel, eventviewModel)
             }
             composable(NavRoutes.MonthView.route) {
-                MonthView(navController = navController, calendarModel = calendarModel, viewModel)
+                MonthView(navController = navController, calendarModel = calendarModel, eventviewModel)
             }
         }
     }

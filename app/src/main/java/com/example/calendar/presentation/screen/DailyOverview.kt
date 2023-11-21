@@ -29,6 +29,9 @@ import java.util.Locale
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.testTag
+import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.ViewModel
 import androidx.navigation.NavController
 import com.example.calendar.data.Event
 import com.example.calendar.R
@@ -36,9 +39,13 @@ import com.example.calendar.data.NavRoutes
 import com.example.calendar.presentation.viewmodels.CalendarViewModel
 import com.example.calendar.presentation.viewmodels.EventViewModel
 import com.example.calendar.presentation.getStringResource
+import com.example.calendar.presentation.viewmodels.DailyViewModel
+import androidx.compose.runtime.*
+
 
 @Composable
 fun DailyOverviewScreen(
+    dailyViewModel: DailyViewModel,
     viewModel: EventViewModel,
     selectedDate: Date,
     events: List<Event>,
@@ -48,6 +55,8 @@ fun DailyOverviewScreen(
     onBack: () -> Unit,
     onEditEvent: (Event) -> Unit
 ) {
+    //dailyViewModel.eventsForSelectedDate.observeAsState(listOf())
+
     Column(modifier = Modifier.fillMaxSize()) {
         Row {
             Button(
@@ -128,6 +137,7 @@ fun EventItem(event: Event, onEventSelected: (Event?) -> Unit, onEditEvent: (Eve
 
     Row(
         modifier = Modifier
+            .testTag("EventItem-${event.id}")
             .fillMaxWidth()
             .padding(8.dp)
     ) {
@@ -242,12 +252,13 @@ fun DailyEventsList(selectedDate: Date, events: List<Event>, onEventSelected: (E
 }
 
 @Composable
-fun DailyOverview(navController: NavController, calendarModel: CalendarViewModel, eventModel: EventViewModel) {
+fun DailyOverview(navController: NavController, calendarModel: CalendarViewModel, dailyViewModel: DailyViewModel, eventModel: EventViewModel) {
     val selectedDate = calendarModel.selectedDate.value
     val events = eventModel.events
 
     calendarModel.events.value = eventModel.events
     DailyOverviewScreen(
+        dailyViewModel,
         eventModel,
         selectedDate = selectedDate,
         events = events,

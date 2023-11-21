@@ -5,6 +5,7 @@ import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.navigation.testing.TestNavHostController
 import androidx.test.platform.app.InstrumentationRegistry
 import com.example.calendar.presentation.screen.CalendarView
+import com.example.calendar.presentation.viewmodels.DailyViewModel
 import com.example.calendar.presentation.viewmodels.CalendarViewModel
 import com.example.calendar.presentation.viewmodels.EventViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -30,21 +31,19 @@ class CalendarViewTest {
         calendarModel = CalendarViewModel()
         eventViewModel = EventViewModel()
         composeTestRule.setContent {
-            CalendarView(navController, calendarModel, eventViewModel)
+            CalendarView(navController, calendarModel, eventViewModel, dayModel = DailyViewModel())
         }
     }
 
     @Test
     fun calendarView_displaysMonthView_whenShowDailyOverviewIsFalse() {
         calendarModel.showDailyOverview.value = false
-        // add event contains the Add Event string case
         composeTestRule.onNodeWithText("Add Event").assertIsDisplayed()
     }
 
     @Test
     fun calendarView_displaysDailyOverview_whenShowDailyOverviewIsTrue() {
         calendarModel.showDailyOverview.value = true
-        // calendarView contains the Back button
         composeTestRule.onNodeWithText("Back").assertIsDisplayed()
     }
 
