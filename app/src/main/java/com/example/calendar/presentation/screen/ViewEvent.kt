@@ -10,9 +10,11 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.compose.rememberNavController
+import com.example.calendar.R
 import com.example.calendar.data.NavRoutes
 import com.example.calendar.presentation.viewmodels.EventViewModel
 import com.example.calendar.ui.theme.CalendarTheme
@@ -21,7 +23,8 @@ import com.example.calendar.ui.theme.CalendarTheme
 fun ViewEventScreen(viewModel: EventViewModel, navController: NavController) {
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
-        modifier = Modifier.fillMaxSize()
+        modifier = Modifier
+            .fillMaxSize()
             .verticalScroll(rememberScrollState())
     ) {
         viewModel.selectedEvent?.let { Text("Title: " + it.title) }
@@ -43,7 +46,7 @@ fun ViewEventScreen(viewModel: EventViewModel, navController: NavController) {
                 }
             }
         ) {
-            Text("Delete")
+            Text(stringResource(R.string.delete))
         }
         Button(
             onClick = {
@@ -55,7 +58,7 @@ fun ViewEventScreen(viewModel: EventViewModel, navController: NavController) {
                 }
             }
         ) {
-            Text("Done")
+            Text(stringResource(R.string.done))
         }
     }
 

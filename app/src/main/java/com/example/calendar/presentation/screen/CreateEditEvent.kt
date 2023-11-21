@@ -29,6 +29,8 @@ import com.example.calendar.presentation.viewmodels.EventViewModel
 import com.example.calendar.ui.theme.CalendarTheme
 import androidx.compose.runtime.*
 import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.res.stringResource
+import com.example.calendar.R
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -49,7 +51,8 @@ fun CreateEditEventScreen(
 
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
-        modifier = Modifier.fillMaxSize()
+        modifier = Modifier
+            .fillMaxSize()
             .verticalScroll(rememberScrollState())
     ) {
         //ALl fields for creating/editing events
@@ -83,7 +86,7 @@ fun TitleInput(title: String, onTitleChange: (String) -> Unit) {
         value = title,
         modifier = Modifier.testTag("TITLE"),
         onValueChange = { onTitleChange(it) },
-        label = { Text("Title") }
+        label = { Text(stringResource(R.string.title)) }
     )
 }
 
@@ -114,7 +117,7 @@ fun DateInput(date: String, onDateChange: (String) -> Unit) {
             datePicker.show()
         }
     ) {
-        Text(text = "Select date")
+        Text(text = stringResource(R.string.select_date))
     }
 }
 
@@ -143,7 +146,7 @@ fun StartTimePicker(initialStartTime: String, onStartTimeChange: (String) -> Uni
             startTimePicker.show()
         }
     ) {
-        Text(text = "Select start time")
+        Text(text = stringResource(R.string.select_start_time))
     }
 }
 
@@ -178,7 +181,7 @@ fun EndTimePicker(initialEndTime: String, startTime: String, onEndTimeChange: (S
             endTimePicker.show()
         }
     ) {
-        Text(text = "Select end time")
+        Text(text = stringResource(R.string.select_end_time))
     }
 }
 
@@ -194,7 +197,7 @@ fun DescriptionInput(description: String, onDescriptionChange: (String) -> Unit)
         value = description,
         modifier = Modifier.testTag("DESCRIPTION"),
         onValueChange = { onDescriptionChange(it) },
-        label = { Text("Description") }
+        label = { Text(stringResource(R.string.description)) }
     )
 }
 
@@ -210,7 +213,7 @@ fun LocationInput(location: String, onLocationChange: (String) -> Unit) {
         value = location,
         modifier = Modifier.testTag("LOCATION"),
         onValueChange = { onLocationChange(it) },
-        label = { Text("Location") }
+        label = { Text(stringResource(R.string.location)) }
     )
 }
 
@@ -226,7 +229,7 @@ fun CourseInput(course: String, onCourseChange: (String) -> Unit) {
         value = course,
         modifier = Modifier.testTag("COURSE"),
         onValueChange = { onCourseChange(it) },
-        label = { Text("Course") }
+        label = { Text(stringResource(R.string.course)) }
     )
 }
 
@@ -269,7 +272,7 @@ fun SaveChangesButton(
             }
         }
     ) {
-        Text("Save changes")
+        Text(stringResource(R.string.save_changes))
     }
 }
 
@@ -289,7 +292,7 @@ fun BackButton(navController: NavController) {
             }
         }
     ) {
-        Text("Back")
+        Text(stringResource(R.string.back))
     }
 }
 
