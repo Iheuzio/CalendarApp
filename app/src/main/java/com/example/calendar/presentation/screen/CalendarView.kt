@@ -45,13 +45,13 @@ import java.util.*
  * @param eventModel The ViewModel that holds the state of the events.
  */
 @Composable
-fun CalendarView(navController: NavController, calendarModel: CalendarViewModel, eventModel: EventViewModel) {
+fun CalendarView(navController: NavController, calendarModel: CalendarViewModel, eventModel: EventViewModel, dayModel: DailyViewModel) {
     val showDailyOverview = calendarModel.showDailyOverview.value
 
     if (!showDailyOverview) {
         MonthView(navController, calendarModel, eventModel)
     } else {
-        DailyOverview(navController, calendarModel, eventModel)
+        DailyOverview(navController, calendarModel, dayModel, eventModel)
     }
 }
 
