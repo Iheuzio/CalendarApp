@@ -57,15 +57,15 @@ class ViewEventTest {
             .assertIsDisplayed()
 
         composeTestRule
-            .onNodeWithText("Date: 11-28-2023")
+            .onNodeWithText("Select date: 11-28-2023")
             .assertIsDisplayed()
 
         composeTestRule
-            .onNodeWithText("Start time: 12:00")
+            .onNodeWithText("Select start time: 12:00")
             .assertIsDisplayed()
 
         composeTestRule
-            .onNodeWithText("End time: 14:00")
+            .onNodeWithText("Select end time: 14:00")
             .assertIsDisplayed()
 
         composeTestRule
