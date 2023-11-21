@@ -1,4 +1,4 @@
-package com.example.calendar.presentation
+package com.example.calendar.presentation.screen
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -33,8 +33,9 @@ import androidx.navigation.NavController
 import com.example.calendar.data.Event
 import com.example.calendar.R
 import com.example.calendar.data.NavRoutes
-import com.example.calendar.data.viewmodels.CalendarViewModel
-import com.example.calendar.data.viewmodels.EventViewModel
+import com.example.calendar.presentation.viewmodels.CalendarViewModel
+import com.example.calendar.presentation.viewmodels.EventViewModel
+import com.example.calendar.presentation.getStringResource
 
 @Composable
 fun DailyOverviewScreen(

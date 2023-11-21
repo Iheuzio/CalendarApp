@@ -1,4 +1,4 @@
-package com.example.calendar.presentation
+package com.example.calendar.presentation.screen
 
 import android.app.DatePickerDialog
 import android.app.TimePickerDialog
@@ -23,7 +23,7 @@ import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.compose.rememberNavController
 import com.example.calendar.data.Event
 import com.example.calendar.data.NavRoutes
-import com.example.calendar.data.viewmodels.EventViewModel
+import com.example.calendar.presentation.viewmodels.EventViewModel
 import com.example.calendar.ui.theme.CalendarTheme
 import android.content.Context
 import androidx.compose.foundation.layout.Column

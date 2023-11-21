@@ -1,4 +1,4 @@
-package com.example.calendar.presentation
+package com.example.calendar.presentation.screen
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -24,6 +24,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
@@ -31,36 +32,18 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.calendar.R
 import com.example.calendar.data.NavRoutes
-import com.example.calendar.data.viewmodels.CalendarViewModel
-import com.example.calendar.data.viewmodels.EventViewModel
-import java.text.SimpleDateFormat
+import com.example.calendar.presentation.viewmodels.CalendarViewModel
+import com.example.calendar.presentation.viewmodels.EventViewModel
+import com.example.calendar.presentation.getStringResource
 import java.util.*
 
-@Composable
-fun MonthView(navController: NavController, calendarModel: CalendarViewModel, eventModel: EventViewModel) {
-    val selectedDate = calendarModel.selectedDate.value
-
-    Column(modifier = Modifier.fillMaxSize()) {
-        CalendarHeader(selectedDate) { newDate ->
-            calendarModel.onDateChange(newDate)
-        }
-
-        DayOfWeekHeader()
-
-        CalendarGrid(eventModel,selectedDate) { day ->
-            calendarModel.onDateChange(day)
-        }
-
-        Button(
-            onClick = {
-                navController.navigate(NavRoutes.CreateEvent.route)
-            }
-        ) {
-            Text(LocalContext.current.getStringResource(R.string.add_event))
-        }
-    }
-}
-
+/**
+ * This is the main view of the calendar. It switches between the MonthView and the DailyOverview based on the value of showDailyOverview in the CalendarViewModel.
+ *
+ * @param navController The NavController used for navigation.
+ * @param calendarModel The ViewModel that holds the state of the calendar.
+ * @param eventModel The ViewModel that holds the state of the events.
+ */
 @Composable
 fun CalendarView(navController: NavController, calendarModel: CalendarViewModel, eventModel: EventViewModel) {
     val showDailyOverview = calendarModel.showDailyOverview.value
@@ -68,61 +51,96 @@ fun CalendarView(navController: NavController, calendarModel: CalendarViewModel,
     if (!showDailyOverview) {
         MonthView(navController, calendarModel, eventModel)
     } else {
-
-        val selectedDate = calendarModel.selectedDate.value
-        val format = SimpleDateFormat("dd-MM-yy", Locale.getDefault())
-        val date = format.format(selectedDate)
-        //navController.navigate(NavRoutes.DayView.route + "/$date")
         DailyOverview(navController, calendarModel, eventModel)
     }
 }
+
+/**
+ * This is the view for the month. It displays the month header, the day of the week header, the calendar grid, and the add event button.
+ * @param navController The NavController used for navigation.
+ * @param calendarModel The ViewModel that holds the state of the calendar.
+ * @param eventModel The ViewModel that holds the state of the events.
+ */
+@Composable
+fun MonthView(navController: NavController, calendarModel: CalendarViewModel, eventModel: EventViewModel) {
+    val selectedDate = calendarModel.selectedDate.value
+
+    Column(modifier = Modifier.fillMaxSize()) {
+        CalendarHeader(selectedDate, calendarModel::onDateChange)
+        DayOfWeekHeader()
+        CalendarGrid(eventModel, selectedDate, calendarModel::onDateChange)
+        AddEventButton(navController)
+    }
+}
+
+/**
+ * This is the header of the calendar. It displays the month and year and has buttons to change the month.
+ *
+ * @param selectedDate The currently selected date.
+ * @param onDateChange The function to call when the date is changed.
+ */
 @Composable
 fun CalendarHeader(selectedDate: Date, onDateChange: (Calendar) -> Unit) {
-    val calendar = Calendar.getInstance()
-    calendar.time = selectedDate
+    val calendar = Calendar.getInstance().apply { time = selectedDate }
 
     Row(
         modifier = Modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically
     ) {
-        PreviousMonthButton(calendar = calendar, onDateChange = onDateChange)
-
+        MonthChangeButton(calendar, onDateChange, Icons.Default.KeyboardArrowLeft, -1, R.string.previous_month)
         monthYearHeader(calendar)
-        NextMonthButton(calendar = calendar, onDateChange = onDateChange)
+        MonthChangeButton(calendar, onDateChange, Icons.Default.KeyboardArrowRight, 1, R.string.next_month)
     }
 }
 
+/**
+ * This is a button that changes the month. It displays an icon and changes the month when clicked.
+ *
+ * @param calendar The calendar to change the month of.
+ * @param onDateChange The function to call when the date is changed.
+ * @param icon The icon to display on the button.
+ * @param monthChange The amount to change the month by.
+ * @param descriptionId The resource id of the content description for the icon.
+ */
 @Composable
-fun PreviousMonthButton(calendar: Calendar, onDateChange: (Calendar) -> Unit) {
+fun MonthChangeButton(calendar: Calendar, onDateChange: (Calendar) -> Unit, icon: ImageVector, monthChange: Int, descriptionId: Int) {
     IconButton(
         onClick = {
-            calendar.add(Calendar.MONTH, -1)
+            calendar.add(Calendar.MONTH, monthChange)
             onDateChange(calendar)
         }
     ) {
         Icon(
-            imageVector = Icons.Default.KeyboardArrowLeft,
-            contentDescription = LocalContext.current.getStringResource(R.string.previous_month)
+            imageVector = icon,
+            contentDescription = LocalContext.current.getStringResource(descriptionId)
         )
     }
 }
 
-
+/**
+ * This is a button that navigates to the create event screen when clicked.
+ *
+ * @param navController The NavController used for navigation.
+ */
 @Composable
-fun NextMonthButton(calendar: Calendar, onDateChange: (Calendar) -> Unit) {
-    IconButton(
+fun AddEventButton(navController: NavController) {
+    Button(
         onClick = {
-            calendar.add(Calendar.MONTH, 1)
-            onDateChange(calendar)
+            navController.navigate(NavRoutes.CreateEvent.route)
         }
     ) {
-        Icon(
-            imageVector = Icons.Default.KeyboardArrowRight,
-            contentDescription = LocalContext.current.getStringResource(R.string.next_month)
-        )
+        Text(LocalContext.current.getStringResource(R.string.add_event))
     }
 }
+
+/**
+ * This is the grid of the calendar. It displays the days of the month and highlights the selected day and today.
+ *
+ * @param eventModel The ViewModel that holds the state of the events.
+ * @param selectedDate The currently selected date.
+ * @param onDateClick The function to call when a date is clicked.
+ */
 @Composable
 fun CalendarGrid(eventModel: EventViewModel, selectedDate: Date, onDateClick: (Calendar) -> Unit) {
     val calendar = Calendar.getInstance()
@@ -167,6 +185,17 @@ fun CalendarGrid(eventModel: EventViewModel, selectedDate: Date, onDateClick: (C
     }
 }
 
+/**
+ * This is a cell in the calendar grid. It displays the day of the month and highlights the cell if it is the selected day, today, or if there are events on this day.
+ *
+ * @param day The day of the month.
+ * @param isSelected Whether this day is the selected day.
+ * @param isCurrentMonth Whether this day is in the current month.
+ * @param cellSize The size of the cell.
+ * @param onDateClick The function to call when a date is clicked.
+ * @param cellDate The date of this cell.
+ * @param eventBool Whether there are events on this day.
+ */
 @Composable
 fun DayCell(
     day: Int,
@@ -210,6 +239,11 @@ fun DayCell(
     }
 }
 
+/**
+ * This is an empty cell in the calendar grid. It is used for days that are not in the current month.
+ *
+ * @param cellSize The size of the cell.
+ */
 @Composable
 fun EmptyCell(cellSize: Dp) {
     Box(
