@@ -42,6 +42,7 @@ fun CreateEditEventScreen(
     var title by remember { mutableStateOf(inputEvent.title) }
     var description by remember { mutableStateOf(inputEvent.description) }
     var location by remember { mutableStateOf(inputEvent.location) }
+    var course by remember { mutableStateOf(inputEvent.course) }
 
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
@@ -54,6 +55,7 @@ fun CreateEditEventScreen(
         EndTimePicker(inputEvent.endTime, startTime) { endTime = it }
         DescriptionInput(description) { description = it }
         LocationInput(location) { location = it }
+        CourseInput(course) { course = it }
 
         //Button for saving changes/creating event
         SaveChangesButton(
@@ -65,7 +67,8 @@ fun CreateEditEventScreen(
             endTime,
             title,
             description,
-            location
+            location,
+            course
         )
 
         //To go back to day view or month view
@@ -214,6 +217,21 @@ fun LocationInput(location: String, onLocationChange: (String) -> Unit) {
 }
 
 /**
+ * Text field to input course
+ * @param course
+ * @param onCourseChange
+ */
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun CourseInput(course: String, onCourseChange: (String) -> Unit) {
+    TextField(
+        value = course,
+        onValueChange = { onCourseChange(it) },
+        label = { Text("Course") }
+    )
+}
+
+/**
  * Button to save changes
  * @param viewModel
  * @param navController
@@ -224,18 +242,13 @@ fun LocationInput(location: String, onLocationChange: (String) -> Unit) {
  * @param title
  * @param description
  * @param location
+ * @param course
  */
 @Composable
 fun SaveChangesButton(
-    viewModel: EventViewModel,
-    navController: NavController,
-    inputEvent: Event,
-    date: String,
-    startTime: String,
-    endTime: String,
-    title: String,
-    description: String,
-    location: String
+    viewModel: EventViewModel, navController: NavController, inputEvent: Event,
+    date: String, startTime: String, endTime: String, title: String,
+    description: String, location: String, course: String
 ) {
     Button(
         onClick = {
@@ -243,19 +256,12 @@ fun SaveChangesButton(
             if (viewModel.selectedEvent != null) {
                 viewModel.modifyItem(
                     viewModel.selectedEvent!!,
-                    Event(inputEvent.id, date, startTime, endTime, title, description, location)
+                    Event(inputEvent.id, date, startTime, endTime, title, description, location, course)
                 )
             } else {
                 //Otherwise create an event
                 viewModel.addToList(
-                    Event(
-                        viewModel.idCount,
-                        date,
-                        startTime,
-                        endTime,
-                        title,
-                        description,
-                        location
+                    Event(viewModel.idCount, date, startTime, endTime, title, description, location, course
                     )
                 )
                 //Increment id for next event creation

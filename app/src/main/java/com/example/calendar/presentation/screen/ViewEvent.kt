@@ -27,6 +27,7 @@ fun ViewEventScreen(viewModel: EventViewModel, navController: NavController) {
         viewModel.selectedEvent?.let { Text("End time: " + it.endTime) }
         viewModel.selectedEvent?.let { Text("Description: " + it.description) }
         viewModel.selectedEvent?.let { Text("Location: " + it.location) }
+        viewModel.selectedEvent?.let { Text("Course: " + it.course) }
 
         Button(
             onClick = {
