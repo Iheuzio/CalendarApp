@@ -7,6 +7,7 @@ data class Event(
     val endTime: String = "",
     val title: String = "",
     val description: String = "",
-    val location: String = ""
+    val location: String = "",
+    val course: String = ""
 )
 
