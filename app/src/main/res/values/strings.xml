@@ -1,3 +1,25 @@
 <resources>
     <string name="app_name">Calendar</string>
+    <string name="create_event">Add Event</string>
+    <string name="next_month">Next Month</string>
+    <string name="previous_month">Previous Month</string>
+
+<!--    Days of the week for month view-->
+    <string name="sunday">Sun</string>
+    <string name="monday">Mon</string>
+    <string name="tuesday">Tue</string>
+    <string name="wednesday">Wed</string>
+    <string name="thursday">Thu</string>
+    <string name="friday">Fri</string>
+    <string name="saturday">Sat</string>
+
+<!--    for event stuff-->
+    <string name="cancel">Cancel</string>
+    <string name="confirm">Save</string>
+    <string name="previous_day">Previous Day</string>
+    <string name="add_event">Add Event</string>
+
+<!--    day overview-->
+    <string name="back">Back</string>
+    <string name="next">Next</string>
 </resources>
