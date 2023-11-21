@@ -10,7 +10,7 @@ import com.example.calendar.presentation.viewmodels.CalendarViewModel
 import com.example.calendar.presentation.viewmodels.EventViewModel
 import com.example.calendar.presentation.screen.CalendarGrid
 import com.example.calendar.presentation.screen.DailyOverview
-import com.example.calendar.presentation.screen.DailyViewModel
+import com.example.calendar.presentation.viewmodels.DailyViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.junit.Assert.assertEquals
 import org.junit.Before

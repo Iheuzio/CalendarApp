@@ -38,16 +38,9 @@ import com.example.calendar.data.NavRoutes
 import com.example.calendar.presentation.viewmodels.CalendarViewModel
 import com.example.calendar.presentation.viewmodels.EventViewModel
 import com.example.calendar.presentation.getStringResource
-
-class DailyViewModel : ViewModel() {
-
-    val eventsForSelectedDate = MutableLiveData<List<Event>>()
-
-    fun loadEventsForDate(date: Date) {
-    }
+import com.example.calendar.presentation.viewmodels.DailyViewModel
 
 
-}
 @Composable
 fun DailyOverviewScreen(
     dailyViewModel: DailyViewModel,

@@ -5,7 +5,7 @@ import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.navigation.testing.TestNavHostController
 import androidx.test.platform.app.InstrumentationRegistry
 import com.example.calendar.presentation.screen.CalendarView
-import com.example.calendar.presentation.screen.DailyViewModel
+import com.example.calendar.presentation.viewmodels.DailyViewModel
 import com.example.calendar.presentation.viewmodels.CalendarViewModel
 import com.example.calendar.presentation.viewmodels.EventViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi

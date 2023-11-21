@@ -35,6 +35,7 @@ import com.example.calendar.data.NavRoutes
 import com.example.calendar.presentation.viewmodels.CalendarViewModel
 import com.example.calendar.presentation.viewmodels.EventViewModel
 import com.example.calendar.presentation.getStringResource
+import com.example.calendar.presentation.viewmodels.DailyViewModel
 import java.util.*
 
 /**
