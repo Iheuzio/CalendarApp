@@ -32,13 +32,13 @@ fun ViewEventScreen(viewModel: EventViewModel, navController: NavController) {
             .fillMaxSize()
             .verticalScroll(rememberScrollState())
     ) {
-        viewModel.selectedEvent?.let { Text("Title: " + it.title) }
-        viewModel.selectedEvent?.let { Text("Date: " + it.date) }
-        viewModel.selectedEvent?.let { Text("Start time: " + it.startTime) }
-        viewModel.selectedEvent?.let { Text("End time: " + it.endTime) }
-        viewModel.selectedEvent?.let { Text("Description: " + it.description) }
-        viewModel.selectedEvent?.let { Text("Location: " + it.location) }
-        viewModel.selectedEvent?.let { Text("Course: " + it.course) }
+        viewModel.selectedEvent?.let { Text(LocalContext.current.getStringResource(R.string.title) + ": ${it.title}") }
+        viewModel.selectedEvent?.let { Text("Date: ${it.date}") }
+        viewModel.selectedEvent?.let { Text("Start time: ${it.startTime}") }
+        viewModel.selectedEvent?.let { Text("End time: ${it.endTime}") }
+        viewModel.selectedEvent?.let { Text("Description: ${it.description}") }
+        viewModel.selectedEvent?.let { Text("Location: ${it.location}") }
+        viewModel.selectedEvent?.let { Text("Course: ${it.course}") }
 
         Button(
             onClick = {
