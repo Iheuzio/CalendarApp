@@ -24,4 +24,7 @@ interface EventDao {
 
     @Query("SELECT * FROM event WHERE strftime('%m %Y', date) = :monthYear")
     fun findEventsByMonthAndYear(monthYear: String): List<Event>
+
+    @Query("SELECT * FROM event WHERE id = :id")
+    fun getById(id: Int): Event
 }
