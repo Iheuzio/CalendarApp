@@ -63,6 +63,8 @@ dependencies {
     implementation("androidx.compose.material3:material3")
     implementation ("androidx.navigation:navigation-compose:2.5.3")
     implementation("androidx.navigation:navigation-runtime-ktx:2.7.5")
+    implementation("androidx.room:room-common:2.6.0")
+    implementation("androidx.room:room-ktx:2.6.0")
 
     testImplementation("junit:junit:4.13.2")
     androidTestImplementation("androidx.navigation:navigation-testing:2.4.1")
