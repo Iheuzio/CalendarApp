@@ -1,7 +1,7 @@
 package com.example.calendar.data
 
 data class Event(
-    val id: Int = 0,
+    var id: Int = 0,
     val date: String = "",
     val startTime: String = "",
     val endTime: String = "",

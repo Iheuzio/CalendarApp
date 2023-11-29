@@ -1,55 +1,55 @@
 package com.example.calendar.presentation.viewmodels
 
-import android.icu.util.Calendar
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
-import com.example.calendar.data.Event
+import androidx.lifecycle.viewModelScope
+import com.example.calendar.data.database.AppDatabase
+import com.example.calendar.data.database.Event
+import kotlinx.coroutines.launch
 import java.util.Date
 
-class EventViewModel : ViewModel() {
+class EventViewModel(private val database: AppDatabase) : ViewModel() {
     var selectedEvent by mutableStateOf<Event?>(null)
     var events by mutableStateOf(mutableListOf<Event>())
-    var idCount by mutableIntStateOf(0)
 
-    //FOr when a new event is created
-    fun addToList(item: Event) {
+    init {
+        fetchEvents()
+    }
+
+    private fun fetchEvents() {
+        viewModelScope.launch {
+            events = database.eventDao().getAll().toMutableList()
+        }
+    }
+
+    fun addToList(item: com.example.calendar.data.Event, database: AppDatabase) {
         if (item.title.isNotEmpty() && item.title.isNotBlank()) {
-            if (!events.contains(item)) {
-                val updatedEventItems = events.toMutableList()
-                updatedEventItems.add(item)
-                events = updatedEventItems
+            viewModelScope.launch {
+                database.eventDao().insertAll(item)
+                events = database.eventDao().getAll().toMutableList()
             }
         }
     }
 
-    //For deleting an event
-    fun removeFromList(item: Event) {
-        val updatedEventItems = events.toMutableList()
-        updatedEventItems.remove(item)
-        events = updatedEventItems
-    }
-
-    fun modifyItem(item: Event, modifiedItem: Event) {
-        val updatedEventItems = events.toMutableList()
-        val index = events.indexOf(item)
-        if (index != -1) {
-            updatedEventItems[index] = modifiedItem
-            events = updatedEventItems
-        } else {
-            removeFromList(item)
-            addToList(modifiedItem)
+    fun modifyItem(item: Event, modifiedItem: com.example.calendar.data.Event, database: AppDatabase) {
+        viewModelScope.launch {
+            database.eventDao().update(modifiedItem)
+            events = database.eventDao().getAll().toMutableList()
         }
     }
 
-    fun getEventById(id: Int): Event? {
-        return events.find { it.id == id }
+    fun removeFromList(item: Event, database: AppDatabase) {
+        viewModelScope.launch {
+            database.eventDao().delete(item)
+            events = database.eventDao().getAll().toMutableList()
+        }
     }
 
-    fun incrementId() {
-        idCount++
+
+    fun getEventById(id: Int): Event? {
+        return events.find { it.id == id }
     }
 
     private fun getEventsByDate(date: String): List<Event> {
@@ -57,12 +57,7 @@ class EventViewModel : ViewModel() {
     }
 
     fun checkEventsExist(time: Date): Any {
-        val calendar = Calendar.getInstance()
-        calendar.time = time
-        val date = "${calendar.get(Calendar.MONTH) + 1}-${calendar.get(Calendar.DAY_OF_MONTH)}-${calendar.get(Calendar.YEAR)}"
-        val events = getEventsByDate(date)
-        // return true or false if event is found on that day
-        return events.isNotEmpty()
+        val dateString = "${time.month + 1}-${time.date}-${time.year}"
+        return getEventsByDate(dateString)
     }
-
 }

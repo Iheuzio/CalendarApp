@@ -27,6 +27,8 @@ import com.example.calendar.presentation.screen.DailyOverview
 import com.example.calendar.presentation.viewmodels.DailyViewModel
 import com.example.calendar.presentation.screen.MonthView
 import com.example.calendar.presentation.screen.ViewEventScreen
+import com.example.calendar.data.database.AppDatabase
+import androidx.room.Room
 import java.text.SimpleDateFormat
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
@@ -47,17 +49,14 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
-                    // remove this if wanting to test your event stuff, just uncomment 
-                    //CalendarView()
-                    //DailyOverviewScreen(null, null, null, null);
-                    //Greeting("Android")
-                    // remove this if wanting to test your event stuff, just uncomment
+                    // Create an instance of the AppDatabase
+                    val database = Room.databaseBuilder(
+                        applicationContext,
+                        AppDatabase::class.java, "database-name"
+                    ).build()
 
-                    //Greeting("Android")
-                // CreateEditEventScreen(inputDate = "01/08/2023", inputTime = "9:22")
-                    //CalendarView()
-                    //CreateEditEventScreen(inputDate = "01/08/2023", inputTime = "9:22")
-                    CalendarApp()
+                    // Pass the database instance to the CalendarApp function
+                    CalendarApp(eventviewModel = EventViewModel(database = database), dayviewModel = DailyViewModel(database = database), navController = rememberNavController(), database = database)
                 }
             }
         }
@@ -65,7 +64,7 @@ class MainActivity : ComponentActivity() {
 
     @RequiresApi(Build.VERSION_CODES.O)
     @Composable
-    fun CalendarApp(eventviewModel: EventViewModel = EventViewModel(), dayviewModel: DailyViewModel = DailyViewModel(), navController: NavHostController = rememberNavController()) {
+    fun CalendarApp(eventviewModel: EventViewModel, dayviewModel: DailyViewModel, navController: NavHostController = rememberNavController(), database: AppDatabase) {
 
         val currentDateTime = LocalDateTime.now()
         val dateFormatter = DateTimeFormatter.ofPattern("MM-dd-yyyy")
@@ -74,25 +73,26 @@ class MainActivity : ComponentActivity() {
        val calendarModel by viewModels<CalendarViewModel>()
         NavHost(navController = navController, startDestination = NavRoutes.CalendarView.route) {
             composable(NavRoutes.CalendarView.route) {
-                CalendarView(navController = navController, calendarModel = calendarModel, eventviewModel, dayviewModel)
+                CalendarView(navController = navController, calendarModel = calendarModel, eventviewModel, dayviewModel, database)
             }
             composable(NavRoutes.CreateEvent.route)
             {
-                val event = Event(eventviewModel.idCount, currentDate, "12:00", "12:00")
-                eventviewModel.incrementId()
+                val event = Event()
+                // increment id
+//                event.id = eventviewModel.events.size + 1
                 val format = SimpleDateFormat("MM-dd-yyyy", Locale.getDefault())
                 val date = format.format(calendarModel.selectedDate.value)
-                CreateEditEventScreen(eventviewModel, navController = navController, inputDate = date, event)
+                CreateEditEventScreen(eventviewModel, navController = navController, inputDate = date, inputEvent = event, database)
             }
             composable(NavRoutes.EditEvent.route) {
                 eventviewModel.selectedEvent?.let { event ->
                     CreateEditEventScreen(eventviewModel, navController = navController, inputDate = eventviewModel.selectedEvent!!.date,
-                        event
+                        inputEvent = event, database
                     )
                 }
             }
             composable(NavRoutes.EventView.route) {
-                ViewEventScreen(eventviewModel, navController = navController)
+                ViewEventScreen(eventviewModel, navController = navController, database)
             }
             composable(NavRoutes.DayView.route + "/{date}") { navBackStackEntry ->
                 // Retrieve the date from the route's arguments
@@ -105,12 +105,8 @@ class MainActivity : ComponentActivity() {
                 DailyOverview(navController, calendarModel,dayviewModel, eventviewModel)
             }
             composable(NavRoutes.MonthView.route) {
-                MonthView(navController = navController, calendarModel = calendarModel, eventviewModel)
+                MonthView(navController = navController, calendarModel = calendarModel, eventviewModel, database)
             }
         }
     }
 }
-
-
-
-

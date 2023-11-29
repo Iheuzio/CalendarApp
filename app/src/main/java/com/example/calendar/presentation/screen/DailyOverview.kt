@@ -41,6 +41,8 @@ import com.example.calendar.presentation.viewmodels.EventViewModel
 import com.example.calendar.presentation.getStringResource
 import com.example.calendar.presentation.viewmodels.DailyViewModel
 import androidx.compose.runtime.*
+import androidx.lifecycle.viewModelScope
+import kotlinx.coroutines.launch
 
 
 @Composable
@@ -53,7 +55,8 @@ fun DailyOverviewScreen(
     onAddEvent: () -> Unit,
     onChangeDate: (Date) -> Unit,
     onBack: () -> Unit,
-    onEditEvent: (Event) -> Unit
+    onEditEvent: (Event) -> Unit,
+    database: AppDatabase
 ) {
     //dailyViewModel.eventsForSelectedDate.observeAsState(listOf())
 
@@ -77,7 +80,7 @@ fun DailyOverviewScreen(
         }
 
         DailyHeader(selectedDate, onChangeDate)
-        DailyEventsList(selectedDate = selectedDate, events = events, onEventSelected, onEditEvent)
+        DailyEventsList(selectedDate = selectedDate, events = events, onEventSelected, onEditEvent, database, viewModel)
     }
 }
     @Composable
@@ -184,7 +187,7 @@ fun EventItem(event: Event, onEventSelected: (Event?) -> Unit, onEditEvent: (Eve
 }
 
 @Composable
-fun DailyEventsList(selectedDate: Date, events: List<Event>, onEventSelected: (Event?) -> Unit, onEditEvent: (Event) -> Unit) {
+fun DailyEventsList(selectedDate: Date, events: List<Event>, onEventSelected: (Event?) -> Unit, onEditEvent: (Event) -> Unit, database: AppDatabase, viewModel: EventViewModel) {
     val hoursOfDay = (0..23).toList()
     val dateFormat = remember { SimpleDateFormat("MM-dd-yyyy", Locale.getDefault()) }
     val timeFormatter = remember { SimpleDateFormat("HH:mm", Locale.getDefault()) }
@@ -201,7 +204,9 @@ fun DailyEventsList(selectedDate: Date, events: List<Event>, onEventSelected: (E
             val hourEndString = String.format(Locale.getDefault(), "%02d:00", hour + 1)
 
             // Check if this hour is within any evts
-            val eventsThisHour = eventsOnSelectedDate.filter { event ->
+            val eventsThisHour = viewModel.viewModelScope.launch {
+                database.eventDao().findEventsByDate(dateFormat.format(selectedDate))
+            }.filter { event ->
                 val eventStart = timeFormatter.parse(event.startTime)
                 val eventEnd = timeFormatter.parse(event.endTime)
                 val hourStart = timeFormatter.parse(hourStartString)
@@ -249,6 +254,10 @@ fun DailyEventsList(selectedDate: Date, events: List<Event>, onEventSelected: (E
             }
         }
     }
+}
+
+// Check if this hour is within any evts
+fun
 }
 
 @Composable

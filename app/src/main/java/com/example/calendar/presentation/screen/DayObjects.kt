@@ -17,6 +17,8 @@ import com.example.calendar.R
 import com.example.calendar.presentation.getStringResource
 import java.text.SimpleDateFormat
 import java.util.Calendar
+// import viewmodel scope
+import androidx.lifecycle.viewModelScope
 
 /**
  * This is the view for the month header. It displays the month and year.

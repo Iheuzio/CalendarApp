@@ -14,11 +14,14 @@ interface EventDao {
     fun findEventsByDate(date: String): List<Event>
 
     @Insert
-    fun insertAll(vararg events: Event)
+    fun insertAll(vararg events: com.example.calendar.data.Event)
 
     @Delete
     fun delete(event: Event)
 
     @Update
-    fun update(event: Event)
+    fun update(event: com.example.calendar.data.Event)
+
+    @Query("SELECT * FROM event WHERE strftime('%m %Y', date) = :monthYear")
+    fun findEventsByMonthAndYear(monthYear: String): List<Event>
 }

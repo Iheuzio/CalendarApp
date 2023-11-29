@@ -3,10 +3,13 @@ package com.example.calendar.presentation.viewmodels
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
-import com.example.calendar.data.Event
+import androidx.lifecycle.viewModelScope
+import com.example.calendar.data.database.AppDatabase
+import com.example.calendar.data.database.Event
+import kotlinx.coroutines.launch
 import java.util.*
 
-class CalendarViewModel : ViewModel() {
+class CalendarViewModel(private val database: AppDatabase) : ViewModel() {
 
     private val _selectedDate = mutableStateOf(Calendar.getInstance().time)
     val selectedDate: MutableState<Date> get() = _selectedDate
@@ -16,6 +19,16 @@ class CalendarViewModel : ViewModel() {
 
     private val _events = mutableStateOf(listOf<Event>())
     val events: MutableState<List<Event>> get() = _events
+
+    init {
+        fetchEvents()
+    }
+
+    private fun fetchEvents() {
+        viewModelScope.launch {
+            _events.value = database.eventDao().getAll()
+        }
+    }
 
     /**
      * Sets the selected date to the given date and toggles the visibility of the event creation dialog.
@@ -27,6 +40,14 @@ class CalendarViewModel : ViewModel() {
             _showDailyOverview.value = true
         }
         _selectedDate.value = newDate.time
+        fetchEventsForDate(newDate)
+    }
+
+    private fun fetchEventsForDate(date: Calendar) {
+        val dateString = "${date.get(Calendar.MONTH) + 1}-${date.get(Calendar.DAY_OF_MONTH)}-${date.get(Calendar.YEAR)}"
+        viewModelScope.launch {
+            _events.value = database.eventDao().findEventsByDate(dateString)
+        }
     }
 
     /**

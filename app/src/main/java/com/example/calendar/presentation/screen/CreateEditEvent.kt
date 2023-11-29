@@ -30,7 +30,10 @@ import com.example.calendar.ui.theme.CalendarTheme
 import androidx.compose.runtime.*
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
+import androidx.lifecycle.viewModelScope
 import com.example.calendar.R
+import com.example.calendar.data.database.AppDatabase
+import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -46,7 +49,8 @@ fun CreateEditEventScreen(
     viewModel: EventViewModel,
     navController: NavController,
     inputDate: String,
-    inputEvent: Event
+    inputEvent: Event,
+    database: AppDatabase
 ) {
     var date by remember { mutableStateOf(inputDate) }
     var startTime by remember { mutableStateOf(inputEvent.startTime) }
@@ -72,9 +76,7 @@ fun CreateEditEventScreen(
         CourseInput(course) { course = it }
 
         //Button for saving changes/creating event
-        SaveChangesButton(viewModel, navController, inputEvent,
-            date, startTime, endTime, title, description, location, course
-        )
+        SaveChangesButton(viewModel, navController, inputEvent, date, startTime, endTime, title, description, location, course, database)
 
         //To go back to day view or month view
         BackButton(navController)
@@ -252,7 +254,7 @@ fun CourseInput(course: String, onCourseChange: (String) -> Unit) {
 fun SaveChangesButton(
     viewModel: EventViewModel, navController: NavController, inputEvent: Event,
     date: String, startTime: String, endTime: String, title: String,
-    description: String, location: String, course: String
+    description: String, location: String, course: String, database: AppDatabase
 ) {
     val isSaveEnabled = (!(startTime == "12:00" && endTime == "12:00") && isValidEndTime(startTime, endTime))
 
@@ -261,17 +263,24 @@ fun SaveChangesButton(
             //Check if there is a selected event to modify event
             if (viewModel.selectedEvent != null) {
                 viewModel.modifyItem(
-                    viewModel.selectedEvent!!,
-                    Event(inputEvent.id, date, startTime, endTime, title, description, location, course)
+                    item=viewModel.selectedEvent!!,
+                    modifiedItem=Event(inputEvent.id, date, startTime, endTime, title, description, location, course),
+                    database=database
                 )
+                viewModel.viewModelScope.launch {
+                    database.eventDao().update(
+                        Event(inputEvent.id, date, startTime, endTime, title, description, location, course)
+                    )
+                }
             } else {
                 //Otherwise create an event
-                viewModel.addToList(
-                    Event(viewModel.idCount, date, startTime, endTime, title, description, location, course
-                    )
-                )
+                val newEvent = Event(inputEvent.id, date, startTime, endTime, title, description, location, course)
+                viewModel.addToList(newEvent, database)
+                viewModel.viewModelScope.launch {
+                    database.eventDao().insertAll(newEvent)
+                }
                 //Increment id for next event creation
-                viewModel.incrementId()
+                inputEvent.id++
             }
             //Navigate back to where the user was when pressing the create/edit event button
             navController.navigate(NavRoutes.CalendarView.route) {
@@ -286,7 +295,6 @@ fun SaveChangesButton(
         Text(stringResource(R.string.save_changes))
     }
 }
-
 /**
  * To navigate back to where the user was when pressing the create/edit event button
  * @param navController
@@ -321,12 +329,12 @@ fun isValidEndTime(startTime: String, endTime: String): Boolean {
 
 @Preview(showBackground = true)
 @Composable
-fun CreateEditEventPreview() {
+fun CreateEditEventPreview(database: AppDatabase) {
     CalendarTheme {
         val date = "01-08-2023"
         val event = Event(0, date, "12:43", "12:43")
         val navController = rememberNavController()
-        val viewModel = EventViewModel()
-        CreateEditEventScreen(viewModel, navController, date, event)
+        val viewModel = EventViewModel(database = database)
+        CreateEditEventScreen(viewModel, navController, date, event, database)
     }
 }
