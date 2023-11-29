@@ -18,6 +18,7 @@ import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.compose.rememberNavController
 import com.example.calendar.R
 import com.example.calendar.data.NavRoutes
+import com.example.calendar.data.database.AppDatabase
 import com.example.calendar.presentation.getStringResource
 import com.example.calendar.presentation.viewmodels.EventViewModel
 import com.example.calendar.ui.theme.CalendarTheme
@@ -50,7 +51,7 @@ viewModel.selectedEvent?.let { Text(LocalContext.current.getStringResource(R.str
                     viewModel.viewModelScope.launch {
                         database.eventDao().delete(event)
                     }
-                    viewModel.removeFromList(event)
+                    viewModel.removeFromList(event, database)
                 }
                 navController.navigate(NavRoutes.CalendarView.route) {
                     popUpTo(navController.graph.findStartDestination().id) {
@@ -78,12 +79,11 @@ viewModel.selectedEvent?.let { Text(LocalContext.current.getStringResource(R.str
 
 }
 
-@Preview(showBackground = true)
 @Composable
-fun ViewEventPreview() {
+fun ViewEventPreview(database: AppDatabase) {
     CalendarTheme {
         val navController = rememberNavController()
-        val viewModel = EventViewModel()
-        ViewEventScreen(viewModel, navController)
+        val viewModel = EventViewModel(database = database)
+        ViewEventScreen(viewModel, navController, database)
     }
 }

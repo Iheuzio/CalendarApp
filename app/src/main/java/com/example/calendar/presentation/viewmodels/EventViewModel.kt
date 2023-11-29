@@ -47,7 +47,6 @@ class EventViewModel(private val database: AppDatabase) : ViewModel() {
         }
     }
 
-
     fun getEventById(id: Int): Event? {
         return events.find { it.id == id }
     }

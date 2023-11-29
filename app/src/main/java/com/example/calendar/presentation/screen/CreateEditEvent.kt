@@ -19,7 +19,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.navigation.NavController
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.compose.rememberNavController
@@ -49,7 +48,7 @@ fun CreateEditEventScreen(
     viewModel: EventViewModel,
     navController: NavController,
     inputDate: String,
-    inputEvent: Event,
+    inputEvent: com.example.calendar.data.database.Event,
     database: AppDatabase
 ) {
     var date by remember { mutableStateOf(inputDate) }
@@ -252,7 +251,7 @@ fun CourseInput(course: String, onCourseChange: (String) -> Unit) {
  */
 @Composable
 fun SaveChangesButton(
-    viewModel: EventViewModel, navController: NavController, inputEvent: Event,
+    viewModel: EventViewModel, navController: NavController, inputEvent: com.example.calendar.data.database.Event,
     date: String, startTime: String, endTime: String, title: String,
     description: String, location: String, course: String, database: AppDatabase
 ) {
@@ -263,9 +262,9 @@ fun SaveChangesButton(
             //Check if there is a selected event to modify event
             if (viewModel.selectedEvent != null) {
                 viewModel.modifyItem(
-                    item=viewModel.selectedEvent!!,
-                    modifiedItem=Event(inputEvent.id, date, startTime, endTime, title, description, location, course),
-                    database=database
+                    item =viewModel.selectedEvent!!,
+                    modifiedItem =Event(inputEvent.id, date, startTime, endTime, title, description, location, course),
+                    database =database
                 )
                 viewModel.viewModelScope.launch {
                     database.eventDao().update(
@@ -327,7 +326,6 @@ fun isValidEndTime(startTime: String, endTime: String): Boolean {
     return startCalendar.before(endCalendar)
 }
 
-@Preview(showBackground = true)
 @Composable
 fun CreateEditEventPreview(database: AppDatabase) {
     CalendarTheme {
@@ -335,6 +333,7 @@ fun CreateEditEventPreview(database: AppDatabase) {
         val event = Event(0, date, "12:43", "12:43")
         val navController = rememberNavController()
         val viewModel = EventViewModel(database = database)
-        CreateEditEventScreen(viewModel, navController, date, event, database)
+        val newEvent = com.example.calendar.data.database.Event(0, date, "12:43", "12:43", "title", "description", "location", "course")
+        CreateEditEventScreen(viewModel, navController, date, newEvent, database)
     }
 }

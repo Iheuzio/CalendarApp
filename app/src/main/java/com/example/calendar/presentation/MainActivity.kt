@@ -52,7 +52,7 @@ class MainActivity : ComponentActivity() {
                     // Create an instance of the AppDatabase
                     val database = Room.databaseBuilder(
                         applicationContext,
-                        AppDatabase::class.java, "database-name"
+                        AppDatabase::class.java, "AppDatabase"
                     ).build()
 
                     // Pass the database instance to the CalendarApp function
@@ -77,9 +77,9 @@ class MainActivity : ComponentActivity() {
             }
             composable(NavRoutes.CreateEvent.route)
             {
-                val event = Event()
+                val event = database.eventDao().getById(eventviewModel.events.size + 1)
                 // increment id
-//                event.id = eventviewModel.events.size + 1
+                // event.id = eventviewModel.events.size + 1
                 val format = SimpleDateFormat("MM-dd-yyyy", Locale.getDefault())
                 val date = format.format(calendarModel.selectedDate.value)
                 CreateEditEventScreen(eventviewModel, navController = navController, inputDate = date, inputEvent = event, database)
@@ -102,7 +102,7 @@ class MainActivity : ComponentActivity() {
                 val format = SimpleDateFormat("dd-MM-yy", Locale.getDefault())
                 val selectedDate = format.parse(date)
 
-                DailyOverview(navController, calendarModel,dayviewModel, eventviewModel)
+                DailyOverview(navController, calendarModel,dayviewModel, eventviewModel, database)
             }
             composable(NavRoutes.MonthView.route) {
                 MonthView(navController = navController, calendarModel = calendarModel, eventviewModel, database)

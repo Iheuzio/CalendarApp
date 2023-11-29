@@ -30,8 +30,6 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.testTag
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
 import androidx.navigation.NavController
 import com.example.calendar.data.Event
 import com.example.calendar.R
@@ -42,6 +40,7 @@ import com.example.calendar.presentation.getStringResource
 import com.example.calendar.presentation.viewmodels.DailyViewModel
 import androidx.compose.runtime.*
 import androidx.lifecycle.viewModelScope
+import com.example.calendar.data.database.AppDatabase
 import kotlinx.coroutines.launch
 
 
@@ -50,12 +49,12 @@ fun DailyOverviewScreen(
     dailyViewModel: DailyViewModel,
     viewModel: EventViewModel,
     selectedDate: Date,
-    events: List<Event>,
-    onEventSelected: (Event?) -> Unit,
+    events: MutableList<com.example.calendar.data.database.Event>,
+    onEventSelected: (com.example.calendar.data.database.Event?) -> Unit,
     onAddEvent: () -> Unit,
     onChangeDate: (Date) -> Unit,
     onBack: () -> Unit,
-    onEditEvent: (Event) -> Unit,
+    onEditEvent: (com.example.calendar.data.database.Event) -> Unit,
     database: AppDatabase
 ) {
     //dailyViewModel.eventsForSelectedDate.observeAsState(listOf())
@@ -78,9 +77,11 @@ fun DailyOverviewScreen(
                 }
             )
         }
+        // convert event to List<com.example.calendar.data.Event>
+        var eventList = mutableListOf<Event>()
 
         DailyHeader(selectedDate, onChangeDate)
-        DailyEventsList(selectedDate = selectedDate, events = events, onEventSelected, onEditEvent, database, viewModel)
+        DailyEventsList(selectedDate = selectedDate, events = eventList, onEventSelected, onEditEvent, database, viewModel)
     }
 }
     @Composable
@@ -132,7 +133,7 @@ private fun getNextDay(selectedDate: Date): Date {
     return calendar.time
 }
 @Composable
-fun EventItem(event: Event, onEventSelected: (Event?) -> Unit, onEditEvent: (Event) -> Unit) {
+fun EventItem(event: Event, onEventSelected: (com.example.calendar.data.database.Event?) -> Unit, onEditEvent: (com.example.calendar.data.database.Event) -> Unit) {
     val timeFormatter = SimpleDateFormat("HH:mm", Locale.getDefault())
     val startTime = timeFormatter.parse(event.startTime)
     val endTime = timeFormatter.parse(event.endTime)
@@ -166,7 +167,17 @@ fun EventItem(event: Event, onEventSelected: (Event?) -> Unit, onEditEvent: (Eve
         ) {
             Button(
                 onClick = {
-                    onEventSelected(event)
+                    val newEvent = com.example.calendar.data.database.Event(
+                        id = event.id,
+                        date = event.date,
+                        startTime = event.startTime,
+                        endTime = event.endTime,
+                        title = event.title,
+                        description = event.description,
+                        location = event.location,
+                        course = event.course
+                    )
+                    onEventSelected(newEvent)
                 },
                 modifier = Modifier
                     .size(100.dp, 40.dp)
@@ -175,7 +186,18 @@ fun EventItem(event: Event, onEventSelected: (Event?) -> Unit, onEditEvent: (Eve
             }
             Button(
                 onClick = {
-                    onEditEvent(event)
+                    // convert event to com.example.calendar.data.database.Event
+                    val newEvent = com.example.calendar.data.database.Event(
+                        id = event.id,
+                        date = event.date,
+                        startTime = event.startTime,
+                        endTime = event.endTime,
+                        title = event.title,
+                        description = event.description,
+                        location = event.location,
+                        course = event.course
+                    )
+                    onEditEvent(newEvent)
                 },
                 modifier = Modifier
                     .size(100.dp, 40.dp)
@@ -187,7 +209,7 @@ fun EventItem(event: Event, onEventSelected: (Event?) -> Unit, onEditEvent: (Eve
 }
 
 @Composable
-fun DailyEventsList(selectedDate: Date, events: List<Event>, onEventSelected: (Event?) -> Unit, onEditEvent: (Event) -> Unit, database: AppDatabase, viewModel: EventViewModel) {
+fun DailyEventsList(selectedDate: Date, events: List<Event>, onEventSelected: (com.example.calendar.data.database.Event?) -> Unit, onEditEvent: (com.example.calendar.data.database.Event) -> Unit, database: AppDatabase, viewModel: EventViewModel) {
     val hoursOfDay = (0..23).toList()
     val dateFormat = remember { SimpleDateFormat("MM-dd-yyyy", Locale.getDefault()) }
     val timeFormatter = remember { SimpleDateFormat("HH:mm", Locale.getDefault()) }
@@ -204,9 +226,20 @@ fun DailyEventsList(selectedDate: Date, events: List<Event>, onEventSelected: (E
             val hourEndString = String.format(Locale.getDefault(), "%02d:00", hour + 1)
 
             // Check if this hour is within any evts
-            val eventsThisHour = viewModel.viewModelScope.launch {
-                database.eventDao().findEventsByDate(dateFormat.format(selectedDate))
-            }.filter { event ->
+            val eventsThisHour = remember { mutableStateListOf<Event>() }
+            LaunchedEffect(key1 = selectedDate) {
+                eventsThisHour.addAll(
+                    sortedEvents.filter { event ->
+                        val eventStart = timeFormatter.parse(event.startTime)
+                        val eventEnd = timeFormatter.parse(event.endTime)
+                        val hourStart = timeFormatter.parse(hourStartString)
+                        val hourEnd = timeFormatter.parse(hourEndString)
+
+                        // Event covers this hour if it starts before hourEnd and ends after hourStart
+                        eventStart.before(hourEnd) && eventEnd.after(hourStart)
+                })
+            }
+            val filteredEventsThisHour = eventsThisHour.filter { event ->
                 val eventStart = timeFormatter.parse(event.startTime)
                 val eventEnd = timeFormatter.parse(event.endTime)
                 val hourStart = timeFormatter.parse(hourStartString)
@@ -256,12 +289,9 @@ fun DailyEventsList(selectedDate: Date, events: List<Event>, onEventSelected: (E
     }
 }
 
-// Check if this hour is within any evts
-fun
-}
 
 @Composable
-fun DailyOverview(navController: NavController, calendarModel: CalendarViewModel, dailyViewModel: DailyViewModel, eventModel: EventViewModel) {
+fun DailyOverview(navController: NavController, calendarModel: CalendarViewModel, dailyViewModel: DailyViewModel, eventModel: EventViewModel, database: AppDatabase) {
     val selectedDate = calendarModel.selectedDate.value
     val events = eventModel.events
 
@@ -300,8 +330,9 @@ fun DailyOverview(navController: NavController, calendarModel: CalendarViewModel
         onEditEvent = { event ->
             eventModel.selectedEvent = event
             navController.navigate(NavRoutes.EditEvent.route)
-        }
 
+        },
+        database = database,
     )
 }
 
