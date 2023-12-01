@@ -50,26 +50,31 @@ class EventViewModel(private val database: AppDatabase) : ViewModel() {
 
     fun modifyItem(item: Event, modifiedItem: com.example.calendar.data.Event, database: AppDatabase) {
         viewModelScope.launch {
-            database.eventDao().update(
-                Event(
-                    id = item.id,
-                    title = modifiedItem.title,
-                    date = modifiedItem.date,
-                    startTime = modifiedItem.startTime,
-                    endTime = modifiedItem.endTime,
-                    description = modifiedItem.description,
-                    location = modifiedItem.location,
-                    course = modifiedItem.course
+            withContext(Dispatchers.IO)
+            {
+                database.eventDao().update(
+                    Event(
+                        id = item.id,
+                        title = modifiedItem.title,
+                        date = modifiedItem.date,
+                        startTime = modifiedItem.startTime,
+                        endTime = modifiedItem.endTime,
+                        description = modifiedItem.description,
+                        location = modifiedItem.location,
+                        course = modifiedItem.course
+                    )
                 )
-            )
-            events = database.eventDao().getAll().toMutableList()
+                events = database.eventDao().getAll().toMutableList()
+            }
         }
     }
 
     fun removeFromList(item: Event, database: AppDatabase) {
         viewModelScope.launch {
-            database.eventDao().delete(item)
-            events = database.eventDao().getAll().toMutableList()
+            withContext(Dispatchers.IO) {
+                database.eventDao().delete(item)
+                events = database.eventDao().getAll().toMutableList()
+            }
         }
     }
 

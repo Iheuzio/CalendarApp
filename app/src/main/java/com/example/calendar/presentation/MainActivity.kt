@@ -13,6 +13,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import com.example.calendar.ui.theme.CalendarTheme
 import androidx.annotation.StringRes
+import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -29,10 +30,14 @@ import com.example.calendar.presentation.screen.MonthView
 import com.example.calendar.presentation.screen.ViewEventScreen
 import com.example.calendar.data.database.AppDatabase
 import androidx.room.Room
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import java.text.SimpleDateFormat
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 import java.util.Locale
+
 
 
 fun Context.getStringResource(@StringRes resId: Int): String {
@@ -71,14 +76,21 @@ class MainActivity : ComponentActivity() {
             composable(NavRoutes.CalendarView.route) {
                 CalendarView(navController = navController, calendarModel = calendarModel, eventviewModel, dayviewModel, database)
             }
-            composable(NavRoutes.CreateEvent.route)
-            {
-                val event = database.eventDao().getById(eventviewModel.events.size + 1)
-                // increment id
-                // event.id = eventviewModel.events.size + 1
-                val format = SimpleDateFormat("MM-dd-yyyy", Locale.getDefault())
-                val date = format.format(calendarModel.selectedDate.value)
-                CreateEditEventScreen(eventviewModel, navController = navController, inputDate = date, inputEvent = event, database)
+            composable(NavRoutes.CreateEvent.route) {
+                var event by remember { mutableStateOf<com.example.calendar.data.database.Event?>(null) }
+                LaunchedEffect(key1 = Unit) {
+                    // convert eventViewModel.selectedEvent to event
+                    event = withContext(Dispatchers.IO) {
+                        eventviewModel.selectedEvent?.let {
+                            database.eventDao().getById(it.id)
+                        }
+                    }
+                }
+                event?.let {
+                    val format = SimpleDateFormat("MM-dd-yyyy", Locale.getDefault())
+                    val date = format.format(calendarModel.selectedDate.value)
+                    CreateEditEventScreen(eventviewModel, navController = navController, inputDate = date, inputEvent = event!!, database)
+                }
             }
             composable(NavRoutes.EditEvent.route) {
                 eventviewModel.selectedEvent?.let { event ->
