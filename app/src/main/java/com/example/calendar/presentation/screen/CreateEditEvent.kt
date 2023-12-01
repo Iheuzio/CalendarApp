@@ -34,6 +34,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.lifecycle.viewModelScope
 import com.example.calendar.R
 import com.example.calendar.data.database.AppDatabase
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
 import java.util.*
@@ -281,13 +282,22 @@ fun SaveChangesButton(
             //Check if there is a selected event to modify event
             if (inputEvent != null) {
                 if (viewModel.selectedEvent != null) {
-                        viewModel.modifyItem(
-                            item =viewModel.selectedEvent!!,
-                            modifiedItem =Event(inputEvent.id, date, startTime, endTime, title, description, location, course),
-                            database =database
-                        )
+                    viewModel.modifyItem(
+                        item = viewModel.selectedEvent!!,
+                        modifiedItem = Event(
+                            inputEvent.id,
+                            date,
+                            startTime,
+                            endTime,
+                            title,
+                            description,
+                            location,
+                            course
+                        ),
+                        database = database
+                    )
                     // update event
-                    viewModel.viewModelScope.launch {
+                    /*viewModel.viewModelScope.launch {
                         database.eventDao().update(
                             com.example.calendar.data.database.Event(
                                 inputEvent.id,
@@ -300,12 +310,28 @@ fun SaveChangesButton(
                                 course
                             )
                         )
-                    }
+                    }*/
                 } else {
-                    //Otherwise create an event
-                    val newEvent = Event(inputEvent.id, date, startTime, endTime, title, description, location, course)
-                    viewModel.addToList(newEvent, database)
-                    // convert newEvent to database.Event and insert into database
+
+                }
+            } else {
+                //Otherwise create an event
+                val newEvent = Event(
+                    0,
+                    date,
+                    startTime,
+                    endTime,
+                    title,
+                    description,
+                    location,
+                    course
+                )
+                // Use viewModelScope to launch a coroutine on the viewModel's scope
+                viewModel.viewModelScope.launch(Dispatchers.IO) {
+                    // Inside the coroutine, perform the database operations
+                    //viewModel.addToList(newEvent, database)
+
+                    // Convert newEvent to database.Event and insert into the database
                     newEvent.let {
                         database.eventDao().insertAll(
                             com.example.calendar.data.database.Event(
@@ -320,9 +346,9 @@ fun SaveChangesButton(
                             )
                         )
                     }
-                    //Increment id for next event creation
-                    inputEvent.id++
                 }
+                //Increment id for next event creation
+                //inputEvent.id++
             }
             //Navigate back to where the user was when pressing the create/edit event button
             navController.navigate(NavRoutes.CalendarView.route) {
