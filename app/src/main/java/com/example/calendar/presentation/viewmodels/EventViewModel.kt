@@ -22,9 +22,10 @@ class EventViewModel(private val database: AppDatabase) : ViewModel() {
 
     private fun fetchEvents() {
         viewModelScope.launch {
-            withContext(Dispatchers.IO) {
-                events = database.eventDao().getAll().toMutableList()
+            val eventsList = withContext(Dispatchers.IO) {
+                database.eventDao().getAll().toMutableList()
             }
+            events = eventsList
         }
     }
 

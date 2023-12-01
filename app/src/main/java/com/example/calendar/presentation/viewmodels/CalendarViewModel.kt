@@ -6,7 +6,9 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.calendar.data.database.AppDatabase
 import com.example.calendar.data.database.Event
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import java.util.*
 
 class CalendarViewModel(private val database: AppDatabase) : ViewModel() {
@@ -26,7 +28,10 @@ class CalendarViewModel(private val database: AppDatabase) : ViewModel() {
 
     private fun fetchEvents() {
         viewModelScope.launch {
-            _events.value = database.eventDao().getAll()
+            val eventsList = withContext(Dispatchers.IO) {
+                database.eventDao().getAll()
+            }
+            _events.value = eventsList
         }
     }
 
@@ -46,7 +51,9 @@ class CalendarViewModel(private val database: AppDatabase) : ViewModel() {
     private fun fetchEventsForDate(date: Calendar) {
         val dateString = "${date.get(Calendar.MONTH) + 1}-${date.get(Calendar.DAY_OF_MONTH)}-${date.get(Calendar.YEAR)}"
         viewModelScope.launch {
-            _events.value = database.eventDao().findEventsByDate(dateString)
+            withContext(Dispatchers.IO) {
+                events.value = database.eventDao().findEventsByDate(dateString)
+            }
         }
     }
 

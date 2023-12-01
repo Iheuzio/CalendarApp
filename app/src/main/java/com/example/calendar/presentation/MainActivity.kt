@@ -53,7 +53,7 @@ class MainActivity : ComponentActivity() {
                     val database = AppDatabase.getInstance(this)
 
                     // Pass the database instance to the CalendarApp function
-                    CalendarApp(eventviewModel = EventViewModel(database = database), dayviewModel = DailyViewModel(database = database), navController = rememberNavController(), database = database)
+                    CalendarApp(eventviewModel = EventViewModel(database = database), dayviewModel = DailyViewModel(database = database), navController = rememberNavController(),calendarModel = CalendarViewModel(database), database = database)
                 }
             }
         }
@@ -61,13 +61,12 @@ class MainActivity : ComponentActivity() {
 
     @RequiresApi(Build.VERSION_CODES.O)
     @Composable
-    fun CalendarApp(eventviewModel: EventViewModel, dayviewModel: DailyViewModel, navController: NavHostController = rememberNavController(), database: AppDatabase) {
+    fun CalendarApp(eventviewModel: EventViewModel, dayviewModel: DailyViewModel, navController: NavHostController = rememberNavController(),calendarModel: CalendarViewModel, database: AppDatabase) {
 
         val currentDateTime = LocalDateTime.now()
         val dateFormatter = DateTimeFormatter.ofPattern("MM-dd-yyyy")
         val currentDate = currentDateTime.format(dateFormatter)
 
-       val calendarModel by viewModels<CalendarViewModel>()
         NavHost(navController = navController, startDestination = NavRoutes.CalendarView.route) {
             composable(NavRoutes.CalendarView.route) {
                 CalendarView(navController = navController, calendarModel = calendarModel, eventviewModel, dayviewModel, database)
