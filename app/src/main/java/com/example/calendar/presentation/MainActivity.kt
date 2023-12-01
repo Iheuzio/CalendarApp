@@ -71,6 +71,41 @@ class MainActivity : ComponentActivity() {
         val currentDateTime = LocalDateTime.now()
         val dateFormatter = DateTimeFormatter.ofPattern("MM-dd-yyyy")
         val currentDate = currentDateTime.format(dateFormatter)
+        // populate the database with some events
+
+val event1 = Event(
+            title = "CS 407",
+            date = "12-01-2023",
+            startTime = "12:00",
+            endTime = "13:00",
+            description = "Software Engineering",
+            location = "Online",
+            course = "CS 407"
+        )
+        val event2 = Event(
+            title = "CS 407",
+            date = "12-01-2023",
+            startTime = "12:00",
+            endTime = "13:00",
+            description = "Software Engineering",
+            location = "Online",
+            course = "CS 407"
+        )
+        val event3 = Event(
+            title = "CS 407",
+            date = "12-01-2023",
+            startTime = "12:00",
+            endTime = "13:00",
+            description = "Software Engineering",
+            location = "Online",
+            course = "CS 407"
+        )
+
+        // add them to the database
+        eventviewModel.addToList(event1, database)
+        eventviewModel.addToList(event2, database)
+        eventviewModel.addToList(event3, database)
+
 
         NavHost(navController = navController, startDestination = NavRoutes.CalendarView.route) {
             composable(NavRoutes.CalendarView.route) {

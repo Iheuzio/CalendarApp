@@ -31,7 +31,7 @@ class EventViewModel(private val database: AppDatabase) : ViewModel() {
 
     fun addToList(item: com.example.calendar.data.Event, database: AppDatabase) {
         if (item.title.isNotEmpty() && item.title.isNotBlank()) {
-            viewModelScope.launch {
+            viewModelScope.launch(Dispatchers.IO) {
                 database.eventDao().insertAll(
                     Event(
                         title = item.title,
@@ -43,7 +43,10 @@ class EventViewModel(private val database: AppDatabase) : ViewModel() {
                         course = item.course
                     )
                 )
-                events = database.eventDao().getAll().toMutableList()
+                val updatedEvents = database.eventDao().getAll().toMutableList()
+                withContext(Dispatchers.Main) {
+                    events = updatedEvents
+                }
             }
         }
     }
