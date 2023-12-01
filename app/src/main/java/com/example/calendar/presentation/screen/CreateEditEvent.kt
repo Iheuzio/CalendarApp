@@ -2,6 +2,7 @@ package com.example.calendar.presentation.screen
 
 import android.app.DatePickerDialog
 import android.app.TimePickerDialog
+import android.util.Log
 import android.widget.DatePicker
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -29,13 +30,13 @@ import com.example.calendar.ui.theme.CalendarTheme
 import androidx.compose.runtime.*
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.lifecycle.viewModelScope
 import com.example.calendar.R
 import com.example.calendar.data.database.AppDatabase
 import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
 import java.util.*
-
 /**
  * Screen to create or edit an event depending on if an event is passed
  * @param viewModel EventViewModel
@@ -48,16 +49,17 @@ fun CreateEditEventScreen(
     viewModel: EventViewModel,
     navController: NavController,
     inputDate: String,
-    inputEvent: com.example.calendar.data.database.Event,
+    inputEvent: com.example.calendar.data.database.Event?,
     database: AppDatabase
 ) {
+    Log.d("Navigation", "Inside CreateEditEventScreen")
     var date by remember { mutableStateOf(inputDate) }
-    var startTime by remember { mutableStateOf(inputEvent.startTime) }
-    var endTime by remember { mutableStateOf(inputEvent.endTime) }
-    var title by remember { mutableStateOf(inputEvent.title) }
-    var description by remember { mutableStateOf(inputEvent.description) }
-    var location by remember { mutableStateOf(inputEvent.location) }
-    var course by remember { mutableStateOf(inputEvent.course) }
+    var startTime by remember { mutableStateOf(inputEvent?.startTime ?: "12:00") }
+    var endTime by remember { mutableStateOf(inputEvent?.endTime ?: "12:00") }
+    var title by remember { mutableStateOf(inputEvent?.title ?: "") }
+    var description by remember { mutableStateOf(inputEvent?.description ?: "") }
+    var location by remember { mutableStateOf(inputEvent?.location ?: "") }
+    var course by remember { mutableStateOf(inputEvent?.course ?: "") }
 
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
@@ -68,14 +70,31 @@ fun CreateEditEventScreen(
         //ALl fields for creating/editing events
         TitleInput(title) { title = it }
         DateInput(date) { date = it }
-        StartTimePicker(inputEvent.startTime, { startTime = it }, { endTime = it })
-        EndTimePicker(inputEvent.endTime, startTime) { endTime = it }
+        if (inputEvent != null) {
+            StartTimePicker(inputEvent.startTime, { startTime = it }, { endTime = it })
+            EndTimePicker(inputEvent.endTime, startTime) { endTime = it }
+        } else {
+            StartTimePicker("12:00", { startTime = it }, { endTime = it })
+            EndTimePicker("12:00", startTime) { endTime = it }
+        }
         DescriptionInput(description) { description = it }
         LocationInput(location) { location = it }
         CourseInput(course) { course = it }
 
         //Button for saving changes/creating event
-        SaveChangesButton(viewModel, navController, inputEvent, date, startTime, endTime, title, description, location, course, database)
+        SaveChangesButton(
+            viewModel,
+            navController,
+            inputEvent,
+            date,
+            startTime,
+            endTime,
+            title,
+            description,
+            location,
+            course,
+            database
+        )
 
         //To go back to day view or month view
         BackButton(navController)
@@ -251,7 +270,7 @@ fun CourseInput(course: String, onCourseChange: (String) -> Unit) {
  */
 @Composable
 fun SaveChangesButton(
-    viewModel: EventViewModel, navController: NavController, inputEvent: com.example.calendar.data.database.Event,
+    viewModel: EventViewModel, navController: NavController, inputEvent: com.example.calendar.data.database.Event?,
     date: String, startTime: String, endTime: String, title: String,
     description: String, location: String, course: String, database: AppDatabase
 ) {
@@ -260,48 +279,50 @@ fun SaveChangesButton(
     Button(
         onClick = {
             //Check if there is a selected event to modify event
-            if (viewModel.selectedEvent != null) {
-                viewModel.modifyItem(
-                    item =viewModel.selectedEvent!!,
-                    modifiedItem =Event(inputEvent.id, date, startTime, endTime, title, description, location, course),
-                    database =database
-                )
-                // update event
-                viewModel.viewModelScope.launch {
-                    database.eventDao().update(
-                        com.example.calendar.data.database.Event(
-                            inputEvent.id,
-                            date,
-                            startTime,
-                            endTime,
-                            title,
-                            description,
-                            location,
-                            course
+            if (inputEvent != null) {
+                if (viewModel.selectedEvent != null) {
+                        viewModel.modifyItem(
+                            item =viewModel.selectedEvent!!,
+                            modifiedItem =Event(inputEvent.id, date, startTime, endTime, title, description, location, course),
+                            database =database
                         )
-                    )
-                }
-            } else {
-                //Otherwise create an event
-                val newEvent = Event(inputEvent.id, date, startTime, endTime, title, description, location, course)
-                viewModel.addToList(newEvent, database)
-                // convert newEvent to database.Event and insert into database
-                newEvent.let {
-                    database.eventDao().insertAll(
-                        com.example.calendar.data.database.Event(
-                            it.id,
-                            it.date,
-                            it.startTime,
-                            it.endTime,
-                            it.title,
-                            it.description,
-                            it.location,
-                            it.course
+                    // update event
+                    viewModel.viewModelScope.launch {
+                        database.eventDao().update(
+                            com.example.calendar.data.database.Event(
+                                inputEvent.id,
+                                date,
+                                startTime,
+                                endTime,
+                                title,
+                                description,
+                                location,
+                                course
+                            )
                         )
-                    )
+                    }
+                } else {
+                    //Otherwise create an event
+                    val newEvent = Event(inputEvent.id, date, startTime, endTime, title, description, location, course)
+                    viewModel.addToList(newEvent, database)
+                    // convert newEvent to database.Event and insert into database
+                    newEvent.let {
+                        database.eventDao().insertAll(
+                            com.example.calendar.data.database.Event(
+                                it.id,
+                                it.date,
+                                it.startTime,
+                                it.endTime,
+                                it.title,
+                                it.description,
+                                it.location,
+                                it.course
+                            )
+                        )
+                    }
+                    //Increment id for next event creation
+                    inputEvent.id++
                 }
-                //Increment id for next event creation
-                inputEvent.id++
             }
             //Navigate back to where the user was when pressing the create/edit event button
             navController.navigate(NavRoutes.CalendarView.route) {
@@ -348,11 +369,13 @@ fun isValidEndTime(startTime: String, endTime: String): Boolean {
     return startCalendar.before(endCalendar)
 }
 
+
 @Composable
+//@Preview
 fun CreateEditEventPreview(database: AppDatabase) {
     CalendarTheme {
         val date = "01-08-2023"
-        val event = Event(0, date, "12:43", "12:43")
+        //val event = Event(0, date, "12:43", "12:43")
         val navController = rememberNavController()
         val viewModel = EventViewModel(database = database)
         val newEvent = com.example.calendar.data.database.Event(0, date, "12:43", "12:43", "title", "description", "location", "course")

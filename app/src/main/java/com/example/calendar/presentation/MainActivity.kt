@@ -6,7 +6,6 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.annotation.RequiresApi
-import androidx.activity.viewModels
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -17,7 +16,6 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import com.example.calendar.data.Event
 import com.example.calendar.data.NavRoutes
 import com.example.calendar.presentation.viewmodels.CalendarViewModel
 import com.example.calendar.presentation.viewmodels.EventViewModel
@@ -28,11 +26,21 @@ import com.example.calendar.presentation.viewmodels.DailyViewModel
 import com.example.calendar.presentation.screen.MonthView
 import com.example.calendar.presentation.screen.ViewEventScreen
 import com.example.calendar.data.database.AppDatabase
-import androidx.room.Room
+import kotlinx.coroutines.withContext
 import java.text.SimpleDateFormat
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 import java.util.Locale
+
+
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import com.example.calendar.data.database.Event
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.withContext
 
 
 fun Context.getStringResource(@StringRes resId: Int): String {
@@ -73,13 +81,11 @@ class MainActivity : ComponentActivity() {
             }
             composable(NavRoutes.CreateEvent.route)
             {
-                val event = database.eventDao().getById(eventviewModel.events.size + 1)
-                // increment id
-                // event.id = eventviewModel.events.size + 1
                 val format = SimpleDateFormat("MM-dd-yyyy", Locale.getDefault())
                 val date = format.format(calendarModel.selectedDate.value)
-                CreateEditEventScreen(eventviewModel, navController = navController, inputDate = date, inputEvent = event, database)
+                CreateEditEventScreen(eventviewModel, navController = navController, inputDate = date, inputEvent = null, database)
             }
+
             composable(NavRoutes.EditEvent.route) {
                 eventviewModel.selectedEvent?.let { event ->
                     CreateEditEventScreen(eventviewModel, navController = navController, inputDate = eventviewModel.selectedEvent!!.date,
