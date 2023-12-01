@@ -266,17 +266,39 @@ fun SaveChangesButton(
                     modifiedItem =Event(inputEvent.id, date, startTime, endTime, title, description, location, course),
                     database =database
                 )
+                // update event
                 viewModel.viewModelScope.launch {
                     database.eventDao().update(
-                        Event(inputEvent.id, date, startTime, endTime, title, description, location, course)
+                        com.example.calendar.data.database.Event(
+                            inputEvent.id,
+                            date,
+                            startTime,
+                            endTime,
+                            title,
+                            description,
+                            location,
+                            course
+                        )
                     )
                 }
             } else {
                 //Otherwise create an event
                 val newEvent = Event(inputEvent.id, date, startTime, endTime, title, description, location, course)
                 viewModel.addToList(newEvent, database)
-                viewModel.viewModelScope.launch {
-                    database.eventDao().insertAll(newEvent)
+                // convert newEvent to database.Event and insert into database
+                newEvent.let {
+                    database.eventDao().insertAll(
+                        com.example.calendar.data.database.Event(
+                            it.id,
+                            it.date,
+                            it.startTime,
+                            it.endTime,
+                            it.title,
+                            it.description,
+                            it.location,
+                            it.course
+                        )
+                    )
                 }
                 //Increment id for next event creation
                 inputEvent.id++

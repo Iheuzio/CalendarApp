@@ -27,7 +27,17 @@ class EventViewModel(private val database: AppDatabase) : ViewModel() {
     fun addToList(item: com.example.calendar.data.Event, database: AppDatabase) {
         if (item.title.isNotEmpty() && item.title.isNotBlank()) {
             viewModelScope.launch {
-                database.eventDao().insertAll(item)
+                database.eventDao().insertAll(
+                    Event(
+                        title = item.title,
+                        date = item.date,
+                        startTime = item.startTime,
+                        endTime = item.endTime,
+                        description = item.description,
+                        location = item.location,
+                        course = item.course
+                    )
+                )
                 events = database.eventDao().getAll().toMutableList()
             }
         }
@@ -35,7 +45,18 @@ class EventViewModel(private val database: AppDatabase) : ViewModel() {
 
     fun modifyItem(item: Event, modifiedItem: com.example.calendar.data.Event, database: AppDatabase) {
         viewModelScope.launch {
-            database.eventDao().update(modifiedItem)
+            database.eventDao().update(
+                Event(
+                    id = item.id,
+                    title = modifiedItem.title,
+                    date = modifiedItem.date,
+                    startTime = modifiedItem.startTime,
+                    endTime = modifiedItem.endTime,
+                    description = modifiedItem.description,
+                    location = modifiedItem.location,
+                    course = modifiedItem.course
+                )
+            )
             events = database.eventDao().getAll().toMutableList()
         }
     }
