@@ -50,10 +50,7 @@ class MainActivity : ComponentActivity() {
                     color = MaterialTheme.colorScheme.background
                 ) {
                     // Create an instance of the AppDatabase
-                    val database = Room.databaseBuilder(
-                        applicationContext,
-                        AppDatabase::class.java, "AppDatabase"
-                    ).build()
+                    val database = AppDatabase.getInstance(this)
 
                     // Pass the database instance to the CalendarApp function
                     CalendarApp(eventviewModel = EventViewModel(database = database), dayviewModel = DailyViewModel(database = database), navController = rememberNavController(), database = database)
