@@ -7,7 +7,9 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.calendar.data.database.AppDatabase
 import com.example.calendar.data.database.Event
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import java.util.Date
 
 class EventViewModel(private val database: AppDatabase) : ViewModel() {
@@ -20,7 +22,9 @@ class EventViewModel(private val database: AppDatabase) : ViewModel() {
 
     private fun fetchEvents() {
         viewModelScope.launch {
-            events = database.eventDao().getAll().toMutableList()
+            withContext(Dispatchers.IO) {
+                events = database.eventDao().getAll().toMutableList()
+            }
         }
     }
 
