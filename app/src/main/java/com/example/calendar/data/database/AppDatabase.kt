@@ -11,6 +11,12 @@ abstract class AppDatabase : RoomDatabase() {
 
     companion object {
         private var INSTANCE: AppDatabase? = null
+
+        /**
+         * Singleton pattern to ensure only one instance of the database is created
+         * @param context Context of the application
+         * @return AppDatabase
+         */
         fun getInstance(context: Context): AppDatabase {
             if (INSTANCE == null) {
                 INSTANCE = Room.databaseBuilder(

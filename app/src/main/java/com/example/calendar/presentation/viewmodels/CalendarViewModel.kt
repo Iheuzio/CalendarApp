@@ -20,12 +20,26 @@ class CalendarViewModel(private val database: AppDatabase) : ViewModel() {
     val showDailyOverview: MutableState<Boolean> get() = _showDailyOverview
 
     private val _events = mutableStateOf(listOf<Event>())
-    val events: MutableState<List<Event>> get() = _events
+    private val events: MutableState<List<Event>> get() = _events
 
     init {
         fetchEvents()
     }
 
+    /**
+     * Fetches all events from the database and sets the events list to the fetched events.
+     * @see Event
+     * @see fetchEventsForDate
+     * @see onDateChange
+     * @see selectedDate
+     * @see events
+     * @see showDailyOverview
+     * @see fetchEventsForDate
+     * @see onDateChange
+     * @see selectedDate
+     * @see events
+     * @see showDailyOverview
+     */
     private fun fetchEvents() {
         viewModelScope.launch {
             val eventsList = withContext(Dispatchers.IO) {
@@ -48,6 +62,19 @@ class CalendarViewModel(private val database: AppDatabase) : ViewModel() {
         fetchEventsForDate(newDate)
     }
 
+    /**
+     * Fetches the events for the given date.
+     * @param date The date for which the events should be fetched.
+     * @return A list of events for the given date.
+     * @see Event
+     * @see Calendar
+     * @see Date
+     * @see fetchEvents
+     * @see onDateChange
+     * @see selectedDate
+     * @see events
+     * @see showDailyOverview
+     */
     private fun fetchEventsForDate(date: Calendar) {
         val dateString = "${date.get(Calendar.MONTH) + 1}-${date.get(Calendar.DAY_OF_MONTH)}-${date.get(Calendar.YEAR)}"
         viewModelScope.launch {
