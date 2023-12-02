@@ -50,7 +50,7 @@ fun CreateEditEventScreen(
     viewModel: EventViewModel,
     navController: NavController,
     inputDate: String,
-    inputEvent: com.example.calendar.data.database.Event,
+    inputEvent: Event,
     database: AppDatabase
 ) {
     var date by remember { mutableStateOf(inputDate) }
@@ -275,7 +275,7 @@ fun SaveChangesButton(
                 // update event
                 viewModel.viewModelScope.launch {
                     database.eventDao().update(
-                        com.example.calendar.data.database.Event(
+                        Event(
                             inputEvent.id,
                             date,
                             startTime,
@@ -295,7 +295,7 @@ fun SaveChangesButton(
                 viewModel.viewModelScope.launch {
                     withContext(Dispatchers.IO) {
                         database.eventDao().insertAll(
-                            com.example.calendar.data.database.Event(
+                            Event(
                                 newEvent.id,
                                 newEvent.date,
                                 newEvent.startTime,

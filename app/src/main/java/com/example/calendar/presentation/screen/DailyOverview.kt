@@ -31,7 +31,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.testTag
 import androidx.navigation.NavController
-import com.example.calendar.data.Event
+import com.example.calendar.data.database.Event
 import com.example.calendar.R
 import com.example.calendar.data.NavRoutes
 import com.example.calendar.presentation.viewmodels.CalendarViewModel
@@ -47,15 +47,14 @@ fun DailyOverviewScreen(
     dailyViewModel: DailyViewModel,
     viewModel: EventViewModel,
     selectedDate: Date,
-    events: List<com.example.calendar.data.database.Event>,
-    onEventSelected: (com.example.calendar.data.database.Event?) -> Unit,
+    events: List<Event>,
+    onEventSelected: (Event?) -> Unit,
     onAddEvent: () -> Unit,
     onChangeDate: (Date) -> Unit,
     onBack: () -> Unit,
-    onEditEvent: (com.example.calendar.data.database.Event) -> Unit,
+    onEditEvent: (Event) -> Unit,
     database: AppDatabase
 ) {
-    //dailyViewModel.eventsForSelectedDate.observeAsState(listOf())
 
     Column(modifier = Modifier.fillMaxSize()) {
         Row {
@@ -75,16 +74,13 @@ fun DailyOverviewScreen(
                 }
             )
         }
-        // convert event to List<com.example.calendar.data.Event>
-        var eventList = mutableListOf<Event>()
 
         DailyHeader(selectedDate, onChangeDate)
-        DailyEventsList(selectedDate = selectedDate, events = eventList, onEventSelected, onEditEvent, database, viewModel)
+        DailyEventsList(selectedDate = selectedDate, events = events, onEventSelected, onEditEvent, database, viewModel)
     }
 }
     @Composable
     fun DailyHeader(selectedDate: Date, onChangeDate: (Date) -> Unit) {
-        val context = LocalContext.current
         val dateFormat = remember { SimpleDateFormat("EEEE, MMMM dd, yyyy", Locale.getDefault()) }
         val dateString = dateFormat.format(selectedDate)
 
@@ -165,17 +161,7 @@ fun EventItem(event: Event, onEventSelected: (com.example.calendar.data.database
         ) {
             Button(
                 onClick = {
-                    val newEvent = com.example.calendar.data.database.Event(
-                        id = event.id,
-                        date = event.date,
-                        startTime = event.startTime,
-                        endTime = event.endTime,
-                        title = event.title,
-                        description = event.description,
-                        location = event.location,
-                        course = event.course
-                    )
-                    onEventSelected(newEvent)
+                    onEventSelected(event)
                 },
                 modifier = Modifier
                     .size(100.dp, 40.dp)
@@ -184,18 +170,7 @@ fun EventItem(event: Event, onEventSelected: (com.example.calendar.data.database
             }
             Button(
                 onClick = {
-                    // convert event to com.example.calendar.data.database.Event
-                    val newEvent = com.example.calendar.data.database.Event(
-                        id = event.id,
-                        date = event.date,
-                        startTime = event.startTime,
-                        endTime = event.endTime,
-                        title = event.title,
-                        description = event.description,
-                        location = event.location,
-                        course = event.course
-                    )
-                    onEditEvent(newEvent)
+                    onEditEvent(event)
                 },
                 modifier = Modifier
                     .size(100.dp, 40.dp)
@@ -293,10 +268,9 @@ fun DailyOverview(navController: NavController, calendarModel: CalendarViewModel
     val selectedDate = calendarModel.selectedDate.value
     val events = eventModel.events
 
-    calendarModel.events.value = eventModel.events
     DailyOverviewScreen(
-        dailyViewModel,
-        eventModel,
+        dailyViewModel = dailyViewModel,
+        viewModel = eventModel,
         selectedDate = selectedDate,
         events = events,
         onEventSelected = { event ->
