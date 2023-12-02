@@ -257,7 +257,7 @@ fun CourseInput(course: String, onCourseChange: (String) -> Unit) {
  */
 @Composable
 fun SaveChangesButton(
-    viewModel: EventViewModel, navController: NavController, inputEvent: com.example.calendar.data.database.Event,
+    viewModel: EventViewModel, navController: NavController, inputEvent: Event,
     date: String, startTime: String, endTime: String, title: String,
     description: String, location: String, course: String, database: AppDatabase
 ) {
@@ -274,42 +274,37 @@ fun SaveChangesButton(
                 )
                 // update event
                 viewModel.viewModelScope.launch {
-                    database.eventDao().update(
-                        Event(
+                    withContext(Dispatchers.IO) {
+                        database.eventDao().updateEvent(
                             inputEvent.id,
+                            title,
                             date,
                             startTime,
                             endTime,
-                            title,
                             description,
                             location,
                             course
                         )
-                    )
+                    }
                 }
             } else {
-                //Otherwise create an event
-                val newEvent = Event(inputEvent.id, date, startTime, endTime, title, description, location, course)
-                viewModel.addToList(newEvent, database)
                 // convert newEvent to database.Event and insert into database
                 viewModel.viewModelScope.launch {
                     withContext(Dispatchers.IO) {
                         database.eventDao().insertAll(
                             Event(
-                                newEvent.id,
-                                newEvent.date,
-                                newEvent.startTime,
-                                newEvent.endTime,
-                                newEvent.title,
-                                newEvent.description,
-                                newEvent.location,
-                                newEvent.course
+                                id = inputEvent.id,
+                                title = title,
+                                date = date,
+                                startTime = startTime,
+                                endTime = endTime,
+                                description = description,
+                                location = location,
+                                course = course
                             )
                         )
                     }
                 }
-                //Increment id for next event creation
-                inputEvent.id++
             }
             //Navigate back to where the user was when pressing the create/edit event button
             navController.navigate(NavRoutes.CalendarView.route) {
