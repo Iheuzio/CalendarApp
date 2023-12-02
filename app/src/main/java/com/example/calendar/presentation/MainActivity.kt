@@ -73,38 +73,37 @@ class MainActivity : ComponentActivity() {
         val currentDate = currentDateTime.format(dateFormatter)
         // populate the database with some events
 
-val event1 = Event(
+        val event1 = Event(
             title = "CS 407",
-            date = "12-01-2023",
+            date = currentDate,
             startTime = "12:00",
             endTime = "13:00",
             description = "Software Engineering",
             location = "Online",
             course = "CS 407"
         )
-        val event2 = Event(
-            title = "CS 407",
-            date = "12-01-2023",
-            startTime = "12:00",
-            endTime = "13:00",
-            description = "Software Engineering",
-            location = "Online",
-            course = "CS 407"
-        )
-        val event3 = Event(
-            title = "CS 407",
-            date = "12-01-2023",
-            startTime = "12:00",
-            endTime = "13:00",
-            description = "Software Engineering",
-            location = "Online",
-            course = "CS 407"
-        )
+//        val event2 = Event(
+//            title = "CS 407",
+//            date = currentDate,
+//            startTime = "12:00",
+//            endTime = "13:00",
+//            description = "Software Engineering",
+//            location = "Online",
+//            course = "CS 407"
+//        )
+//        val event3 = Event(
+//            title = "CS 407",
+//            date = "12-01-2023",
+//            startTime = "12:00",
+//            endTime = "13:00",
+//            description = "Software Engineering",
+//            location = "Online",
+//            course = "CS 407"
+//        )
 
-        // add them to the database
         eventviewModel.addToList(event1, database)
-        eventviewModel.addToList(event2, database)
-        eventviewModel.addToList(event3, database)
+//        eventviewModel.addToList(event2, database)
+//        eventviewModel.addToList(event3, database)
 
 
         NavHost(navController = navController, startDestination = NavRoutes.CalendarView.route) {
@@ -120,6 +119,22 @@ val event1 = Event(
                             database.eventDao().getById(it.id)
                         }
                     }
+                }
+                if (event == null) {
+                    val currentDateTime = LocalDateTime.now()
+                    val dateFormatter = DateTimeFormatter.ofPattern("MM-dd-yyyy")
+                    val currentDate = currentDateTime.format(dateFormatter)
+                    val currentId = eventviewModel.events.size + 1
+                    event = com.example.calendar.data.database.Event(
+                        id = currentId,
+                        title = "",
+                        date = currentDate,
+                        startTime = "12:00",
+                        endTime = "1:00",
+                        description = "",
+                        location = "",
+                        course = ""
+                    )
                 }
                 event?.let {
                     val format = SimpleDateFormat("MM-dd-yyyy", Locale.getDefault())

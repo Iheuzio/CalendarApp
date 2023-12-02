@@ -14,7 +14,7 @@ import java.util.Date
 
 class EventViewModel(private val database: AppDatabase) : ViewModel() {
     var selectedEvent by mutableStateOf<Event?>(null)
-    var events by mutableStateOf(mutableListOf<Event>())
+    var events by mutableStateOf(listOf<Event>())
 
     init {
         fetchEvents()
@@ -85,12 +85,18 @@ class EventViewModel(private val database: AppDatabase) : ViewModel() {
         return events.find { it.id == id }
     }
 
-    private fun getEventsByDate(date: String): List<Event> {
-        return events.filter { it.date == date }
+    private fun getEventsByDate(date: String, database: AppDatabase): List<Event> {
+        var filteredEvents: List<Event> = listOf()
+        viewModelScope.launch {
+            withContext(Dispatchers.IO) {
+                filteredEvents = database.eventDao().findEventsByDate(date)
+            }
+        }
+        return filteredEvents
     }
 
     fun checkEventsExist(time: Date): Any {
         val dateString = "${time.month + 1}-${time.date}-${time.year}"
-        return getEventsByDate(dateString)
+        return getEventsByDate(dateString, database)
     }
 }

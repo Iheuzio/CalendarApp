@@ -138,7 +138,11 @@ fun DateInput(date: String, onDateChange: (String) -> Unit) {
 fun StartTimePicker(initialStartTime: String, onStartTimeChange: (String) -> Unit, onEndTimeChange: (String) -> Unit) {
     var startTime by remember { mutableStateOf(initialStartTime) }
 
-    val startTimeValues = initialStartTime.split(":")
+    val startTimeValues = if (initialStartTime.isNotEmpty() && initialStartTime.contains(":")) {
+        initialStartTime.split(":")
+    } else {
+        listOf("00", "00")
+    }
     //Create dialog to use for picking start time
     val startTimePicker = TimePickerDialog(
         LocalContext.current,

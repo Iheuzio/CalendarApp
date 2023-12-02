@@ -39,9 +39,7 @@ import com.example.calendar.presentation.viewmodels.EventViewModel
 import com.example.calendar.presentation.getStringResource
 import com.example.calendar.presentation.viewmodels.DailyViewModel
 import androidx.compose.runtime.*
-import androidx.lifecycle.viewModelScope
 import com.example.calendar.data.database.AppDatabase
-import kotlinx.coroutines.launch
 
 
 @Composable
@@ -49,7 +47,7 @@ fun DailyOverviewScreen(
     dailyViewModel: DailyViewModel,
     viewModel: EventViewModel,
     selectedDate: Date,
-    events: MutableList<com.example.calendar.data.database.Event>,
+    events: List<com.example.calendar.data.database.Event>,
     onEventSelected: (com.example.calendar.data.database.Event?) -> Unit,
     onAddEvent: () -> Unit,
     onChangeDate: (Date) -> Unit,
