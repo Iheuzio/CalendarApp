@@ -27,4 +27,8 @@ interface EventDao {
 
     @Query("SELECT * FROM event WHERE id = :id")
     fun getById(id: Int): Event
+
+    //update
+    @Query("UPDATE event SET title = :title, date = :date, startTime = :startTime, endTime = :endTime, description = :description, location = :location, course = :course WHERE id = :id")
+    fun updateEvent(id: Int, title: String, date: String, startTime: String, endTime: String, description: String, location: String, course: String)
 }
