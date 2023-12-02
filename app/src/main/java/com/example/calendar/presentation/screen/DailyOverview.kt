@@ -127,7 +127,7 @@ private fun getNextDay(selectedDate: Date): Date {
     return calendar.time
 }
 @Composable
-fun EventItem(event: Event, onEventSelected: (com.example.calendar.data.database.Event?) -> Unit, onEditEvent: (com.example.calendar.data.database.Event) -> Unit) {
+fun EventItem(event: Event, onEventSelected: (Event?) -> Unit, onEditEvent: (Event) -> Unit) {
     val timeFormatter = SimpleDateFormat("HH:mm", Locale.getDefault())
     val startTime = timeFormatter.parse(event.startTime)
     val endTime = timeFormatter.parse(event.endTime)
