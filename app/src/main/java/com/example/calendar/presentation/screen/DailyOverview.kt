@@ -213,7 +213,7 @@ fun DailyEventsList(selectedDate: Date, events: MutableList<com.example.calendar
     val timeFormatter = remember { SimpleDateFormat("HH:mm", Locale.getDefault()) }
     val sortedEvents = events.sortedBy { timeFormatter.parse(it.startTime).time }
 
-    val eventsOnSelectedDate = events.filter {
+    val eventsOnSelectedDate = sortedEvents.filter {
         dateFormat.format(selectedDate) == it.date
     }
 
@@ -227,7 +227,7 @@ fun DailyEventsList(selectedDate: Date, events: MutableList<com.example.calendar
             val eventsThisHour = remember { mutableStateListOf<com.example.calendar.data.database.Event>() }
             LaunchedEffect(key1 = selectedDate) {
                 eventsThisHour.addAll(
-                    sortedEvents.filter { event ->
+                    eventsOnSelectedDate.filter { event ->
                         val eventStart = timeFormatter.parse(event.startTime)
                         val eventEnd = timeFormatter.parse(event.endTime)
                         val hourStart = timeFormatter.parse(hourStartString)

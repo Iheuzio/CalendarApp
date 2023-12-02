@@ -67,11 +67,7 @@ fun CalendarView(navController: NavController, calendarModel: CalendarViewModel,
 @Composable
 fun MonthView(navController: NavController, calendarModel: CalendarViewModel, eventModel: EventViewModel, database: AppDatabase) {
     val selectedDate = calendarModel.selectedDate.value
-    val events = eventModel.events
     Column(modifier = Modifier.fillMaxSize()) {
-        for (event in events) {
-            Text(event.title)
-        }
         CalendarHeader(selectedDate, calendarModel::onDateChange)
         DayOfWeekHeader()
         CalendarGrid(eventModel, selectedDate, calendarModel::onDateChange, database)
