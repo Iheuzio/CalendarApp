@@ -18,7 +18,7 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import com.example.calendar.data.Event
+import com.example.calendar.data.database.Event
 import com.example.calendar.data.NavRoutes
 import com.example.calendar.presentation.viewmodels.CalendarViewModel
 import com.example.calendar.presentation.viewmodels.EventViewModel
@@ -124,9 +124,7 @@ class MainActivity : ComponentActivity() {
                     val currentDateTime = LocalDateTime.now()
                     val dateFormatter = DateTimeFormatter.ofPattern("MM-dd-yyyy")
                     val currentDate = currentDateTime.format(dateFormatter)
-                    val currentId = eventviewModel.events.size + 1
-                    event = com.example.calendar.data.database.Event(
-                        id = currentId,
+                    event = Event(
                         title = "",
                         date = currentDate,
                         startTime = "12:00",
