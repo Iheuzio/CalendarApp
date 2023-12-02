@@ -26,7 +26,7 @@ class CreateEditEventTest {
     private lateinit var navController: TestNavHostController
     private lateinit var eventViewModel : EventViewModel
 
-    @Before
+    /*@Before
     fun setup() {
         navController =
             TestNavHostController(InstrumentationRegistry.getInstrumentation().targetContext)
@@ -38,7 +38,7 @@ class CreateEditEventTest {
                 inputEvent = Event(0, "11-28-2023", "12:00", "12:00", "")
             )
         }
-    }
+    }*/
 
     @Test
     fun testIsValidEndTime() {

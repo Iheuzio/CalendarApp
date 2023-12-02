@@ -33,10 +33,10 @@ class ViewEventTest {
         // Create a sample event for testing
         val sampleEvent = Event(
             id = 1,
+            title = "Sample Event",
             date = "11-28-2023",
             startTime = "12:00",
             endTime = "14:00",
-            title = "Sample Event",
             description = "This is a sample event",
             location = "Sample Location",
             course = "Sample Course"
