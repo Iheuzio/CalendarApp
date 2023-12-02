@@ -34,6 +34,7 @@ class EventViewModel(private val database: AppDatabase) : ViewModel() {
             viewModelScope.launch(Dispatchers.IO) {
                 database.eventDao().insertAll(
                     Event(
+                        id = item.id,
                         title = item.title,
                         date = item.date,
                         startTime = item.startTime,
@@ -101,4 +102,26 @@ class EventViewModel(private val database: AppDatabase) : ViewModel() {
         val events = getEventsByDate(date, database)
         return events.isNotEmpty()
     }
+
+    /*
+     fun checkEventsExist(time: Date): Any {
+        val dateFormat = java.text.SimpleDateFormat("MM-dd-yyyy")
+        val date = dateFormat.format(time)
+        val events = getEventsByDate(date, database)
+        var events: List<Event> = listOf()
+        viewModelScope.launch {
+            events = getEventsByDate(date, database)
+        }
+        return events.isNotEmpty()
+    }
+    */
+
+    /*
+    private suspend fun getEventsByDate(date: String, database: AppDatabase): List<Event> {
+        return withContext(Dispatchers.IO) {
+            database.eventDao().findEventsByDate(date)
+        }
+        return filteredEvents
+    }
+    */
 }

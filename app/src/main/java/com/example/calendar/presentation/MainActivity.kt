@@ -73,15 +73,15 @@ class MainActivity : ComponentActivity() {
         val currentDate = currentDateTime.format(dateFormatter)
         // populate the database with some events
         // delete all events from db
-        val event1 = Event(
-            title = "CS 407",
-            date = currentDate,
-            startTime = "12:00",
-            endTime = "13:00",
-            description = "Software Engineering",
-            location = "Online",
-            course = "CS 407"
-        )
+//        val event1 = Event(
+//            title = "CS 407",
+//            date = currentDate,
+//            startTime = "12:00",
+//            endTime = "13:00",
+//            description = "Software Engineering",
+//            location = "Online",
+//            course = "CS 407"
+//        )
 //        val event2 = Event(
 //            title = "CS 407",
 //            date = currentDate,
@@ -101,7 +101,7 @@ class MainActivity : ComponentActivity() {
 //            course = "CS 407"
 //        )
 
-        eventviewModel.addToList(event1, database)
+//        eventviewModel.addToList(event1, database)
 //        eventviewModel.addToList(event2, database)
 //        eventviewModel.addToList(event3, database)
 
