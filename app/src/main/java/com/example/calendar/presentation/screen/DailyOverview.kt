@@ -39,9 +39,7 @@ import com.example.calendar.presentation.viewmodels.EventViewModel
 import com.example.calendar.presentation.getStringResource
 import com.example.calendar.presentation.viewmodels.DailyViewModel
 import androidx.compose.runtime.*
-import androidx.lifecycle.viewModelScope
 import com.example.calendar.data.database.AppDatabase
-import kotlinx.coroutines.launch
 
 
 @Composable
@@ -81,7 +79,7 @@ fun DailyOverviewScreen(
         var eventList = mutableListOf<Event>()
 
         DailyHeader(selectedDate, onChangeDate)
-        DailyEventsList(selectedDate = selectedDate, events = eventList, onEventSelected, onEditEvent, database, viewModel)
+        DailyEventsList(selectedDate = selectedDate, events = events, onEventSelected, onEditEvent, database, viewModel)
     }
 }
     @Composable
@@ -133,7 +131,7 @@ private fun getNextDay(selectedDate: Date): Date {
     return calendar.time
 }
 @Composable
-fun EventItem(event: Event, onEventSelected: (com.example.calendar.data.database.Event?) -> Unit, onEditEvent: (com.example.calendar.data.database.Event) -> Unit) {
+fun EventItem(event: com.example.calendar.data.database.Event, onEventSelected: (com.example.calendar.data.database.Event?) -> Unit, onEditEvent: (com.example.calendar.data.database.Event) -> Unit) {
     val timeFormatter = SimpleDateFormat("HH:mm", Locale.getDefault())
     val startTime = timeFormatter.parse(event.startTime)
     val endTime = timeFormatter.parse(event.endTime)
@@ -169,10 +167,10 @@ fun EventItem(event: Event, onEventSelected: (com.example.calendar.data.database
                 onClick = {
                     val newEvent = com.example.calendar.data.database.Event(
                         id = event.id,
+                        title = event.title,
                         date = event.date,
                         startTime = event.startTime,
                         endTime = event.endTime,
-                        title = event.title,
                         description = event.description,
                         location = event.location,
                         course = event.course
@@ -209,7 +207,7 @@ fun EventItem(event: Event, onEventSelected: (com.example.calendar.data.database
 }
 
 @Composable
-fun DailyEventsList(selectedDate: Date, events: List<Event>, onEventSelected: (com.example.calendar.data.database.Event?) -> Unit, onEditEvent: (com.example.calendar.data.database.Event) -> Unit, database: AppDatabase, viewModel: EventViewModel) {
+fun DailyEventsList(selectedDate: Date, events: MutableList<com.example.calendar.data.database.Event>, onEventSelected: (com.example.calendar.data.database.Event?) -> Unit, onEditEvent: (com.example.calendar.data.database.Event) -> Unit, database: AppDatabase, viewModel: EventViewModel) {
     val hoursOfDay = (0..23).toList()
     val dateFormat = remember { SimpleDateFormat("MM-dd-yyyy", Locale.getDefault()) }
     val timeFormatter = remember { SimpleDateFormat("HH:mm", Locale.getDefault()) }
@@ -226,7 +224,7 @@ fun DailyEventsList(selectedDate: Date, events: List<Event>, onEventSelected: (c
             val hourEndString = String.format(Locale.getDefault(), "%02d:00", hour + 1)
 
             // Check if this hour is within any evts
-            val eventsThisHour = remember { mutableStateListOf<Event>() }
+            val eventsThisHour = remember { mutableStateListOf<com.example.calendar.data.database.Event>() }
             LaunchedEffect(key1 = selectedDate) {
                 eventsThisHour.addAll(
                     sortedEvents.filter { event ->

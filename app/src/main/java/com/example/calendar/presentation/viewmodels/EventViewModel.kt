@@ -21,11 +21,11 @@ class EventViewModel(private val database: AppDatabase) : ViewModel() {
     }
 
     private fun fetchEvents() {
-        viewModelScope.launch {
-            val eventsList = withContext(Dispatchers.IO) {
-                database.eventDao().getAll().toMutableList()
+        viewModelScope.launch(Dispatchers.IO) {
+            val eventsList = database.eventDao().getAll()
+            withContext(Dispatchers.Main) {
+                events = eventsList.toMutableList()
             }
-            events = eventsList
         }
     }
 
@@ -74,7 +74,12 @@ class EventViewModel(private val database: AppDatabase) : ViewModel() {
     }
 
     fun getEventById(id: Int): Event? {
-        return events.find { it.id == id }
+        var event: Event? = null
+        viewModelScope.launch(Dispatchers.IO) {
+            event = database.eventDao().getById(0)
+            //return events.find { it.id == id }
+        }
+        return event
     }
 
     private fun getEventsByDate(date: String): List<Event> {

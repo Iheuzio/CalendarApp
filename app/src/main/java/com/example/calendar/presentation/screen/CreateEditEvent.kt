@@ -336,15 +336,16 @@ fun SaveChangesButton(
                         database.eventDao().insertAll(
                             com.example.calendar.data.database.Event(
                                 it.id,
+                                it.title,
                                 it.date,
                                 it.startTime,
                                 it.endTime,
-                                it.title,
                                 it.description,
                                 it.location,
                                 it.course
                             )
                         )
+
                     }
                 }
                 //Increment id for next event creation
