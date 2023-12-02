@@ -67,7 +67,6 @@ fun CalendarView(navController: NavController, calendarModel: CalendarViewModel,
 @Composable
 fun MonthView(navController: NavController, calendarModel: CalendarViewModel, eventModel: EventViewModel, database: AppDatabase) {
     val selectedDate = calendarModel.selectedDate.value
-
     Column(modifier = Modifier.fillMaxSize()) {
         CalendarHeader(selectedDate, calendarModel::onDateChange)
         DayOfWeekHeader()

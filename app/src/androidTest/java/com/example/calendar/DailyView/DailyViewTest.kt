@@ -9,6 +9,7 @@ import androidx.navigation.testing.TestNavHostController
 import androidx.test.platform.app.InstrumentationRegistry
 import com.example.calendar.data.Event
 import com.example.calendar.data.NavRoutes
+import com.example.calendar.data.database.AppDatabase
 import com.example.calendar.presentation.viewmodels.CalendarViewModel
 import com.example.calendar.presentation.viewmodels.EventViewModel
 import com.example.calendar.presentation.screen.CalendarGrid
@@ -37,7 +38,7 @@ class DailyOverviewTest {
     @Before
     fun setup() {
         navController = TestNavHostController(InstrumentationRegistry.getInstrumentation().targetContext)
-        dailyViewModel = DailyViewModel()
+        dailyViewModel = DailyViewModel(database = AppDatabase.getInstance())
         calendarViewModel = CalendarViewModel()
         eventViewModel = EventViewModel()
         composeTestRule.runOnUiThread {

@@ -273,38 +273,35 @@ fun SaveChangesButton(
                     database =database
                 )
                 // update event
-                viewModel.viewModelScope.launch {
-                    withContext(Dispatchers.IO) {
-                        database.eventDao().updateEvent(
-                            inputEvent.id,
-                            title,
-                            date,
-                            startTime,
-                            endTime,
-                            description,
-                            location,
-                            course
-                        )
-                    }
-                }
+                viewModel.modifyItem(
+                    item = viewModel.selectedEvent!!,
+                    modifiedItem = Event(
+                        id = inputEvent.id,
+                        title = title,
+                        date = date,
+                        startTime = startTime,
+                        endTime = endTime,
+                        description = description,
+                        location = location,
+                        course = course
+                    ),
+                    database = database
+                )
             } else {
                 // convert newEvent to database.Event and insert into database
-                viewModel.viewModelScope.launch {
-                    withContext(Dispatchers.IO) {
-                        database.eventDao().insertAll(
-                            Event(
-                                id = inputEvent.id,
-                                title = title,
-                                date = date,
-                                startTime = startTime,
-                                endTime = endTime,
-                                description = description,
-                                location = location,
-                                course = course
-                            )
-                        )
-                    }
-                }
+                viewModel.addToList(
+                    item = Event(
+                        id = inputEvent.id,
+                        title = title,
+                        date = date,
+                        startTime = startTime,
+                        endTime = endTime,
+                        description = description,
+                        location = location,
+                        course = course
+                    ),
+                    database = database
+                )
             }
             //Navigate back to where the user was when pressing the create/edit event button
             navController.navigate(NavRoutes.CalendarView.route) {

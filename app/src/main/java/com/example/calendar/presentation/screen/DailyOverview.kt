@@ -55,7 +55,6 @@ fun DailyOverviewScreen(
     onEditEvent: (Event) -> Unit,
     database: AppDatabase
 ) {
-
     Column(modifier = Modifier.fillMaxSize()) {
         Row {
             Button(
