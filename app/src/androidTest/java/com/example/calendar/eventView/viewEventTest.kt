@@ -6,7 +6,6 @@ import androidx.compose.ui.test.onNodeWithText
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.testing.TestNavHostController
 import androidx.test.platform.app.InstrumentationRegistry
-import com.example.calendar.data.Event
 import com.example.calendar.presentation.screen.ViewEventScreen
 import com.example.calendar.presentation.viewmodels.EventViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi

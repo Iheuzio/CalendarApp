@@ -75,7 +75,7 @@ fun DailyOverviewScreen(
         }
 
         DailyHeader(selectedDate, onChangeDate)
-        DailyEventsList(selectedDate = selectedDate, events = events, onEventSelected, onEditEvent, database, viewModel)
+        DailyEventsList(selectedDate = selectedDate, events = events, onEventSelected, onEditEvent)
     }
 }
     @Composable
@@ -127,11 +127,6 @@ private fun getNextDay(selectedDate: Date): Date {
 }
 @Composable
 fun EventItem(event: Event, onEventSelected: (Event?) -> Unit, onEditEvent: (Event) -> Unit) {
-    val timeFormatter = SimpleDateFormat("HH:mm", Locale.getDefault())
-    val startTime = timeFormatter.parse(event.startTime)
-    val endTime = timeFormatter.parse(event.endTime)
-    val duration = (endTime.time - startTime.time) / (1000 * 60 * 60)
-
     Row(
         modifier = Modifier
             .testTag("EventItem-${event.id}")
@@ -181,15 +176,10 @@ fun EventItem(event: Event, onEventSelected: (Event?) -> Unit, onEditEvent: (Eve
 }
 
 @Composable
-fun DailyEventsList(selectedDate: Date, events: List<Event>, onEventSelected: (Event?) -> Unit, onEditEvent: (com.example.calendar.data.database.Event) -> Unit, database: AppDatabase, viewModel: EventViewModel) {
+fun DailyEventsList(selectedDate: Date, events: List<Event>, onEventSelected: (Event?) -> Unit, onEditEvent: (Event) -> Unit) {
     val hoursOfDay = (0..23).toList()
-    val dateFormat = remember { SimpleDateFormat("MM-dd-yyyy", Locale.getDefault()) }
     val timeFormatter = remember { SimpleDateFormat("HH:mm", Locale.getDefault()) }
     val sortedEvents = events.sortedBy { timeFormatter.parse(it.startTime).time }
-
-    val eventsOnSelectedDate = events.filter {
-        dateFormat.format(selectedDate) == it.date
-    }
 
     LazyColumn {
         items(hoursOfDay) { hour ->
@@ -211,16 +201,6 @@ fun DailyEventsList(selectedDate: Date, events: List<Event>, onEventSelected: (E
                         eventStart.before(hourEnd) && eventEnd.after(hourStart)
                 })
             }
-            val filteredEventsThisHour = eventsThisHour.filter { event ->
-                val eventStart = timeFormatter.parse(event.startTime)
-                val eventEnd = timeFormatter.parse(event.endTime)
-                val hourStart = timeFormatter.parse(hourStartString)
-                val hourEnd = timeFormatter.parse(hourEndString)
-
-                // Event covers this hour if it starts before hourEnd and ends after hourStart
-                eventStart.before(hourEnd) && eventEnd.after(hourStart)
-            }
-
             Row(modifier = Modifier
                 .fillMaxWidth()
                 .padding(vertical = 4.dp, horizontal = 8.dp)
@@ -284,19 +264,9 @@ fun DailyOverview(navController: NavController, calendarModel: CalendarViewModel
             val calendar = Calendar.getInstance()
             calendar.time = newDate
             calendarModel.onDateChange(calendar)
-            /*val format = SimpleDateFormat("dd-MM-yy", Locale.getDefault())
-            val date = format.format(selectedDate)
-            navController.navigate(NavRoutes.DayView.route + "/$date")*/
-
         },
         onBack = {
             calendarModel.toggleShowDailyOverview()
-            /*navController.navigate(NavRoutes.MonthView.route) {
-                popUpTo(navController.graph.findStartDestination().id) {
-                    saveState = true
-                    inclusive = true
-                }
-            }*/
         },
         onEditEvent = { event ->
             eventModel.selectedEvent = event
@@ -307,21 +277,4 @@ fun DailyOverview(navController: NavController, calendarModel: CalendarViewModel
     )
 }
 
-@Composable
-fun TimeSlot(time: String) {
 
-    Row(modifier = Modifier
-        .fillMaxWidth()
-        .padding(8.dp)
-        .height(60.dp)) {
-        Text(
-            text = time,
-            modifier = Modifier.width(80.dp)
-        )
-        Spacer(modifier = Modifier.weight(1f))
-    }
-}
-fun getTime(dateStr: String): Date {
-    val format = SimpleDateFormat("HH:mm", Locale.getDefault())
-    return format.parse(dateStr)
-}

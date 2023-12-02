@@ -21,20 +21,14 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.navigation.NavController
 import androidx.navigation.NavGraph.Companion.findStartDestination
-import androidx.navigation.compose.rememberNavController
 import com.example.calendar.data.database.Event
 import com.example.calendar.data.NavRoutes
 import com.example.calendar.presentation.viewmodels.EventViewModel
-import com.example.calendar.ui.theme.CalendarTheme
 import androidx.compose.runtime.*
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
-import androidx.lifecycle.viewModelScope
 import com.example.calendar.R
 import com.example.calendar.data.database.AppDatabase
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -348,14 +342,3 @@ fun isValidEndTime(startTime: String, endTime: String): Boolean {
     return startCalendar.before(endCalendar)
 }
 
-//@Composable
-//fun CreateEditEventPreview(database: AppDatabase) {
-//    CalendarTheme {
-//        val date = "01-08-2023"
-//        val event = Event(0, date, "12:43", "12:43")
-//        val navController = rememberNavController()
-//        val viewModel = EventViewModel(database = database)
-//        val newEvent = com.example.calendar.data.database.Event(0, date, "12:43", "12:43", "title", "description", "location", "course")
-//        CreateEditEventScreen(viewModel, navController, date, newEvent, database)
-//    }
-//}
