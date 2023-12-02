@@ -72,7 +72,7 @@ class MainActivity : ComponentActivity() {
         val dateFormatter = DateTimeFormatter.ofPattern("MM-dd-yyyy")
         val currentDate = currentDateTime.format(dateFormatter)
         // populate the database with some events
-
+        // delete all events from db
         val event1 = Event(
             title = "CS 407",
             date = currentDate,

@@ -182,7 +182,7 @@ fun EventItem(event: Event, onEventSelected: (com.example.calendar.data.database
 }
 
 @Composable
-fun DailyEventsList(selectedDate: Date, events: List<Event>, onEventSelected: (com.example.calendar.data.database.Event?) -> Unit, onEditEvent: (com.example.calendar.data.database.Event) -> Unit, database: AppDatabase, viewModel: EventViewModel) {
+fun DailyEventsList(selectedDate: Date, events: List<Event>, onEventSelected: (Event?) -> Unit, onEditEvent: (com.example.calendar.data.database.Event) -> Unit, database: AppDatabase, viewModel: EventViewModel) {
     val hoursOfDay = (0..23).toList()
     val dateFormat = remember { SimpleDateFormat("MM-dd-yyyy", Locale.getDefault()) }
     val timeFormatter = remember { SimpleDateFormat("HH:mm", Locale.getDefault()) }

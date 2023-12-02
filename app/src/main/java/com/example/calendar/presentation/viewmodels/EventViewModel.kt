@@ -96,7 +96,9 @@ class EventViewModel(private val database: AppDatabase) : ViewModel() {
     }
 
     fun checkEventsExist(time: Date): Any {
-        val dateString = "${time.month + 1}-${time.date}-${time.year}"
-        return getEventsByDate(dateString, database)
+        val dateFormat = java.text.SimpleDateFormat("MM-dd-yyyy")
+        val date = dateFormat.format(time)
+        val events = getEventsByDate(date, database)
+        return events.isNotEmpty()
     }
 }
