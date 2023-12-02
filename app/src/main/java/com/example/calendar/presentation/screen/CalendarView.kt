@@ -37,6 +37,7 @@ import com.example.calendar.presentation.viewmodels.CalendarViewModel
 import com.example.calendar.presentation.viewmodels.EventViewModel
 import com.example.calendar.presentation.getStringResource
 import com.example.calendar.presentation.viewmodels.DailyViewModel
+import java.text.SimpleDateFormat
 import java.util.*
 
 /**
@@ -177,7 +178,11 @@ fun CalendarGrid(eventModel: EventViewModel, selectedDate: Date, onDateClick: (C
                     val isCurrentMonth = cellDate.get(Calendar.MONTH) == selectedDate.month
                     val isSelected = cellDate.time == selectedDate
                     // check if events exist for this day
-                    val eventBool = eventModel.checkEventsExist(cellDate.time)
+                    val dateFormat = SimpleDateFormat("MM-dd-yyyy")
+                    val currentTime = dateFormat.format(cellDate.time)
+                    val eventBool = eventModel.events.any { event ->
+                        event.date == currentTime
+                    }
                     DayCell(day, isSelected, isCurrentMonth, cellSize, onDateClick, cellDate, eventBool)
                 } else {
                     EmptyCell(cellSize)
