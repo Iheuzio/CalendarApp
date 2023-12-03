@@ -1,6 +1,7 @@
 package com.example.calendar.presentation.screen
 
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -8,6 +9,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.material3.Button
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -18,7 +20,7 @@ import androidx.navigation.NavController
 import com.example.calendar.R
 
 @Composable
-fun FiveDayForecastScreen() {
+fun FiveDayForecastScreen(navController: NavController) {
     val forecastData = List(40) {
         ForecastData(
             time = "12:00 PM",
@@ -28,14 +30,25 @@ fun FiveDayForecastScreen() {
         )
     }
 
-    LazyColumn(modifier = Modifier.fillMaxSize()) {
-        items(forecastData) { data ->
-            ForecastItem(
-                time = data.time,
-                temperature = data.temperature,
-                condition = data.condition,
-                iconId = data.iconId
-            )
+    Column(modifier = Modifier.fillMaxSize()) {
+        Button(
+            onClick = {
+                navController.popBackStack()
+            },
+            modifier = Modifier.padding(16.dp)
+        ) {
+            Text("Back")
+        }
+
+        LazyColumn {
+            items(forecastData) { data ->
+                ForecastItem(
+                    time = data.time,
+                    temperature = data.temperature,
+                    condition = data.condition,
+                    iconId = data.iconId
+                )
+            }
         }
     }
 }

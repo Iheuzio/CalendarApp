@@ -110,7 +110,7 @@ class MainActivity : ComponentActivity() {
             }
 
             composable(route = NavRoutes.FiveDayForecast.route) {
-                FiveDayForecastScreen()
+                FiveDayForecastScreen(navController = navController)
             }
 
         }
