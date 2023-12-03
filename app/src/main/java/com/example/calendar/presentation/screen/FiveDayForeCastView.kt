@@ -1,5 +1,7 @@
 package com.example.calendar.presentation.screen
 
+import android.icu.text.SimpleDateFormat
+import android.icu.util.Calendar
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -18,9 +20,12 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.example.calendar.R
+import java.util.Locale
 
 @Composable
 fun FiveDayForecastScreen(navController: NavController) {
+
+
     val forecastData = List(40) {
         ForecastData(
             time = "12:00 PM",
@@ -52,7 +57,15 @@ fun FiveDayForecastScreen(navController: NavController) {
         }
     }
 }
-
+@Composable
+fun DayHeader(day: String) {
+    Text(
+        text = day,
+        modifier = Modifier
+            .padding(16.dp)
+            .fillMaxWidth()
+    )
+}
 @Composable
 fun ForecastItem(
     time: String,
