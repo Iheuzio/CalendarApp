@@ -1,5 +1,6 @@
 package com.example.calendar.presentation.screen
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.padding
@@ -12,10 +13,13 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavController
 import com.example.calendar.R
+import com.example.calendar.data.NavRoutes
 
 @Composable
 fun WeatherDisplay(
+    navController: NavController,
     temperature: String = "21°C",
     weatherCondition: String = "Sunny",
     iconId: Int = R.drawable.sunny,
@@ -23,7 +27,11 @@ fun WeatherDisplay(
 ) {
     Row(
         verticalAlignment = Alignment.CenterVertically,
-        modifier = Modifier.padding(16.dp)
+        modifier = Modifier
+            .padding(16.dp)
+            .clickable(onClick = {
+                navController.navigate(NavRoutes.FiveDayForecast.route)
+            })
     ) {
         Icon(
             painter = painterResource(id = iconId),

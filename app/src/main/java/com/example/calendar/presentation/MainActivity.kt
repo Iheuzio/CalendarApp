@@ -24,6 +24,7 @@ import com.example.calendar.presentation.viewmodels.EventViewModel
 import com.example.calendar.presentation.screen.CalendarView
 import com.example.calendar.presentation.screen.CreateEditEventScreen
 import com.example.calendar.presentation.screen.DailyOverview
+import com.example.calendar.presentation.screen.FiveDayForecastScreen
 import com.example.calendar.presentation.viewmodels.DailyViewModel
 import com.example.calendar.presentation.screen.MonthView
 import com.example.calendar.presentation.screen.ViewEventScreen
@@ -107,6 +108,11 @@ class MainActivity : ComponentActivity() {
             composable(NavRoutes.MonthView.route) {
                 MonthView(navController = navController, calendarModel = calendarModel, eventviewModel)
             }
+
+            composable(route = NavRoutes.FiveDayForecast.route) {
+                FiveDayForecastScreen()
+            }
+
         }
     }
 }

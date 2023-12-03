@@ -45,6 +45,7 @@ import androidx.compose.runtime.*
 
 @Composable
 fun DailyOverviewScreen(
+    navController: NavController,
     dailyViewModel: DailyViewModel,
     viewModel: EventViewModel,
     selectedDate: Date,
@@ -79,7 +80,7 @@ fun DailyOverviewScreen(
         }
         //only display weather if it is today's date that is selected
         if (selectedDate.isSameDayAs(today)) {
-            WeatherDisplay()
+            WeatherDisplay(navController)
         }
         DailyHeader(selectedDate, onChangeDate)
         DailyEventsList(selectedDate = selectedDate, events = events, onEventSelected, onEditEvent)
@@ -263,6 +264,7 @@ fun DailyOverview(navController: NavController, calendarModel: CalendarViewModel
 
     calendarModel.events.value = eventModel.events
     DailyOverviewScreen(
+        navController,
         dailyViewModel,
         eventModel,
         selectedDate = selectedDate,
