@@ -39,6 +39,7 @@ fun FiveDayForecastScreen(navController: NavController) {
     }
 
     val dayFormat = SimpleDateFormat("EEEE MMMM dd", Locale.getDefault())
+    val timeFormat = SimpleDateFormat("HH:mm", Locale.getDefault())
 
 
     val forecastData = List(40) {
@@ -59,18 +60,24 @@ fun FiveDayForecastScreen(navController: NavController) {
         ) {
             Text("Back")
         }
-        days.forEach { date ->
-            DayHeader(day = dayFormat.format(date))
-        }
-
         LazyColumn {
-            items(forecastData) { data ->
-                ForecastItem(
-                    time = data.time,
-                    temperature = data.temperature,
-                    condition = data.condition,
-                    iconId = data.iconId
-                )
+            days.forEach { date ->
+                item {
+                    DayHeader(day = dayFormat.format(date))
+                }
+                items((0 until 24 step 3).toList()) { hour ->
+                    val time = calendar.apply {
+                        this.time = date
+                        set(Calendar.HOUR_OF_DAY, hour)
+                        set(Calendar.MINUTE, 0)
+                    }.time
+                    ForecastItem(
+                        time = timeFormat.format(time),
+                        temperature = "${(10..30).random()}°C",
+                        condition = "Sunny",
+                        iconId = R.drawable.sunny
+                    )
+                }
             }
         }
     }
@@ -83,6 +90,7 @@ fun DayHeader(day: String) {
             .padding(16.dp)
             .fillMaxWidth()
     )
+
 }
 @Composable
 fun ForecastItem(
@@ -110,7 +118,16 @@ fun ForecastItem(
         Text(text = condition)
     }
 }
-
+fun generateForecastTimes(calendar: Calendar): List<String> {
+    val timeFormat = SimpleDateFormat("HH:mm", Locale.getDefault())
+    return List(8) { index ->
+        calendar.apply {
+            set(Calendar.HOUR_OF_DAY, index * 3)
+            set(Calendar.MINUTE, 0)
+        }
+        timeFormat.format(calendar.time)
+    }
+}
 // Placeholder data
 data class ForecastData(
     val time: String,
