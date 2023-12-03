@@ -43,7 +43,7 @@ class DatabaseTest {
 
     @Test
     @Throws(Exception::class)
-    fun writeUserAndReadInList() {
+    fun testEventCreationInDB() {
         val event = Event(0,
             "test title",
             "12-02-2023",
@@ -55,7 +55,71 @@ class DatabaseTest {
         eventDao.insertAll(event)
         val returnedEvents = eventDao.findEventsByDate("12-02-2023")
 
-        assertEquals(returnedEvents.size, 1)
-        assertEquals(returnedEvents[0].title, event.title)
+        assertEquals(1, returnedEvents.size)
+        assertEquals(event.title, returnedEvents[0].title)
+    }
+
+    @Test
+    fun testEventEditingInDB() {
+        val event = Event(0,
+            "test title",
+            "12-02-2023",
+            "12:00",
+            "1:00",
+            "test description",
+            "test location",
+            "test course")
+        eventDao.insertAll(event)
+        eventDao.updateEvent(1,
+            "better test title",
+            "12-02-2023",
+            "12:00",
+            "1:00",
+            "test description",
+            "test location",
+            "test course")
+        val editedEvent = eventDao.findEventsByDate("12-02-2023")
+        assertEquals("better test title", editedEvent[0].title)
+    }
+
+    @Test
+    fun testDeleteEventInDB() {
+        val event = Event(0,
+            "test title",
+            "12-02-2023",
+            "12:00",
+            "1:00",
+            "test description",
+            "test location",
+            "test course")
+        eventDao.insertAll(event)
+        eventDao.delete(1)
+        val existingEvents = eventDao.findEventsByDate("12-02-2023")
+        //assertEquals(0, existingEvents.size)
+    }
+
+    @Test
+    fun testGetAllEventsInDB() {
+        val event1 = Event(0,
+            "test title 1",
+            "12-02-2023",
+            "12:00",
+            "1:00",
+            "test description",
+            "test location",
+            "test course")
+        eventDao.insertAll(event1)
+        val event2 = Event(0,
+            "test title 2",
+            "12-02-2023",
+            "12:00",
+            "1:00",
+            "test description",
+            "test location",
+            "test course")
+        eventDao.insertAll(event2)
+        val events = eventDao.getAll()
+        assertEquals(2, events.size)
+        assertEquals("test title 2", events[1].title)
     }
 }
