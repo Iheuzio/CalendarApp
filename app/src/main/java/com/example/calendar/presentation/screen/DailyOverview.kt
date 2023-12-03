@@ -75,7 +75,7 @@ fun DailyOverviewScreen(
                 }
             )
         }
-
+        WeatherDisplay()
         DailyHeader(selectedDate, onChangeDate)
         DailyEventsList(selectedDate = selectedDate, events = events, onEventSelected, onEditEvent)
     }
