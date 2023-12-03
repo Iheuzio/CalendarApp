@@ -19,18 +19,16 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.navigation.NavController
 import androidx.navigation.NavGraph.Companion.findStartDestination
-import androidx.navigation.compose.rememberNavController
-import com.example.calendar.data.Event
+import com.example.calendar.data.database.Event
 import com.example.calendar.data.NavRoutes
 import com.example.calendar.presentation.viewmodels.EventViewModel
-import com.example.calendar.ui.theme.CalendarTheme
 import androidx.compose.runtime.*
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
 import com.example.calendar.R
+import com.example.calendar.data.database.AppDatabase
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -46,7 +44,8 @@ fun CreateEditEventScreen(
     viewModel: EventViewModel,
     navController: NavController,
     inputDate: String,
-    inputEvent: Event
+    inputEvent: Event,
+    database: AppDatabase
 ) {
     var date by remember { mutableStateOf(inputDate) }
     var startTime by remember { mutableStateOf(inputEvent.startTime) }
@@ -72,9 +71,7 @@ fun CreateEditEventScreen(
         CourseInput(course) { course = it }
 
         //Button for saving changes/creating event
-        SaveChangesButton(viewModel, navController, inputEvent,
-            date, startTime, endTime, title, description, location, course
-        )
+        SaveChangesButton(viewModel, navController, inputEvent, date, startTime, endTime, title, description, location, course, database)
 
         //To go back to day view or month view
         BackButton(navController)
@@ -137,7 +134,11 @@ fun DateInput(date: String, onDateChange: (String) -> Unit) {
 fun StartTimePicker(initialStartTime: String, onStartTimeChange: (String) -> Unit, onEndTimeChange: (String) -> Unit) {
     var startTime by remember { mutableStateOf(initialStartTime) }
 
-    val startTimeValues = initialStartTime.split(":")
+    val startTimeValues = if (initialStartTime.isNotEmpty() && initialStartTime.contains(":")) {
+        initialStartTime.split(":")
+    } else {
+        listOf("00", "00")
+    }
     //Create dialog to use for picking start time
     val startTimePicker = TimePickerDialog(
         LocalContext.current,
@@ -252,7 +253,7 @@ fun CourseInput(course: String, onCourseChange: (String) -> Unit) {
 fun SaveChangesButton(
     viewModel: EventViewModel, navController: NavController, inputEvent: Event,
     date: String, startTime: String, endTime: String, title: String,
-    description: String, location: String, course: String
+    description: String, location: String, course: String, database: AppDatabase
 ) {
     val isSaveEnabled = (!(startTime == "12:00" && endTime == "12:00") && isValidEndTime(startTime, endTime))
 
@@ -261,17 +262,40 @@ fun SaveChangesButton(
             //Check if there is a selected event to modify event
             if (viewModel.selectedEvent != null) {
                 viewModel.modifyItem(
-                    viewModel.selectedEvent!!,
-                    Event(inputEvent.id, date, startTime, endTime, title, description, location, course)
+                    item =viewModel.selectedEvent!!,
+                    modifiedItem =Event(inputEvent.id, date, startTime, endTime, title, description, location, course),
+                    database =database
+                )
+                // update event
+                viewModel.modifyItem(
+                    item = viewModel.selectedEvent!!,
+                    modifiedItem = Event(
+                        id = inputEvent.id,
+                        title = title,
+                        date = date,
+                        startTime = startTime,
+                        endTime = endTime,
+                        description = description,
+                        location = location,
+                        course = course
+                    ),
+                    database = database
                 )
             } else {
-                //Otherwise create an event
+                // convert newEvent to database.Event and insert into database
                 viewModel.addToList(
-                    Event(viewModel.idCount, date, startTime, endTime, title, description, location, course
-                    )
+                    item = Event(
+                        id = inputEvent.id,
+                        title = title,
+                        date = date,
+                        startTime = startTime,
+                        endTime = endTime,
+                        description = description,
+                        location = location,
+                        course = course
+                    ),
+                    database = database
                 )
-                //Increment id for next event creation
-                viewModel.incrementId()
             }
             //Navigate back to where the user was when pressing the create/edit event button
             navController.navigate(NavRoutes.CalendarView.route) {
@@ -286,7 +310,6 @@ fun SaveChangesButton(
         Text(stringResource(R.string.save_changes))
     }
 }
-
 /**
  * To navigate back to where the user was when pressing the create/edit event button
  * @param navController
@@ -319,14 +342,3 @@ fun isValidEndTime(startTime: String, endTime: String): Boolean {
     return startCalendar.before(endCalendar)
 }
 
-@Preview(showBackground = true)
-@Composable
-fun CreateEditEventPreview() {
-    CalendarTheme {
-        val date = "01-08-2023"
-        val event = Event(0, date, "12:43", "12:43")
-        val navController = rememberNavController()
-        val viewModel = EventViewModel()
-        CreateEditEventScreen(viewModel, navController, date, event)
-    }
-}
