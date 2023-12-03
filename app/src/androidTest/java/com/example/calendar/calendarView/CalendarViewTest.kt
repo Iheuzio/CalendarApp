@@ -1,9 +1,13 @@
 package com.example.calendar.calendarView
 
+import android.content.Context
 import androidx.compose.ui.test.*
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.navigation.testing.TestNavHostController
+import androidx.room.Room
+import androidx.test.core.app.ApplicationProvider
 import androidx.test.platform.app.InstrumentationRegistry
+import com.example.calendar.data.database.AppDatabase
 import com.example.calendar.presentation.screen.CalendarView
 import com.example.calendar.presentation.viewmodels.DailyViewModel
 import com.example.calendar.presentation.viewmodels.CalendarViewModel
@@ -28,11 +32,17 @@ class CalendarViewTest {
     @Before
     fun setup() {
         navController = TestNavHostController(InstrumentationRegistry.getInstrumentation().targetContext)
-        calendarModel = CalendarViewModel()
-        eventViewModel = EventViewModel()
+        val context = ApplicationProvider.getApplicationContext<Context>()
+        val db = Room.inMemoryDatabaseBuilder(
+            context,
+            AppDatabase::class.java
+        ).allowMainThreadQueries().build()
+        calendarModel = CalendarViewModel(db)
+        eventViewModel = EventViewModel(db)
         composeTestRule.setContent {
-            CalendarView(navController, calendarModel, eventViewModel, dayModel = DailyViewModel())
+            CalendarView(navController, calendarModel, eventViewModel, dayModel = DailyViewModel(), db)
         }
+
     }
 
     @Test
