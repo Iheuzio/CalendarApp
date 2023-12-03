@@ -1,5 +1,6 @@
 package com.example.calendar.eventView
 
+import android.content.Context
 import androidx.compose.ui.test.assert
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.hasText
@@ -8,7 +9,11 @@ import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performTextInput
 import androidx.navigation.testing.TestNavHostController
+import androidx.room.Room
+import androidx.test.core.app.ApplicationProvider
 import androidx.test.platform.app.InstrumentationRegistry
+import com.example.calendar.data.database.AppDatabase
+import com.example.calendar.data.database.Event
 import com.example.calendar.presentation.screen.CreateEditEventScreen
 import com.example.calendar.presentation.screen.isValidEndTime
 import com.example.calendar.presentation.viewmodels.EventViewModel
@@ -30,12 +35,18 @@ class CreateEditEventTest {
     fun setup() {
         navController =
             TestNavHostController(InstrumentationRegistry.getInstrumentation().targetContext)
-        eventViewModel = EventViewModel()
+        val context = ApplicationProvider.getApplicationContext<Context>()
+        val db = Room.inMemoryDatabaseBuilder(
+            context,
+            AppDatabase::class.java
+        ).allowMainThreadQueries().build()
+        eventViewModel = EventViewModel(db)
         composeTestRule.setContent {
             CreateEditEventScreen(viewModel = eventViewModel,
                 navController = navController,
                 inputDate = "11-28-2023",
-                inputEvent = Event(0, "11-28-2023", "12:00", "12:00", "")
+                inputEvent = Event(0, "", "11-28-2023", "12:00", "12:00", "", "", ""),
+                db
             )
         }
     }

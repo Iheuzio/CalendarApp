@@ -1,12 +1,16 @@
 package com.example.calendar.DailyView
+import android.content.Context
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import androidx.navigation.testing.TestNavHostController
+import androidx.room.Room
+import androidx.test.core.app.ApplicationProvider
 import androidx.test.platform.app.InstrumentationRegistry
 import com.example.calendar.data.database.AppDatabase
+import com.example.calendar.data.database.Event
 import com.example.calendar.presentation.viewmodels.CalendarViewModel
 import com.example.calendar.presentation.viewmodels.EventViewModel
 import com.example.calendar.presentation.screen.DailyOverview
@@ -33,13 +37,18 @@ class DailyOverviewTest {
     @Before
     fun setup() {
         navController = TestNavHostController(InstrumentationRegistry.getInstrumentation().targetContext)
-        dailyViewModel = DailyViewModel(database = AppDatabase.getInstance())
-        calendarViewModel = CalendarViewModel()
-        eventViewModel = EventViewModel()
+        val context = ApplicationProvider.getApplicationContext<Context>()
+        val db = Room.inMemoryDatabaseBuilder(
+            context,
+            AppDatabase::class.java
+        ).allowMainThreadQueries().build()
+        dailyViewModel = DailyViewModel()
+        calendarViewModel = CalendarViewModel(db)
+        eventViewModel = EventViewModel(db)
         composeTestRule.runOnUiThread {
             dailyViewModel.eventsForSelectedDate.value = createMockEvents()
             composeTestRule.setContent {
-                DailyOverview(navController, calendarViewModel, dailyViewModel, eventViewModel)
+                DailyOverview(navController, calendarViewModel, dailyViewModel, eventViewModel, db)
             }
         }
     }
@@ -96,8 +105,8 @@ class DailyOverviewTest {
     }
     private fun createMockEvents(): List<Event> {
         return listOf(
-            Event(id = 1, date = "2023-11-20", startTime = "1:00", endTime = "11:00", title = "Event", description = "Description 1", location = "Location 1"),
-            Event(id = 2, date = "2023-11-20", startTime = "12:00", endTime = "13:00", title = "Event 2", description = "Description 2", location = "Location 2")
+            Event(id = 1, title = "Event", date = "2023-11-20", startTime = "1:00", endTime = "11:00", description = "Description 1", location = "Location 1", course="Course 1"),
+            Event(id = 2, title = "Event 2", date = "2023-11-20", startTime = "12:00", endTime = "13:00", description = "Description 2", location = "Location 2", course="Course 2")
         )
     }
 }
