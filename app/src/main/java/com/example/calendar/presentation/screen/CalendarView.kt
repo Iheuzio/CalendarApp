@@ -32,10 +32,12 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.calendar.R
 import com.example.calendar.data.NavRoutes
+import com.example.calendar.data.database.AppDatabase
 import com.example.calendar.presentation.viewmodels.CalendarViewModel
 import com.example.calendar.presentation.viewmodels.EventViewModel
 import com.example.calendar.presentation.getStringResource
 import com.example.calendar.presentation.viewmodels.DailyViewModel
+import java.text.SimpleDateFormat
 import java.util.*
 
 /**
@@ -46,13 +48,13 @@ import java.util.*
  * @param eventModel The ViewModel that holds the state of the events.
  */
 @Composable
-fun CalendarView(navController: NavController, calendarModel: CalendarViewModel, eventModel: EventViewModel, dayModel: DailyViewModel) {
+fun CalendarView(navController: NavController, calendarModel: CalendarViewModel, eventModel: EventViewModel, dayModel: DailyViewModel, database: AppDatabase) {
     val showDailyOverview = calendarModel.showDailyOverview.value
 
     if (!showDailyOverview) {
-        MonthView(navController, calendarModel, eventModel)
+        MonthView(navController, calendarModel, eventModel, database)
     } else {
-        DailyOverview(navController, calendarModel, dayModel, eventModel)
+        DailyOverview(navController, calendarModel, dayModel, eventModel, database)
     }
 }
 
@@ -63,13 +65,12 @@ fun CalendarView(navController: NavController, calendarModel: CalendarViewModel,
  * @param eventModel The ViewModel that holds the state of the events.
  */
 @Composable
-fun MonthView(navController: NavController, calendarModel: CalendarViewModel, eventModel: EventViewModel) {
+fun MonthView(navController: NavController, calendarModel: CalendarViewModel, eventModel: EventViewModel, database: AppDatabase) {
     val selectedDate = calendarModel.selectedDate.value
-
     Column(modifier = Modifier.fillMaxSize()) {
         CalendarHeader(selectedDate, calendarModel::onDateChange)
         DayOfWeekHeader()
-        CalendarGrid(eventModel, selectedDate, calendarModel::onDateChange)
+        CalendarGrid(eventModel, selectedDate, calendarModel::onDateChange, database)
         AddEventButton(navController)
     }
 }
@@ -143,7 +144,7 @@ fun AddEventButton(navController: NavController) {
  * @param onDateClick The function to call when a date is clicked.
  */
 @Composable
-fun CalendarGrid(eventModel: EventViewModel, selectedDate: Date, onDateClick: (Calendar) -> Unit) {
+fun CalendarGrid(eventModel: EventViewModel, selectedDate: Date, onDateClick: (Calendar) -> Unit, database: AppDatabase) {
     val calendar = Calendar.getInstance()
     calendar.time = selectedDate
 
@@ -176,7 +177,11 @@ fun CalendarGrid(eventModel: EventViewModel, selectedDate: Date, onDateClick: (C
                     val isCurrentMonth = cellDate.get(Calendar.MONTH) == selectedDate.month
                     val isSelected = cellDate.time == selectedDate
                     // check if events exist for this day
-                    val eventBool = eventModel.checkEventsExist(cellDate.time)
+                    val dateFormat = SimpleDateFormat("MM-dd-yyyy")
+                    val currentTime = dateFormat.format(cellDate.time)
+                    val eventBool = eventModel.events.any { event ->
+                        event.date == currentTime
+                    }
                     DayCell(day, isSelected, isCurrentMonth, cellSize, onDateClick, cellDate, eventBool)
                 } else {
                     EmptyCell(cellSize)
