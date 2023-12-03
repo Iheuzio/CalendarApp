@@ -73,10 +73,10 @@ class EventViewModel(private val database: AppDatabase) : ViewModel() {
         }
     }
 
-    fun removeFromList(item: Event, database: AppDatabase) {
+    fun removeFromList(id: Int, database: AppDatabase) {
         viewModelScope.launch {
             withContext(Dispatchers.IO) {
-                database.eventDao().delete(item)
+                database.eventDao().delete(id)
                 events = database.eventDao().getAll().toMutableList()
             }
         }

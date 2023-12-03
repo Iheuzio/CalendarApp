@@ -12,14 +12,12 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
-import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import com.example.calendar.R
 import com.example.calendar.data.NavRoutes
 import com.example.calendar.data.database.AppDatabase
 import com.example.calendar.presentation.getStringResource
 import com.example.calendar.presentation.viewmodels.EventViewModel
-import kotlinx.coroutines.launch
 
 /**
  * Screen to view a single event's details and be able to delete it
@@ -45,10 +43,7 @@ viewModel.selectedEvent?.let { Text(LocalContext.current.getStringResource(R.str
         Button(
             onClick = {
                 viewModel.selectedEvent?.let { event ->
-                    viewModel.viewModelScope.launch {
-                        database.eventDao().delete(event)
-                    }
-                    viewModel.removeFromList(event, database)
+                    viewModel.removeFromList(event.id, database)
                 }
                 navController.navigate(NavRoutes.CalendarView.route) {
                     popUpTo(navController.graph.findStartDestination().id) {

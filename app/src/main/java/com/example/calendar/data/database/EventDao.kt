@@ -36,10 +36,10 @@ interface EventDao {
 
     /***
      * Deletes the given event from the database
-     * @param event Event
+     * @param id Int
      */
-    @Delete
-    fun delete(event: Event)
+    @Query("DELETE FROM event WHERE id = :id")
+    fun delete(id: Int)
 
     /***
      * Updates the given event in the database
