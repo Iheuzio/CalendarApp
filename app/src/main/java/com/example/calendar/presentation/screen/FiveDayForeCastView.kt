@@ -25,6 +25,21 @@ import java.util.Locale
 @Composable
 fun FiveDayForecastScreen(navController: NavController) {
 
+    val calendar = Calendar.getInstance().apply {
+        set(Calendar.HOUR_OF_DAY, 0)
+        set(Calendar.MINUTE, 0)
+        set(Calendar.SECOND, 0)
+        set(Calendar.MILLISECOND, 0)
+    }
+
+    val days = List(5) { index ->
+        (calendar.clone() as Calendar).apply {
+            add(Calendar.DATE, index)
+        }.time
+    }
+
+    val dayFormat = SimpleDateFormat("EEEE MMMM dd", Locale.getDefault())
+
 
     val forecastData = List(40) {
         ForecastData(
@@ -43,6 +58,9 @@ fun FiveDayForecastScreen(navController: NavController) {
             modifier = Modifier.padding(16.dp)
         ) {
             Text("Back")
+        }
+        days.forEach { date ->
+            DayHeader(day = dayFormat.format(date))
         }
 
         LazyColumn {
