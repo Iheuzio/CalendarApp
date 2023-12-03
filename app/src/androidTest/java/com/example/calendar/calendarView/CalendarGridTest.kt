@@ -1,8 +1,12 @@
 package com.example.calendar.calendarView
 
+import android.content.Context
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.navigation.testing.TestNavHostController
+import androidx.room.Room
+import androidx.test.core.app.ApplicationProvider
 import androidx.test.platform.app.InstrumentationRegistry
+import com.example.calendar.data.database.AppDatabase
 import com.example.calendar.presentation.viewmodels.CalendarViewModel
 import com.example.calendar.presentation.viewmodels.EventViewModel
 import com.example.calendar.presentation.screen.CalendarGrid
@@ -27,13 +31,18 @@ class CalendarGridTest {
     fun setup() {
         navController =
             TestNavHostController(InstrumentationRegistry.getInstrumentation().targetContext)
-        calendarModel = CalendarViewModel()
-        eventViewModel = EventViewModel()
+        val context = ApplicationProvider.getApplicationContext<Context>()
+        val db = Room.inMemoryDatabaseBuilder(
+            context,
+            AppDatabase::class.java
+        ).allowMainThreadQueries().build()
+        calendarModel = CalendarViewModel(db)
+        eventViewModel = EventViewModel(db)
         calendarModel.showDailyOverview.value = false
         composeTestRule.setContent {
-            CalendarGrid(eventViewModel,calendarModel.selectedDate.value) { day ->
+            CalendarGrid(eventViewModel,calendarModel.selectedDate.value, { day ->
                 calendarModel.onDateChange(day)
-            }
+            }, db)
         }
     }
 
