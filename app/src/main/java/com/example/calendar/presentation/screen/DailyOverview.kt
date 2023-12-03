@@ -56,6 +56,8 @@ fun DailyOverviewScreen(
     onEditEvent: (Event) -> Unit
 ) {
     //dailyViewModel.eventsForSelectedDate.observeAsState(listOf())
+    val today = Calendar.getInstance().time
+
 
     Column(modifier = Modifier.fillMaxSize()) {
         Row {
@@ -75,7 +77,10 @@ fun DailyOverviewScreen(
                 }
             )
         }
-        WeatherDisplay()
+        //only display weather if it is today's date that is selected
+        if (selectedDate.isSameDayAs(today)) {
+            WeatherDisplay()
+        }
         DailyHeader(selectedDate, onChangeDate)
         DailyEventsList(selectedDate = selectedDate, events = events, onEventSelected, onEditEvent)
     }
@@ -313,4 +318,12 @@ fun TimeSlot(time: String) {
 fun getTime(dateStr: String): Date {
     val format = SimpleDateFormat("HH:mm", Locale.getDefault())
     return format.parse(dateStr)
+}
+//helper function to check if days are equal
+fun Date.isSameDayAs(otherDate: Date): Boolean {
+    val calendar1 = Calendar.getInstance().apply { time = this@isSameDayAs }
+    val calendar2 = Calendar.getInstance().apply { time = otherDate }
+    return calendar1.get(Calendar.ERA) == calendar2.get(Calendar.ERA) &&
+            calendar1.get(Calendar.YEAR) == calendar2.get(Calendar.YEAR) &&
+            calendar1.get(Calendar.DAY_OF_YEAR) == calendar2.get(Calendar.DAY_OF_YEAR)
 }
