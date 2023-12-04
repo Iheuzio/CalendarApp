@@ -99,14 +99,14 @@ fun WeatherDisplay(
 fun getDrawableResourceForCondition(condition: String): Int {
     return when (condition) {
         "Sunny" -> R.drawable.sunny
-        "Mostly Sunny" -> R.drawable.sunny
-        "Partly Sunny" -> R.drawable.sunny
-        "Hazy Sunshine" -> R.drawable.sunny
+        "Mostly sunny" -> R.drawable.sunny
+        "Partly sunny" -> R.drawable.sunny
+        "Hazy sunshine" -> R.drawable.sunny
         "Cloudy" -> R.drawable.cloudy
         "Partly cloudy" -> R.drawable.intermittentclouds
         "Intermittent clouds" -> R.drawable.intermittentclouds
         "Snow" -> R.drawable.snowy
-        "Mostly Cloudy" -> R.drawable.cloudy
+        "Mostly cloudy" -> R.drawable.cloudy
         "Cloudy" -> R.drawable.cloudy
         "Dreary" -> R.drawable.cloudy
         "Fog" -> R.drawable.cloudy
@@ -123,17 +123,17 @@ fun getDrawableResourceForCondition(condition: String): Int {
         "Mostly Cloudy w/ Snow" -> R.drawable.snowy
         "Ice" -> R.drawable.snowy
         "Sleet" -> R.drawable.snowy
-        "Freezing Rain" -> R.drawable.grain
-        "Rain and Snow" -> R.drawable.grain
+        "Freezing rain" -> R.drawable.grain
+        "Rain and snow" -> R.drawable.grain
         "Hot" -> R.drawable.sunny
         "Cold" -> R.drawable.snowy
         "Windy" -> R.drawable.cloudy
         "Clear" -> R.drawable.sunny
-        "Mostly Clear" -> R.drawable.sunny
-        "Partly Cloudy" -> R.drawable.intermittentclouds
-        "Intermittent Clouds" -> R.drawable.intermittentclouds
-        "Hazy Moonlight" -> R.drawable.cloudy
-        "Mostly Cloudy" -> R.drawable.cloudy
+        "Mostly clear" -> R.drawable.sunny
+        "Partly cloudy" -> R.drawable.intermittentclouds
+        "Intermittent clouds" -> R.drawable.intermittentclouds
+        "Hazy moonlight" -> R.drawable.cloudy
+        "Mostly cloudy" -> R.drawable.cloudy
         else -> R.drawable.unknown_weather_condition
     }
 }
