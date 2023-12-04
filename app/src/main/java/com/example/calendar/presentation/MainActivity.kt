@@ -1,40 +1,43 @@
 package com.example.calendar.presentation
 
+import android.Manifest
 import android.content.Context
+import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.annotation.RequiresApi
+import androidx.annotation.StringRes
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
-import com.example.calendar.ui.theme.CalendarTheme
-import androidx.annotation.StringRes
+import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import com.example.calendar.data.database.Event
 import com.example.calendar.data.NavRoutes
-import com.example.calendar.presentation.viewmodels.CalendarViewModel
-import com.example.calendar.presentation.viewmodels.EventViewModel
+import com.example.calendar.data.database.AppDatabase
+import com.example.calendar.data.database.Event
 import com.example.calendar.presentation.screen.CalendarView
 import com.example.calendar.presentation.screen.CreateEditEventScreen
 import com.example.calendar.presentation.screen.DailyOverview
 import com.example.calendar.presentation.screen.FiveDayForecastScreen
-import com.example.calendar.presentation.viewmodels.DailyViewModel
 import com.example.calendar.presentation.screen.MonthView
 import com.example.calendar.presentation.screen.ViewEventScreen
-import com.example.calendar.data.database.AppDatabase
+import com.example.calendar.presentation.viewmodels.CalendarViewModel
+import com.example.calendar.presentation.viewmodels.DailyViewModel
+import com.example.calendar.presentation.viewmodels.EventViewModel
+import com.example.calendar.ui.theme.CalendarTheme
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import java.text.SimpleDateFormat
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 import java.util.Locale
-
 
 
 fun Context.getStringResource(@StringRes resId: Int): String {
@@ -45,6 +48,7 @@ class MainActivity : ComponentActivity() {
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        requestLocationPermission()
         setContent {
             CalendarTheme {
                 Surface(
@@ -122,4 +126,30 @@ class MainActivity : ComponentActivity() {
 
         }
     }
+    private val LOCATION_PERMISSION_REQUEST_CODE = 1
+    private fun requestLocationPermission() {
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
+            != PackageManager.PERMISSION_GRANTED
+        ) {
+            ActivityCompat.requestPermissions(
+                this, arrayOf<String>(Manifest.permission.ACCESS_FINE_LOCATION),
+                LOCATION_PERMISSION_REQUEST_CODE
+            )
+        }
+    }
+    @Suppress("DEPRECATION")
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<String?>,
+        grantResults: IntArray
+    ) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+        if (requestCode == LOCATION_PERMISSION_REQUEST_CODE) {
+            if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+
+            } else {
+            }
+        }
+    }
+
 }

@@ -23,11 +23,13 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.example.calendar.R
 import com.example.calendar.data.NavRoutes
+import com.example.calendar.utils.LocationUtil
 import com.example.calendar.utils.RetrofitInstance
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.isActive
@@ -41,7 +43,24 @@ fun WeatherDisplay(
     var weatherData by remember { mutableStateOf<WeatherResponse?>(null) }
     val coroutineScope = rememberCoroutineScope()
     val apiKey = "ERtoam8JXYf21rCXIfEhd9w1gZVhLkU6"
-    val locationKey = "56186"
+    var locationKey by remember { mutableStateOf("119490") } //default
+    val context = LocalContext.current
+
+    //get location
+    @Suppress("DEPRECATION")
+    LaunchedEffect(Unit) {
+        coroutineScope.launch {
+            val locationUtil = LocationUtil(context)
+            locationUtil.startLocationUpdates(onSuccess = { location ->
+                val geocoder = Geocoder(context, Locale.getDefault())
+                val addresses =
+                    location?.let { geocoder.getFromLocation(it.latitude, location.longitude, 1) }
+                Log.d("location", addresses.toString())
+            }, onFailure = { error ->
+                Log.e("WeatherDisplay", error.toString())
+            })
+        }
+    }
 
     LaunchedEffect(Unit) {
         coroutineScope.launch {
@@ -140,5 +159,19 @@ fun getDrawableResourceForCondition(condition: String): Int {
         else -> R.drawable.unknown_weather_condition
     }
 }
-
+suspend fun getLocationKeyForCity(city: String): String? {
+    val apiKey = "ERtoam8JXYf21rCXIfEhd9w1gZVhLkU6"
+    return try {
+        val response = RetrofitInstance.api.searchCityLocation(apiKey, city)
+        if (response.isSuccessful && response.body() != null) {
+            response.body()!![0].Key
+        } else {
+            Log.e("LocationSearch", "Error: ${response.errorBody()?.string()}")
+            null
+        }
+    } catch (e: Exception) {
+        Log.e("LocationSearch", "Exception: $e")
+        null
+    }
+}
 
