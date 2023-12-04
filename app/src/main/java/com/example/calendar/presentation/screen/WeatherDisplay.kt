@@ -33,15 +33,12 @@ import kotlinx.coroutines.launch
 
 @Composable
 fun WeatherDisplay(
-    navController: NavController,
-    temperature: String = "21°C",
-    weatherCondition: String = "Sunny",
-    lastUpdated: String = "10:00 AM"
+    navController: NavController
 ) {
     var weatherData by remember { mutableStateOf<WeatherResponse?>(null) }
     val coroutineScope = rememberCoroutineScope()
     val apiKey = "ERtoam8JXYf21rCXIfEhd9w1gZVhLkU6"
-    val locationKey = "349727"
+    val locationKey = "56186"
     val imageName =
 
     LaunchedEffect(Unit) {
@@ -85,7 +82,7 @@ fun WeatherDisplay(
             val date = forecast.Date
             Icon(
                 painter = painterResource(id = iconId),
-                contentDescription = weatherCondition,
+                contentDescription = condition,
                 modifier = Modifier.size(48.dp)
             )
 
@@ -102,9 +99,42 @@ fun WeatherDisplay(
 @DrawableRes
 fun getDrawableResourceForCondition(condition: String): Int {
     return when (condition) {
-        "sunny" -> R.drawable.sunny
-        "cloudy" -> R.drawable.cloudy
+        "Sunny" -> R.drawable.sunny
+        "Mostly Sunny" -> R.drawable.sunny
+        "Partly Sunny" -> R.drawable.sunny
+        "Hazy Sunshine" -> R.drawable.sunny
+        "Cloudy" -> R.drawable.cloudy
+        "Partly cloudy" -> R.drawable.intermittentclouds
         "Intermittent clouds" -> R.drawable.intermittentclouds
+        "Snow" -> R.drawable.snowy
+        "Mostly Cloudy" -> R.drawable.cloudy
+        "Cloudy" -> R.drawable.cloudy
+        "Dreary" -> R.drawable.cloudy
+        "Fog" -> R.drawable.cloudy
+        "Showers" -> R.drawable.rainy
+        "Mostly Cloudy w/ Showers" -> R.drawable.cloudy
+        "Partly Sunny w/ Showers" -> R.drawable.cloudy
+        "T-Storms" -> R.drawable.cloudy
+        "Mostly Cloudy w/ T-Storms" -> R.drawable.cloudy
+        "Partly Sunny w/ T-Storms" -> R.drawable.sunny
+        "Rain" -> R.drawable.rainy
+        "Flurries" -> R.drawable.snowy
+        "Mostly Cloudy w/ Flurries" -> R.drawable.snowy
+        "Partly Sunny w/ Flurries" -> R.drawable.snowy
+        "Mostly Cloudy w/ Snow" -> R.drawable.snowy
+        "Ice" -> R.drawable.snowy
+        "Sleet" -> R.drawable.snowy
+        "Freezing Rain" -> R.drawable.grain
+        "Rain and Snow" -> R.drawable.grain
+        "Hot" -> R.drawable.sunny
+        "Cold" -> R.drawable.snowy
+        "Windy" -> R.drawable.cloudy
+        "Clear" -> R.drawable.sunny
+        "Mostly Clear" -> R.drawable.sunny
+        "Partly Cloudy" -> R.drawable.intermittentclouds
+        "Intermittent Clouds" -> R.drawable.intermittentclouds
+        "Hazy Moonlight" -> R.drawable.cloudy
+        "Mostly Cloudy" -> R.drawable.cloudy
         else -> R.drawable.unknown_weather_condition
     }
 }
