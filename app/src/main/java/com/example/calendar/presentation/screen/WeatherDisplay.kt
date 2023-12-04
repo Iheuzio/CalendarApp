@@ -59,6 +59,12 @@ fun WeatherDisplay(
     }
 
     // add refetch data every 10 min later
+    LaunchedEffect(weatherData) {
+        delay(600_000) // 10 minutes in milliseconds
+        coroutineScope.launch {
+            // Refetch the data as done in the above try-catch block
+        }
+    }
 
     Row(
         verticalAlignment = Alignment.CenterVertically,
@@ -68,16 +74,22 @@ fun WeatherDisplay(
                 navController.navigate(NavRoutes.FiveDayForecast.route)
             })
     ) {
-        Icon(
-            painter = painterResource(id = iconId),
-            contentDescription = weatherCondition,
-            modifier = Modifier.size(48.dp)
-        )
+        weatherData?.let { data ->
+            val forecast = data.DailyForecasts.first()
+            val tempCelsius = ((forecast.Temperature.Minimum.Value - 32) * 5/9).toInt()
+            val condition = forecast.Day.IconPhrase
+            val date = forecast.Date
+            Icon(
+                painter = painterResource(id = iconId),
+                contentDescription = weatherCondition,
+                modifier = Modifier.size(48.dp)
+            )
 
-        Column(modifier = Modifier.padding(start = 8.dp)) {
-            Text(text = temperature)
-            Text(text = weatherCondition)
-            Text(text = "Last updated: $lastUpdated")
+            Column(modifier = Modifier.padding(start = 8.dp)) {
+                Text(text = "Temperature: $tempCelsius°C")
+                Text(text = "Condition: $condition")
+                Text(text = "Last updated: $date")
+        } ?: Text(text = "Fetching weather...")
 
         }
     }
