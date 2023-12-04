@@ -1,6 +1,8 @@
 package com.example.calendar.presentation.screen
 
 import WeatherResponse
+import android.content.Context
+import android.location.Geocoder
 import android.text.TextUtils.replace
 import android.util.Log
 import androidx.annotation.DrawableRes
@@ -30,6 +32,7 @@ import com.example.calendar.utils.RetrofitInstance
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
+import java.util.Locale
 
 @Composable
 fun WeatherDisplay(
@@ -137,3 +140,5 @@ fun getDrawableResourceForCondition(condition: String): Int {
         else -> R.drawable.unknown_weather_condition
     }
 }
+
+
