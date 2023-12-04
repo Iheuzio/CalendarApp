@@ -1,7 +1,9 @@
 package com.example.calendar.presentation.screen
 
 import WeatherResponse
+import android.text.TextUtils.replace
 import android.util.Log
+import androidx.annotation.DrawableRes
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -34,13 +36,13 @@ fun WeatherDisplay(
     navController: NavController,
     temperature: String = "21°C",
     weatherCondition: String = "Sunny",
-    iconId: Int = R.drawable.sunny,
     lastUpdated: String = "10:00 AM"
 ) {
     var weatherData by remember { mutableStateOf<WeatherResponse?>(null) }
     val coroutineScope = rememberCoroutineScope()
     val apiKey = "ERtoam8JXYf21rCXIfEhd9w1gZVhLkU6"
     val locationKey = "349727"
+    val imageName =
 
     LaunchedEffect(Unit) {
         coroutineScope.launch {
@@ -60,9 +62,8 @@ fun WeatherDisplay(
 
     // add refetch data every 10 min later
     LaunchedEffect(weatherData) {
-        delay(600_000) // 10 minutes in milliseconds
+        delay(600_000) // 10 min
         coroutineScope.launch {
-            // Refetch the data as done in the above try-catch block
         }
     }
 
@@ -78,6 +79,9 @@ fun WeatherDisplay(
             val forecast = data.DailyForecasts.first()
             val tempCelsius = ((forecast.Temperature.Minimum.Value - 32) * 5/9).toInt()
             val condition = forecast.Day.IconPhrase
+            val iconId = getDrawableResourceForCondition(condition)
+
+
             val date = forecast.Date
             Icon(
                 painter = painterResource(id = iconId),
@@ -92,5 +96,15 @@ fun WeatherDisplay(
         } ?: Text(text = "Fetching weather...")
 
         }
+    }
+}
+
+@DrawableRes
+fun getDrawableResourceForCondition(condition: String): Int {
+    return when (condition) {
+        "sunny" -> R.drawable.sunny
+        "cloudy" -> R.drawable.cloudy
+        "Intermittent clouds" -> R.drawable.intermittentclouds
+        else -> R.drawable.unknown_weather_condition
     }
 }
