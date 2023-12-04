@@ -33,11 +33,10 @@ import kotlinx.coroutines.launch
 import java.util.Locale
 
 @Composable
-fun FiveDayForecastScreen(navController: NavController) {
+fun FiveDayForecastScreen(navController: NavController, locationKey: String) {
     var weatherData by remember { mutableStateOf<WeatherResponse?>(null) }
     val coroutineScope = rememberCoroutineScope()
     val apiKey = "ERtoam8JXYf21rCXIfEhd9w1gZVhLkU6"
-    val locationKey = "56186"
 
     LaunchedEffect(Unit) {
         coroutineScope.launch {

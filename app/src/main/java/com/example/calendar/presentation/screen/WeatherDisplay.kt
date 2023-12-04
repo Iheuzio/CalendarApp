@@ -43,7 +43,7 @@ fun WeatherDisplay(
     var weatherData by remember { mutableStateOf<WeatherResponse?>(null) }
     val coroutineScope = rememberCoroutineScope()
     val apiKey = "ERtoam8JXYf21rCXIfEhd9w1gZVhLkU6"
-    var locationKey by remember { mutableStateOf("119490") } //default
+    var locationKey by remember { mutableStateOf<String?>(null) } // Will be set when location is obtained
     val context = LocalContext.current
 
     //get location
@@ -56,16 +56,20 @@ fun WeatherDisplay(
                 val addresses =
                     location?.let { geocoder.getFromLocation(it.latitude, location.longitude, 1) }
                 Log.d("location", addresses.toString())
+                val address = addresses?.get(0)
+                if (address != null) {
+                    locationKey = address.postalCode
+                }
             }, onFailure = { error ->
                 Log.e("WeatherDisplay", error.toString())
             })
         }
     }
 
-    LaunchedEffect(Unit) {
+    LaunchedEffect(locationKey) {
         coroutineScope.launch {
             try {
-                val response = RetrofitInstance.api.getDailyForecast(locationKey, apiKey)
+                val response = RetrofitInstance.api.getDailyForecast(locationKey.toString(), apiKey)
                 if (response.isSuccessful) {
                     weatherData = response.body()
                     Log.d("data", weatherData.toString())
@@ -90,7 +94,9 @@ fun WeatherDisplay(
         modifier = Modifier
             .padding(16.dp)
             .clickable(onClick = {
-                navController.navigate(NavRoutes.FiveDayForecast.route)
+                locationKey?.let { key ->
+                    navController.navigate("fiveDayForecast/$key")
+                }
             })
     ) {
         weatherData?.let { data ->
@@ -159,19 +165,6 @@ fun getDrawableResourceForCondition(condition: String): Int {
         else -> R.drawable.unknown_weather_condition
     }
 }
-suspend fun getLocationKeyForCity(city: String): String? {
-    val apiKey = "ERtoam8JXYf21rCXIfEhd9w1gZVhLkU6"
-    return try {
-        val response = RetrofitInstance.api.searchCityLocation(apiKey, city)
-        if (response.isSuccessful && response.body() != null) {
-            response.body()!![0].Key
-        } else {
-            Log.e("LocationSearch", "Error: ${response.errorBody()?.string()}")
-            null
-        }
-    } catch (e: Exception) {
-        Log.e("LocationSearch", "Exception: $e")
-        null
-    }
-}
+
+
 

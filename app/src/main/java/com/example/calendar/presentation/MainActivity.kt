@@ -16,9 +16,11 @@ import androidx.compose.ui.Modifier
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.navigation.NavHostController
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navArgument
 import com.example.calendar.data.NavRoutes
 import com.example.calendar.data.database.AppDatabase
 import com.example.calendar.data.database.Event
@@ -120,8 +122,14 @@ class MainActivity : ComponentActivity() {
                 MonthView(navController = navController, calendarModel = calendarModel, eventviewModel, database)
             }
 
-            composable(route = NavRoutes.FiveDayForecast.route) {
-                FiveDayForecastScreen(navController = navController)
+            composable(
+                route = "fiveDayForecast/{locationKey}",
+                arguments = listOf(navArgument("locationKey") { type = NavType.StringType })
+            ) { backStackEntry ->
+                FiveDayForecastScreen(
+                    navController = navController,
+                    locationKey = backStackEntry.arguments?.getString("locationKey") ?: ""
+                )
             }
 
         }
