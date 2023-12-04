@@ -14,6 +14,11 @@ interface WeatherService {
         @Path("locationKey") locationKey: String,
         @Query("apikey") apiKey: String
     ): Response<WeatherResponse>
+    @GET("forecasts/v1/daily/5day/{locationKey}")
+    suspend fun getFiveDayForecast(
+        @Path("locationKey") locationKey: String,
+        @Query("apikey") apiKey: String
+    ): Response<WeatherResponse>
 }
 object RetrofitInstance {
     val api: WeatherService by lazy {

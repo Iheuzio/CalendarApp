@@ -1,7 +1,9 @@
 package com.example.calendar.presentation.screen
 
+import WeatherResponse
 import android.icu.text.SimpleDateFormat
 import android.icu.util.Calendar
+import android.util.Log
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -15,15 +17,43 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.example.calendar.R
+import com.example.calendar.utils.RetrofitInstance
+import kotlinx.coroutines.launch
 import java.util.Locale
 
 @Composable
 fun FiveDayForecastScreen(navController: NavController) {
+    var weatherData by remember { mutableStateOf<WeatherResponse?>(null) }
+    val coroutineScope = rememberCoroutineScope()
+    val apiKey = "ERtoam8JXYf21rCXIfEhd9w1gZVhLkU6"
+    val locationKey = "56186"
+
+    LaunchedEffect(Unit) {
+        coroutineScope.launch {
+            try {
+                val response = RetrofitInstance.api.getFiveDayForecast(locationKey, apiKey)
+                if (response.isSuccessful) {
+                    weatherData = response.body()
+                    Log.d("5daydata", weatherData.toString())
+                } else {
+                    Log.e("FiveDayForecast", "Error fetching weather data: ${response.errorBody()?.string()}")
+                }
+            } catch (e: Exception) {
+                Log.e("FiveDayForecast", "Exception in fetching weather data", e)
+            }
+        }
+    }
 
     val calendar = Calendar.getInstance().apply {
         set(Calendar.HOUR_OF_DAY, 0)

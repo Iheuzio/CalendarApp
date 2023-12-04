@@ -39,7 +39,6 @@ fun WeatherDisplay(
     val coroutineScope = rememberCoroutineScope()
     val apiKey = "ERtoam8JXYf21rCXIfEhd9w1gZVhLkU6"
     val locationKey = "56186"
-    val imageName =
 
     LaunchedEffect(Unit) {
         coroutineScope.launch {
