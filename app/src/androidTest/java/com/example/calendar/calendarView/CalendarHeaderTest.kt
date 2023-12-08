@@ -3,7 +3,9 @@ package com.example.calendar.calendarView
 import androidx.compose.ui.test.*
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.navigation.testing.TestNavHostController
+import androidx.room.Room
 import androidx.test.platform.app.InstrumentationRegistry
+import com.example.calendar.data.database.AppDatabase
 import com.example.calendar.presentation.viewmodels.CalendarViewModel
 import com.example.calendar.presentation.viewmodels.EventViewModel
 import com.example.calendar.presentation.screen.CalendarHeader
@@ -11,6 +13,8 @@ import com.example.calendar.presentation.screen.DayNameText
 import com.example.calendar.presentation.screen.DayOfWeekHeader
 import com.example.calendar.presentation.screen.monthYearHeader
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import android.content.Context
+import androidx.test.core.app.ApplicationProvider
 import org.junit.Assert.assertNotEquals
 import org.junit.Before
 import org.junit.Rule
@@ -31,8 +35,13 @@ class CalendarHeaderTest {
     fun setup() {
         navController =
             TestNavHostController(InstrumentationRegistry.getInstrumentation().targetContext)
-        calendarModel = CalendarViewModel()
-        eventViewModel = EventViewModel()
+        val context = ApplicationProvider.getApplicationContext<Context>()
+        val db = Room.inMemoryDatabaseBuilder(
+            context,
+            AppDatabase::class.java
+        ).allowMainThreadQueries().build()
+        calendarModel = CalendarViewModel(db)
+        eventViewModel = EventViewModel(db)
 
     }
 

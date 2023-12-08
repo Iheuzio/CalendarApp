@@ -1,6 +1,7 @@
 plugins {
     id("com.android.application")
     id("org.jetbrains.kotlin.android")
+    id("org.jetbrains.kotlin.kapt")
 }
 
 android {
@@ -36,6 +37,12 @@ android {
     kotlinOptions {
         jvmTarget = "1.8"
     }
+    // have kaptGenerateStubsDebugKotlin use version 1.8
+    tasks.withType(org.jetbrains.kotlin.gradle.tasks.KotlinCompile::class) {
+        kotlinOptions {
+            jvmTarget = "1.8"
+        }
+    }
     buildFeatures {
         compose = true
     }
@@ -63,7 +70,10 @@ dependencies {
     implementation("androidx.compose.material3:material3")
     implementation ("androidx.navigation:navigation-compose:2.5.3")
     implementation("androidx.navigation:navigation-runtime-ktx:2.7.5")
-
+    androidTestImplementation("org.testng:testng:6.9.6")
+    kapt ("androidx.room:room-compiler:2.6.0")
+    implementation("androidx.room:room-ktx:2.6.0")
+    implementation("androidx.room:room-runtime:2.6.0")
     testImplementation("junit:junit:4.13.2")
     androidTestImplementation("androidx.navigation:navigation-testing:2.4.1")
     androidTestImplementation("androidx.test.ext:junit:1.1.5")

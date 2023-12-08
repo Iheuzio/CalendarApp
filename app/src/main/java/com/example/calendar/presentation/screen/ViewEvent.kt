@@ -12,14 +12,12 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.navigation.NavGraph.Companion.findStartDestination
-import androidx.navigation.compose.rememberNavController
 import com.example.calendar.R
 import com.example.calendar.data.NavRoutes
+import com.example.calendar.data.database.AppDatabase
 import com.example.calendar.presentation.getStringResource
 import com.example.calendar.presentation.viewmodels.EventViewModel
-import com.example.calendar.ui.theme.CalendarTheme
 
 /**
  * Screen to view a single event's details and be able to delete it
@@ -27,7 +25,7 @@ import com.example.calendar.ui.theme.CalendarTheme
  * @param navController
  */
 @Composable
-fun ViewEventScreen(viewModel: EventViewModel, navController: NavController) {
+fun ViewEventScreen(viewModel: EventViewModel, navController: NavController, database: AppDatabase) {
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
         modifier = Modifier
@@ -44,7 +42,9 @@ viewModel.selectedEvent?.let { Text(LocalContext.current.getStringResource(R.str
 
         Button(
             onClick = {
-                viewModel.selectedEvent?.let { viewModel.removeFromList(it) }
+                viewModel.selectedEvent?.let { event ->
+                    viewModel.removeFromList(event.id, database)
+                }
                 navController.navigate(NavRoutes.CalendarView.route) {
                     popUpTo(navController.graph.findStartDestination().id) {
                         saveState = true
@@ -69,14 +69,4 @@ viewModel.selectedEvent?.let { Text(LocalContext.current.getStringResource(R.str
         }
     }
 
-}
-
-@Preview(showBackground = true)
-@Composable
-fun ViewEventPreview() {
-    CalendarTheme {
-        val navController = rememberNavController()
-        val viewModel = EventViewModel()
-        ViewEventScreen(viewModel, navController)
-    }
 }
