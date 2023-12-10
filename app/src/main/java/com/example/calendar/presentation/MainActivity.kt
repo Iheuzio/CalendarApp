@@ -12,12 +12,14 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import com.example.calendar.ui.theme.CalendarTheme
 import androidx.annotation.StringRes
+import androidx.compose.ui.platform.LocalContext
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.calendar.data.database.Event
 import com.example.calendar.data.NavRoutes
+import com.example.calendar.data.UtilityHelper
 import com.example.calendar.presentation.viewmodels.CalendarViewModel
 import com.example.calendar.presentation.viewmodels.EventViewModel
 import com.example.calendar.presentation.screen.CalendarView
@@ -27,13 +29,13 @@ import com.example.calendar.presentation.viewmodels.DailyViewModel
 import com.example.calendar.presentation.screen.MonthView
 import com.example.calendar.presentation.screen.ViewEventScreen
 import com.example.calendar.data.database.AppDatabase
+import com.example.downloadandsavetostorage.presentation.viewmodel.HolidayViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import java.text.SimpleDateFormat
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 import java.util.Locale
-
 
 
 fun Context.getStringResource(@StringRes resId: Int): String {
@@ -52,9 +54,10 @@ class MainActivity : ComponentActivity() {
                 ) {
                     // Create an instance of the AppDatabase
                     val database = AppDatabase.getInstance(this)
+                    HolidayViewModel(UtilityHelper(LocalContext.current)).getdata()
 
                     // Pass the database instance to the CalendarApp function
-                    // these are the viewmodels for the different screens
+                    // these are the view models for the different screens
                     CalendarApp(eventviewModel = EventViewModel(database = database), dayviewModel = DailyViewModel(), navController = rememberNavController(),calendarModel = CalendarViewModel(database), database = database)
                 }
             }

@@ -1,4 +1,4 @@
-package com.example.calendar.utils
+package com.example.calendar.data
 
 import android.util.Log
 import java.net.HttpURLConnection
