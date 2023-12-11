@@ -19,10 +19,10 @@ class HolidayViewModel(private val utilityHelper: UtilityHelper): ViewModel() {
     private val filename = "holidayData"
     var holidays by mutableStateOf(listOf<Holiday>())
 
-    fun getdata() {
+    fun getData() {
         //Create a coroutine to fetch the data
         viewModelScope.launch(Dispatchers.IO) {
-            GetHolidayData(utilityHelper).fetchData(filename)
+            holidays = GetHolidayData(utilityHelper).fetchData()
         }
     }
 

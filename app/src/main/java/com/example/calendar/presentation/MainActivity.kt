@@ -54,11 +54,17 @@ class MainActivity : ComponentActivity() {
                 ) {
                     // Create an instance of the AppDatabase
                     val database = AppDatabase.getInstance(this)
-                    HolidayViewModel(UtilityHelper(LocalContext.current)).getdata()
+                    val holidayModel = HolidayViewModel(UtilityHelper(LocalContext.current))
+                    holidayModel.getData()
 
                     // Pass the database instance to the CalendarApp function
                     // these are the view models for the different screens
-                    CalendarApp(eventviewModel = EventViewModel(database = database), dayviewModel = DailyViewModel(), navController = rememberNavController(),calendarModel = CalendarViewModel(database), database = database)
+                    CalendarApp(eventviewModel = EventViewModel(database = database),
+                        dayviewModel = DailyViewModel(),
+                        navController = rememberNavController(),
+                        calendarModel = CalendarViewModel(database),
+                        database = database,
+                        holidayModel = holidayModel)
                 }
             }
         }
@@ -66,11 +72,11 @@ class MainActivity : ComponentActivity() {
 
     @RequiresApi(Build.VERSION_CODES.O)
     @Composable
-    fun CalendarApp(eventviewModel: EventViewModel, dayviewModel: DailyViewModel, navController: NavHostController = rememberNavController(),calendarModel: CalendarViewModel, database: AppDatabase) {
+    fun CalendarApp(eventviewModel: EventViewModel, dayviewModel: DailyViewModel, navController: NavHostController = rememberNavController(),calendarModel: CalendarViewModel, database: AppDatabase, holidayModel: HolidayViewModel) {
 
         NavHost(navController = navController, startDestination = NavRoutes.CalendarView.route) {
             composable(NavRoutes.CalendarView.route) {
-                CalendarView(navController = navController, calendarModel = calendarModel, eventviewModel, dayviewModel, database)
+                CalendarView(navController = navController, calendarModel = calendarModel, eventviewModel, dayviewModel, database, holidayModel)
             }
             composable(NavRoutes.CreateEvent.route) {
                 var event by remember { mutableStateOf<Event?>(null) }
@@ -115,7 +121,7 @@ class MainActivity : ComponentActivity() {
                 DailyOverview(navController, calendarModel,dayviewModel, eventviewModel, database)
             }
             composable(NavRoutes.MonthView.route) {
-                MonthView(navController = navController, calendarModel = calendarModel, eventviewModel, database)
+                MonthView(navController = navController, calendarModel = calendarModel, eventviewModel, database, holidayModel)
             }
         }
     }

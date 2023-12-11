@@ -15,11 +15,12 @@ class GetHolidayData(utilityHelper: UtilityHelper) {
     private val theUrl = "https://date.nager.at/api/v3/NextPublicHolidays/CA"
     private val utilHelper = utilityHelper
 
-    fun fetchData(tempFile: String) {
+    fun fetchData(): List<Holiday> {
         val url = URL(theUrl)
         val httpURLConnection = url.openConnection() as HttpURLConnection
         httpURLConnection.requestMethod = "GET"
         httpURLConnection.setRequestProperty("Accept", "text/json")
+        val holidays = mutableListOf<Holiday>()
 
         //Check if the connection is successful
         val responseCode = httpURLConnection.responseCode
@@ -27,8 +28,6 @@ class GetHolidayData(utilityHelper: UtilityHelper) {
         if (responseCode == HttpURLConnection.HTTP_OK) {
             val dataString = httpURLConnection.inputStream.bufferedReader()
                 .use { it.readText() }
-
-            val holidays by mutableStateOf(mutableListOf<Holiday>())
 
             val jsonArray = JSONTokener(dataString).nextValue() as JSONArray
             for (i in 0 until jsonArray.length()) {
@@ -42,7 +41,6 @@ class GetHolidayData(utilityHelper: UtilityHelper) {
                 holidays += holiday
 
             }
-            print("Hello")
 
             //Write the data string to the temp file
             //TempStorage(utilHelper).writeDataToFile(dataString, tempFile)
@@ -50,6 +48,8 @@ class GetHolidayData(utilityHelper: UtilityHelper) {
         } else {
             Log.e("httpsURLConnection_ERROR", responseCode.toString())
         }
+
+        return holidays
     }
 }
 
