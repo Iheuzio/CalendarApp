@@ -1,11 +1,15 @@
 package com.example.downloadandsavetostorage.presentation.viewmodel
 
+import androidx.compose.runtime.getValue
 import androidx.lifecycle.ViewModel
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import androidx.lifecycle.viewModelScope
+import androidx.room.PrimaryKey
 import com.example.calendar.data.GetHolidayData
 import com.example.calendar.data.TempStorage
 import com.example.calendar.data.UtilityHelper
+import com.example.calendar.data.database.Event
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
@@ -13,6 +17,7 @@ class HolidayViewModel(private val utilityHelper: UtilityHelper): ViewModel() {
     //Stores the data that will be read from the temp file
     var theDataState = mutableStateOf("")
     private val filename = "holidayData"
+    var holidays by mutableStateOf(listOf<Holiday>())
 
     fun getdata() {
         //Create a coroutine to fetch the data
@@ -31,3 +36,10 @@ class HolidayViewModel(private val utilityHelper: UtilityHelper): ViewModel() {
         }
     }
 }
+
+data class Holiday(
+    var date: String,
+    var name: String,
+    var description: String,
+    var location: String,
+)
