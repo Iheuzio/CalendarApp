@@ -37,7 +37,7 @@ import com.example.calendar.presentation.viewmodels.CalendarViewModel
 import com.example.calendar.presentation.viewmodels.EventViewModel
 import com.example.calendar.presentation.getStringResource
 import com.example.calendar.presentation.viewmodels.DailyViewModel
-import com.example.downloadandsavetostorage.presentation.viewmodel.HolidayViewModel
+import com.example.calendar.presentation.viewmodels.HolidayViewModel
 import java.text.SimpleDateFormat
 import java.util.*
 

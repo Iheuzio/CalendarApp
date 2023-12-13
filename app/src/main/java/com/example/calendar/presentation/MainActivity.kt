@@ -29,7 +29,7 @@ import com.example.calendar.presentation.viewmodels.DailyViewModel
 import com.example.calendar.presentation.screen.MonthView
 import com.example.calendar.presentation.screen.ViewEventScreen
 import com.example.calendar.data.database.AppDatabase
-import com.example.downloadandsavetostorage.presentation.viewmodel.HolidayViewModel
+import com.example.calendar.presentation.viewmodels.HolidayViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import java.text.SimpleDateFormat
@@ -55,7 +55,6 @@ class MainActivity : ComponentActivity() {
                     // Create an instance of the AppDatabase
                     val database = AppDatabase.getInstance(this)
                     val holidayModel = HolidayViewModel(UtilityHelper(LocalContext.current))
-                    holidayModel.getData()
 
                     // Pass the database instance to the CalendarApp function
                     // these are the view models for the different screens
