@@ -55,7 +55,7 @@ fun CalendarView(navController: NavController, calendarModel: CalendarViewModel,
     if (!showDailyOverview) {
         MonthView(navController, calendarModel, eventModel, database, holidayModel)
     } else {
-        DailyOverview(navController, calendarModel, dayModel, eventModel, database)
+        DailyOverview(navController, calendarModel, dayModel, eventModel, holidayModel)
     }
 }
 

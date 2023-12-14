@@ -54,7 +54,9 @@ class MainActivity : ComponentActivity() {
                 ) {
                     // Create an instance of the AppDatabase
                     val database = AppDatabase.getInstance(this)
-                    val holidayModel = HolidayViewModel(UtilityHelper(LocalContext.current))
+                    val context = LocalContext.current
+                    val holidayModel = HolidayViewModel(UtilityHelper(context))
+
 
                     // Pass the database instance to the CalendarApp function
                     // these are the view models for the different screens
@@ -117,7 +119,7 @@ class MainActivity : ComponentActivity() {
                 ViewEventScreen(eventviewModel, navController = navController, database)
             }
             composable(NavRoutes.DayView.route + "/{date}") {
-                DailyOverview(navController, calendarModel,dayviewModel, eventviewModel, database)
+                DailyOverview(navController, calendarModel,dayviewModel, eventviewModel, holidayModel)
             }
             composable(NavRoutes.MonthView.route) {
                 MonthView(navController = navController, calendarModel = calendarModel, eventviewModel, database, holidayModel)

@@ -40,6 +40,7 @@ import com.example.calendar.presentation.getStringResource
 import com.example.calendar.presentation.viewmodels.DailyViewModel
 import androidx.compose.runtime.*
 import com.example.calendar.data.database.AppDatabase
+import com.example.calendar.presentation.viewmodels.HolidayViewModel
 
 
 @Composable
@@ -53,7 +54,7 @@ fun DailyOverviewScreen(
     onChangeDate: (Date) -> Unit,
     onBack: () -> Unit,
     onEditEvent: (Event) -> Unit,
-    database: AppDatabase
+    holidayModel: HolidayViewModel
 ) {
     Column(modifier = Modifier.fillMaxSize()) {
         Row {
@@ -75,6 +76,22 @@ fun DailyOverviewScreen(
         }
 
         DailyHeader(selectedDate, onChangeDate)
+
+        val format = SimpleDateFormat("MM-dd-yyyy", Locale.getDefault())
+        val date = format.format(selectedDate)
+        val holidaysToday = holidayModel.holidays.filter { holiday ->
+            holiday.date == date
+        }
+        Column {
+            for (holiday in holidaysToday) {
+                Row {
+                    Text(holiday.name)
+                    Text("Celebrated in: " + holiday.location)
+                    Text(holiday.description)
+                }
+            }
+        }
+        
         DailyEventsList(selectedDate = selectedDate, events = events, onEventSelected, onEditEvent)
     }
 }
@@ -243,7 +260,7 @@ fun DailyEventsList(selectedDate: Date, events: List<Event>, onEventSelected: (E
 
 
 @Composable
-fun DailyOverview(navController: NavController, calendarModel: CalendarViewModel, dailyViewModel: DailyViewModel, eventModel: EventViewModel, database: AppDatabase) {
+fun DailyOverview(navController: NavController, calendarModel: CalendarViewModel, dailyViewModel: DailyViewModel, eventModel: EventViewModel, holidayModel: HolidayViewModel) {
     val selectedDate = calendarModel.selectedDate.value
     val events = eventModel.events
 
@@ -273,7 +290,7 @@ fun DailyOverview(navController: NavController, calendarModel: CalendarViewModel
             navController.navigate(NavRoutes.EditEvent.route)
 
         },
-        database = database,
+        holidayModel
     )
 }
 
