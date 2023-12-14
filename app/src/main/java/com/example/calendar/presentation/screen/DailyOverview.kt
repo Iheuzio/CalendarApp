@@ -39,6 +39,7 @@ import com.example.calendar.presentation.viewmodels.EventViewModel
 import com.example.calendar.presentation.getStringResource
 import com.example.calendar.presentation.viewmodels.DailyViewModel
 import androidx.compose.runtime.*
+import androidx.compose.ui.text.font.FontWeight
 import com.example.calendar.presentation.viewmodels.HolidayViewModel
 
 
@@ -288,9 +289,10 @@ fun HolidayDisplay(holidayModel: HolidayViewModel, selectedDate: Date) {
         holiday.date == date
     }
     for (holiday in holidaysToday) {
-        Column {
-            Text(holiday.name)
-            if (holiday.location.isNotEmpty()) {
+        Column(horizontalAlignment = Alignment.CenterHorizontally,
+                modifier = Modifier.fillMaxWidth()) {
+            Text(holiday.name, fontWeight = FontWeight.Bold)
+            if (holiday.location.isNotEmpty() && holiday.location[0] != "null") {
                 Row {
                     Text("Celebrated in: ")
                     for (location in holiday.location) {
