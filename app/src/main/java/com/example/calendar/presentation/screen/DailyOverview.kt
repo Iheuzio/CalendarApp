@@ -77,21 +77,8 @@ fun DailyOverviewScreen(
 
         DailyHeader(selectedDate, onChangeDate)
 
-        val format = SimpleDateFormat("MM-dd-yyyy", Locale.getDefault())
-        val date = format.format(selectedDate)
-        val holidaysToday = holidayModel.holidays.filter { holiday ->
-            holiday.date == date
-        }
-        Column {
-            for (holiday in holidaysToday) {
-                Row {
-                    Text(holiday.name)
-                    Text("Celebrated in: " + holiday.location)
-                    Text(holiday.description)
-                }
-            }
-        }
-        
+        HolidayDisplay(holidayModel, selectedDate)
+
         DailyEventsList(selectedDate = selectedDate, events = events, onEventSelected, onEditEvent)
     }
 }
@@ -294,4 +281,25 @@ fun DailyOverview(navController: NavController, calendarModel: CalendarViewModel
     )
 }
 
+@Composable
+fun HolidayDisplay(holidayModel: HolidayViewModel, selectedDate: Date) {
+    val format = SimpleDateFormat("MM-dd-yyyy", Locale.getDefault())
+    val date = format.format(selectedDate)
+    val holidaysToday = holidayModel.holidays.filter { holiday ->
+        holiday.date == date
+    }
+    for (holiday in holidaysToday) {
+        Column {
+            Text(holiday.name)
+            if (holiday.location.isNotEmpty()) {
+                Row {
+                    Text("Celebrated in: ")
+                    for (location in holiday.location) {
+                        Text(location)
+                    }
+                }
+            }
+        }
+    }
+}
 
