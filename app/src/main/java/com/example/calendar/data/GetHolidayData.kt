@@ -6,12 +6,9 @@ import java.net.HttpURLConnection
 import java.net.URL
 import org.json.JSONArray
 import org.json.JSONTokener
-import java.text.SimpleDateFormat
-import java.util.Locale
 
-class GetHolidayData(utilityHelper: UtilityHelper) {
+class GetHolidayData {
     private val theUrl = "https://date.nager.at/api/v3/NextPublicHolidays/CA"
-    private val utilHelper = utilityHelper
 
     fun fetchData(): List<Holiday> {
         val url = URL(theUrl)
@@ -47,8 +44,6 @@ class GetHolidayData(utilityHelper: UtilityHelper) {
             }
 
             return holidays
-            //Write the data string to the temp file
-            //TempStorage(utilHelper).writeDataToFile(dataString, tempFile)
 
         } else {
             Log.e("httpsURLConnection_ERROR", responseCode.toString())

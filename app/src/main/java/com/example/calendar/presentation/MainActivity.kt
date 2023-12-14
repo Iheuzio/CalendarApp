@@ -12,14 +12,12 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import com.example.calendar.ui.theme.CalendarTheme
 import androidx.annotation.StringRes
-import androidx.compose.ui.platform.LocalContext
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.calendar.data.database.Event
 import com.example.calendar.data.NavRoutes
-import com.example.calendar.data.UtilityHelper
 import com.example.calendar.presentation.viewmodels.CalendarViewModel
 import com.example.calendar.presentation.viewmodels.EventViewModel
 import com.example.calendar.presentation.screen.CalendarView
@@ -54,8 +52,7 @@ class MainActivity : ComponentActivity() {
                 ) {
                     // Create an instance of the AppDatabase
                     val database = AppDatabase.getInstance(this)
-                    val context = LocalContext.current
-                    val holidayModel = HolidayViewModel(UtilityHelper(context))
+                    val holidayModel = HolidayViewModel()
 
 
                     // Pass the database instance to the CalendarApp function

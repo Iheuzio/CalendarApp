@@ -39,7 +39,6 @@ import com.example.calendar.presentation.viewmodels.EventViewModel
 import com.example.calendar.presentation.getStringResource
 import com.example.calendar.presentation.viewmodels.DailyViewModel
 import androidx.compose.runtime.*
-import com.example.calendar.data.database.AppDatabase
 import com.example.calendar.presentation.viewmodels.HolidayViewModel
 
 

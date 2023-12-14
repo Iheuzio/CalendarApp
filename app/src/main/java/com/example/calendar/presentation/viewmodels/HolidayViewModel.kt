@@ -6,22 +6,20 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.viewModelScope
 import com.example.calendar.data.GetHolidayData
-import com.example.calendar.data.TempStorage
-import com.example.calendar.data.UtilityHelper
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
-class HolidayViewModel(private val utilityHelper: UtilityHelper): ViewModel() {
+class HolidayViewModel: ViewModel() {
     var holidays by mutableStateOf(listOf<Holiday>())
 
     init {
         getData()
     }
 
-    fun getData() {
+    private fun getData() {
         //Create a coroutine to fetch the data
         viewModelScope.launch(Dispatchers.IO) {
-            val fetchedHolidays = GetHolidayData(utilityHelper).fetchData()
+            val fetchedHolidays = GetHolidayData().fetchData()
 
             // Update Compose state on the main thread
             launch(Dispatchers.Main) {
