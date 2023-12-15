@@ -19,15 +19,30 @@ import org.json.JSONTokener
 class HolidayViewModel(private val database: AppDatabase) : ViewModel() {
     var holidays by mutableStateOf(listOf<Holiday>())
 
+    private val countryCode = java.util.Locale.getDefault().country
+    private val theUrl = "https://date.nager.at/api/v3/NextPublicHolidays/$countryCode"
+
     init {
         getData()
     }
 
     private fun getData() {
+        if (database.holidayDao().getAll().isEmpty()) {
+            fetchHolidays()
+        } else {
+            viewModelScope.launch {
+                val holidayList = withContext(Dispatchers.IO) {
+                    database.holidayDao().getAll().toMutableList()
+                }
+                holidays = holidayList
+            }
+        }
+
+    }
+
+    private fun fetchHolidays() {
         viewModelScope.launch {
-            val getHolidayData = GetHolidayData()
-            val holidayList = getHolidayData.fetchData()
-            holidays = holidayList
+            val holidayList = fetchData()
 
             // Add holidays to database
             for (holiday in holidayList) {
@@ -36,50 +51,45 @@ class HolidayViewModel(private val database: AppDatabase) : ViewModel() {
         }
     }
 
-    class GetHolidayData {
-        private val countryCode = java.util.Locale.getDefault().country
-        private val theUrl = "https://date.nager.at/api/v3/NextPublicHolidays/$countryCode"
+    private suspend fun fetchData(): List<Holiday> = withContext(Dispatchers.IO) {
+        val url = URL(theUrl)
+        val httpURLConnection = url.openConnection() as HttpURLConnection
+        httpURLConnection.requestMethod = "GET"
+        httpURLConnection.setRequestProperty("Accept", "text/json")
 
-        suspend fun fetchData(): List<Holiday> = withContext(Dispatchers.IO) {
-            val url = URL(theUrl)
-            val httpURLConnection = url.openConnection() as HttpURLConnection
-            httpURLConnection.requestMethod = "GET"
-            httpURLConnection.setRequestProperty("Accept", "text/json")
+        //Check if the connection is successful
+        val responseCode = httpURLConnection.responseCode
 
-            //Check if the connection is successful
-            val responseCode = httpURLConnection.responseCode
+        if (responseCode == HttpURLConnection.HTTP_OK) {
+            val dataString = httpURLConnection.inputStream.bufferedReader()
+                .use { it.readText() }
 
-            if (responseCode == HttpURLConnection.HTTP_OK) {
-                val dataString = httpURLConnection.inputStream.bufferedReader()
-                    .use { it.readText() }
+            val holidays = mutableListOf<Holiday>()
 
-                val holidays = mutableListOf<Holiday>()
+            val jsonArray = JSONTokener(dataString).nextValue() as JSONArray
+            for (i in 0 until jsonArray.length()) {
+                // Reformat data
+                val dateValues = jsonArray.getJSONObject(i).getString("date").split("-")
+                val date = dateValues[1] + "-" + dateValues[2] + "-" + dateValues[0]
 
-                val jsonArray = JSONTokener(dataString).nextValue() as JSONArray
-                for (i in 0 until jsonArray.length()) {
-                    // Reformat data
-                    val dateValues = jsonArray.getJSONObject(i).getString("date").split("-")
-                    val date = dateValues[1] + "-" + dateValues[2] + "-" + dateValues[0]
+                val locations = jsonArray.getJSONObject(i).getString("counties").split(",")
 
-                    val locations = jsonArray.getJSONObject(i).getString("counties").split(",")
+                val holiday = Holiday(
+                    date = date,
+                    name = jsonArray.getJSONObject(i).getString("name"),
+                    description = jsonArray.getJSONObject(i).getString("localName"),
+                    location = locations
+                )
 
-                    val holiday = Holiday(
-                        date = date,
-                        name = jsonArray.getJSONObject(i).getString("name"),
-                        description = jsonArray.getJSONObject(i).getString("localName"),
-                        location = locations
-                    )
+                holidays += holiday
 
-                    holidays += holiday
-
-                }
-
-                return@withContext holidays
-
-            } else {
-                Log.e("httpsURLConnection_ERROR", responseCode.toString())
-                return@withContext emptyList()
             }
+
+            return@withContext holidays
+
+        } else {
+            Log.e("httpsURLConnection_ERROR", responseCode.toString())
+            return@withContext emptyList()
         }
     }
 }
