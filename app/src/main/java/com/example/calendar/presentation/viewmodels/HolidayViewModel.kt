@@ -1,5 +1,8 @@
 package com.example.calendar.presentation.viewmodels
 
+import android.content.Context
+import android.content.pm.PackageManager
+import android.location.Geocoder
 import androidx.compose.runtime.getValue
 import androidx.lifecycle.ViewModel
 import androidx.compose.runtime.mutableStateOf
@@ -10,22 +13,45 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import android.util.Log
+import androidx.core.content.ContextCompat
+import android.Manifest
 import com.example.calendar.data.database.AppDatabase
+import com.google.android.gms.location.FusedLocationProviderClient
 import java.net.HttpURLConnection
 import java.net.URL
 import org.json.JSONArray
 import org.json.JSONTokener
+import com.google.android.gms.location.LocationServices
+import java.util.Locale
 
-class HolidayViewModel(private val database: AppDatabase) : ViewModel() {
+class HolidayViewModel(private val database: AppDatabase, private val context: Context) : ViewModel() {
     var holidays by mutableStateOf(listOf<Holiday>())
 
-    private val countryCode = java.util.Locale.getDefault().country
-    private val theUrl = "https://date.nager.at/api/v3/NextPublicHolidays/$countryCode"
+    private var fusedLocationClient: FusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(context)
+    private var countryCode: String = Locale.getDefault().country
 
+    private var theUrl = "https://date.nager.at/api/v3/NextPublicHolidays/$countryCode"
 
     init {
-        getData()
+        viewModelScope.launch {
+            val permission = ContextCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION)
+            if (permission == PackageManager.PERMISSION_GRANTED) {
+                val task = fusedLocationClient.lastLocation
+                task.addOnSuccessListener { location ->
+                    if (location != null) {
+                        val geocoder = Geocoder(context)
+                        val addresses = geocoder.getFromLocation(location.latitude, location.longitude, 1)
+                        countryCode = addresses?.get(0)?.countryCode ?: "CA"
+                        theUrl = "https://date.nager.at/api/v3/NextPublicHolidays/$countryCode"
+                        getData()
+                    }
+                }
+            } else {
+                getData()
+            }
+        }
     }
+
 
     private fun getData() {
         viewModelScope.launch {
