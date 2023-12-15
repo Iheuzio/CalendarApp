@@ -8,6 +8,7 @@ import android.content.Context
 @Database(entities = [Event::class], version = 1)
 abstract class AppDatabase : RoomDatabase() {
     abstract fun eventDao(): EventDao
+    abstract fun holidayDao(): HolidayDao
 
     companion object {
         private var INSTANCE: AppDatabase? = null
