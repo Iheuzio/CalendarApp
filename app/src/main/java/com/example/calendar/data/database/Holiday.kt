@@ -18,5 +18,5 @@ data class Holiday(
     var name: String,
     var date: String,
     var description: String,
-    var location: List<String>
+    var location: String
 )

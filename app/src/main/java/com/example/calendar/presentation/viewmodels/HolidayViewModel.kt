@@ -22,22 +22,22 @@ class HolidayViewModel(private val database: AppDatabase) : ViewModel() {
     private val countryCode = java.util.Locale.getDefault().country
     private val theUrl = "https://date.nager.at/api/v3/NextPublicHolidays/$countryCode"
 
+
     init {
         getData()
     }
 
     private fun getData() {
-        if (database.holidayDao().getAll().isEmpty()) {
-            fetchHolidays()
-        } else {
-            viewModelScope.launch {
-                val holidayList = withContext(Dispatchers.IO) {
-                    database.holidayDao().getAll().toMutableList()
-                }
-                holidays = holidayList
+        viewModelScope.launch {
+            val holidayList = withContext(Dispatchers.IO) {
+                database.holidayDao().getAll().toMutableList()
+            }
+            holidays = holidayList
+
+            if (holidays.isEmpty()) {
+                fetchHolidays()
             }
         }
-
     }
 
     private fun fetchHolidays() {
@@ -45,8 +45,11 @@ class HolidayViewModel(private val database: AppDatabase) : ViewModel() {
             val holidayList = fetchData()
 
             // Add holidays to database
-            for (holiday in holidayList) {
-                database.holidayDao().insertAll(holiday)
+            withContext(Dispatchers.IO) {
+                for (holiday in holidayList) {
+                    database.holidayDao().insertAll(holiday)
+                }
+                holidays = holidayList
             }
         }
     }
@@ -74,11 +77,17 @@ class HolidayViewModel(private val database: AppDatabase) : ViewModel() {
 
                 val locations = jsonArray.getJSONObject(i).getString("counties").split(",")
 
+                // convert locations to a string delimited by commas
+                var locationsString = ""
+                for (location in locations) {
+                    locationsString += "$location, "
+                }
+
                 val holiday = Holiday(
                     date = date,
                     name = jsonArray.getJSONObject(i).getString("name"),
                     description = jsonArray.getJSONObject(i).getString("localName"),
-                    location = locations
+                    location = countryCode
                 )
 
                 holidays += holiday
