@@ -1,6 +1,8 @@
 package com.example.calendar.presentation
 
+import android.Manifest
 import android.content.Context
+import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Bundle
 import androidx.activity.ComponentActivity
@@ -12,6 +14,8 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import com.example.calendar.ui.theme.CalendarTheme
 import androidx.annotation.StringRes
+import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -52,20 +56,38 @@ class MainActivity : ComponentActivity() {
                 ) {
                     // Create an instance of the AppDatabase
                     val database = AppDatabase.getInstance(this)
-                    val holidayModel = HolidayViewModel()
+                    val holidayModel = HolidayViewModel(database = database, context = this)
 
+                    // Check if the location permission is granted
+                    val locationPermissionGranted = ContextCompat.checkSelfPermission(
+                        this,
+                        Manifest.permission.ACCESS_FINE_LOCATION
+                    ) == PackageManager.PERMISSION_GRANTED
 
-                    // Pass the database instance to the CalendarApp function
-                    // these are the view models for the different screens
-                    CalendarApp(eventviewModel = EventViewModel(database = database),
+                    if (!locationPermissionGranted) {
+                        // Request the location permission
+                        ActivityCompat.requestPermissions(
+                            this,
+                            arrayOf(Manifest.permission.ACCESS_FINE_LOCATION),
+                            LOCATION_PERMISSION_REQUEST_CODE
+                        )
+                    }
+
+                    CalendarApp(
+                        eventviewModel = EventViewModel(database = database),
                         dayviewModel = DailyViewModel(),
                         navController = rememberNavController(),
                         calendarModel = CalendarViewModel(database),
                         database = database,
-                        holidayModel = holidayModel)
+                        holidayModel = holidayModel
+                    )
                 }
             }
         }
+    }
+
+    companion object {
+        const val LOCATION_PERMISSION_REQUEST_CODE = 1
     }
 
     @RequiresApi(Build.VERSION_CODES.O)
