@@ -28,20 +28,21 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.example.calendar.R
+import com.example.calendar.utils.OpenWeatherMapForecastResponse
 import com.example.calendar.utils.RetrofitInstance
 import kotlinx.coroutines.launch
 import java.util.Locale
 
 @Composable
-fun FiveDayForecastScreen(navController: NavController, locationKey: String) {
-    var weatherData by remember { mutableStateOf<WeatherResponse?>(null) }
+fun FiveDayForecastScreen(navController: NavController, latitude: Double, longitude: Double) {
+    var weatherData by remember { mutableStateOf<OpenWeatherMapForecastResponse?>(null) }
     val coroutineScope = rememberCoroutineScope()
     val apiKey = "ERtoam8JXYf21rCXIfEhd9w1gZVhLkU6"
 
     LaunchedEffect(Unit) {
         coroutineScope.launch {
             try {
-                val response = RetrofitInstance.api.getFiveDayForecast(locationKey, apiKey)
+                val response = RetrofitInstance.api.getFiveDayForecast(latitude, longitude, apiKey)
                 if (response.isSuccessful) {
                     weatherData = response.body()
                     Log.d("5daydata", weatherData.toString())
@@ -117,16 +118,16 @@ fun FiveDayForecastScreen(navController: NavController, locationKey: String) {
 //            }
 //        }
         LazyColumn {
-            weatherData?.DailyForecasts?.forEach { dailyForecast ->
+            weatherData?.list?.groupBy { it.dt_txt.substring(0, 10) }?.forEach { (date, forecasts) ->
                 item {
-                    DayHeader(day = dailyForecast.Date)
+                    DayHeader(date)
                 }
-                items((0 until 24 step 3).toList()) { hour ->
+                items(forecasts) { forecast ->
                     ForecastItem(
-                        time = formatTime(hour),
-                        temperature = dailyForecast.Temperature.Minimum.Value.toString(),
-                        condition = dailyForecast.Day.IconPhrase,
-                        iconId = getDrawableResourceForCondition(dailyForecast.Day.IconPhrase)
+                        time = forecast.dt_txt.substring(11, 16),
+                        temperature = "${forecast.main.temp - 273.15}°C",
+                        condition = forecast.weather.first().description,
+                        iconId = getDrawableResourceForCondition(forecast.weather.first().main)
                     )
                 }
             }

@@ -1,11 +1,15 @@
 package com.example.calendar.presentation.screen
 
+import OpenWeatherMapCurrentWeatherResponse
 import WeatherResponse
 import android.content.Context
 import android.location.Geocoder
+import android.location.Location
+import android.os.Build
 import android.text.TextUtils.replace
 import android.util.Log
 import androidx.annotation.DrawableRes
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -30,62 +34,59 @@ import androidx.navigation.NavController
 import com.example.calendar.R
 import com.example.calendar.data.NavRoutes
 import com.example.calendar.utils.LocationUtil
+import com.example.calendar.utils.OpenWeatherMapForecastResponse
 import com.example.calendar.utils.RetrofitInstance
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
+import java.time.Instant
+import java.time.ZoneId
+import java.time.format.DateTimeFormatter
 import java.util.Locale
 
+@RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun WeatherDisplay(
     navController: NavController
 ) {
-    var weatherData by remember { mutableStateOf<WeatherResponse?>(null) }
+    var weatherData by remember { mutableStateOf<OpenWeatherMapCurrentWeatherResponse?>(null) }
     val coroutineScope = rememberCoroutineScope()
-    val apiKey = "ERtoam8JXYf21rCXIfEhd9w1gZVhLkU6"
-    var locationKey by remember { mutableStateOf<String?>(null) } // Will be set when location is obtained
+    val apiKey = "012a14aa06d38dc98fca31414f0d7bf2"
+    var location by remember { mutableStateOf<Location?>(null) }
     val context = LocalContext.current
 
-    //get location
-    @Suppress("DEPRECATION")
+    // Fetching the location
     LaunchedEffect(Unit) {
         coroutineScope.launch {
             val locationUtil = LocationUtil(context)
-            locationUtil.startLocationUpdates(onSuccess = { location ->
-                val geocoder = Geocoder(context, Locale.getDefault())
-                val addresses =
-                    location?.let { geocoder.getFromLocation(it.latitude, location.longitude, 1) }
-                Log.d("location", addresses.toString())
-                val address = addresses?.get(0)
-                if (address != null) {
-                    locationKey = address.postalCode
-                }
+            locationUtil.startLocationUpdates(onSuccess = { newLocation ->
+                location = newLocation
             }, onFailure = { error ->
                 Log.e("WeatherDisplay", error.toString())
             })
         }
     }
 
-    LaunchedEffect(locationKey) {
-        coroutineScope.launch {
-            try {
-                val response = RetrofitInstance.api.getDailyForecast(locationKey.toString(), apiKey)
-                if (response.isSuccessful) {
-                    weatherData = response.body()
-                    Log.d("data", weatherData.toString())
-                } else {
-                    Log.e("WeatherDisplay", "Error fetching weather data: ${response.errorBody()?.string()}")
+    // Fetching the weather data
+    LaunchedEffect(location) {
+        location?.let {
+            coroutineScope.launch {
+                try {
+                    val response = RetrofitInstance.api.getCurrentWeather(
+                        latitude = it.latitude,
+                        longitude = it.longitude,
+                        apiKey = apiKey
+                    )
+                    if (response.isSuccessful) {
+                        weatherData = response.body()
+                        Log.d("WeatherData", weatherData.toString())
+                    } else {
+                        Log.e("WeatherDisplay", "Error fetching weather data: ${response.errorBody()?.string()}")
+                    }
+                } catch (e: Exception) {
+                    Log.e("WeatherDisplay", "Exception fetching weather data", e)
                 }
-            } catch (e: Exception) {
-                Log.e("WeatherDisplay", "Exception fetching weather data", e)
             }
-        }
-    }
-
-    // add refetch data every 10 min later
-    LaunchedEffect(weatherData) {
-        delay(600_000) // 10 min
-        coroutineScope.launch {
         }
     }
 
@@ -93,20 +94,14 @@ fun WeatherDisplay(
         verticalAlignment = Alignment.CenterVertically,
         modifier = Modifier
             .padding(16.dp)
-            .clickable(onClick = {
-                locationKey?.let { key ->
-                    navController.navigate("fiveDayForecast/$key")
-                }
-            })
+            .clickable { navController.navigate(NavRoutes.FiveDayForecast.route) }
     ) {
         weatherData?.let { data ->
-            val forecast = data.DailyForecasts.first()
-            val tempCelsius = ((forecast.Temperature.Minimum.Value - 32) * 5/9).toInt()
-            val condition = forecast.Day.IconPhrase
+            val tempCelsius = data.main.temp - 273.15 // Convert Kelvin to Celsius
+            val condition = data.weather.first().main
             val iconId = getDrawableResourceForCondition(condition)
+            val lastUpdated = Instant.ofEpochSecond(data.dt).atZone(ZoneId.systemDefault()).toLocalDateTime()
 
-
-            val date = forecast.Date
             Icon(
                 painter = painterResource(id = iconId),
                 contentDescription = condition,
@@ -114,14 +109,14 @@ fun WeatherDisplay(
             )
 
             Column(modifier = Modifier.padding(start = 8.dp)) {
-                Text(text = "Temperature: $tempCelsius°C")
+                Text(text = "Temperature: ${tempCelsius.toInt()}°C")
                 Text(text = "Condition: $condition")
-                Text(text = "Last updated: $date")
+                Text(text = "Last updated: ${lastUpdated.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm"))}")
+            }
         } ?: Text(text = "Fetching weather...")
-
-        }
     }
 }
+
 
 @DrawableRes
 fun getDrawableResourceForCondition(condition: String): Int {
