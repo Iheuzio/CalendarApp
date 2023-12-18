@@ -10,6 +10,7 @@ import com.example.calendar.data.database.AppDatabase
 import com.example.calendar.presentation.viewmodels.CalendarViewModel
 import com.example.calendar.presentation.viewmodels.EventViewModel
 import com.example.calendar.presentation.screen.CalendarGrid
+import com.example.calendar.presentation.viewmodels.HolidayViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.junit.Assert.assertEquals
 import org.junit.Before
@@ -38,11 +39,12 @@ class CalendarGridTest {
         ).allowMainThreadQueries().build()
         calendarModel = CalendarViewModel(db)
         eventViewModel = EventViewModel(db)
+        val holidayModel = HolidayViewModel(db, context)
         calendarModel.showDailyOverview.value = false
         composeTestRule.setContent {
             CalendarGrid(eventViewModel,calendarModel.selectedDate.value, { day ->
                 calendarModel.onDateChange(day)
-            }, db)
+            }, holidayModel)
         }
     }
 

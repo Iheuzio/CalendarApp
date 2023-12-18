@@ -66,7 +66,11 @@ class HolidayViewModel(private val database: AppDatabase, private val context: C
         }
     }
 
-    private fun fetchHolidays() {
+     fun fetchHolidays(location: String? = null) {
+         //For testing purpose
+         if (location != null) {
+             countryCode = location
+         }
         viewModelScope.launch {
             val holidayList = fetchData()
 
@@ -80,7 +84,11 @@ class HolidayViewModel(private val database: AppDatabase, private val context: C
         }
     }
 
-    private suspend fun fetchData(): List<Holiday> = withContext(Dispatchers.IO) {
+    suspend fun fetchData(location: String? = null): List<Holiday> = withContext(Dispatchers.IO) {
+        //For testing purpose
+        if (location != null) {
+            countryCode = location
+        }
         val url = URL(theUrl)
         val httpURLConnection = url.openConnection() as HttpURLConnection
         httpURLConnection.requestMethod = "GET"
