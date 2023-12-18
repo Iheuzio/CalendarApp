@@ -98,9 +98,11 @@ fun WeatherDisplay(
             }
     ) {
         weatherData?.let { data ->
-            val tempCelsius = data.main.temp - 273.15 // Convert Kelvin to Celsius
-            val condition = data.weather.first().main
+            val tempCelsius = data.main.temp - 273.15 // kelvin to Celsius
+            val condition = data.weather.first().description
+            Log.d("condition", condition)
             val iconId = getDrawableResourceForCondition(condition)
+            Log.d("condition", iconId.toString())
             val lastUpdated = Instant.ofEpochSecond(data.dt).atZone(ZoneId.systemDefault()).toLocalDateTime()
 
             Icon(
@@ -122,42 +124,20 @@ fun WeatherDisplay(
 @DrawableRes
 fun getDrawableResourceForCondition(condition: String): Int {
     return when (condition) {
-        "Sunny" -> R.drawable.sunny
-        "Mostly sunny" -> R.drawable.sunny
-        "Partly sunny" -> R.drawable.sunny
-        "Hazy sunshine" -> R.drawable.sunny
-        "Cloudy" -> R.drawable.cloudy
-        "Partly cloudy" -> R.drawable.intermittentclouds
-        "Intermittent clouds" -> R.drawable.intermittentclouds
-        "Snow" -> R.drawable.snowy
-        "Mostly cloudy" -> R.drawable.cloudy
-        "Cloudy" -> R.drawable.cloudy
+        "Sunny", "Clear" -> R.drawable.sunny
+        "Mostly sunny", "Mostly clear" -> R.drawable.sunny
+        "Partly sunny", "haze", "few clouds" -> R.drawable.intermittentclouds
+        "Hazy sunshine", "Hazy moonlight" -> R.drawable.sunny
+        "Clouds", "Mostly cloudy", "overcast clouds", "broken clouds", "scattered clouds", "few clouds" -> R.drawable.cloudy
         "Dreary" -> R.drawable.cloudy
         "Fog" -> R.drawable.cloudy
-        "Showers" -> R.drawable.rainy
-        "Mostly Cloudy w/ Showers" -> R.drawable.cloudy
-        "Partly Sunny w/ Showers" -> R.drawable.cloudy
-        "T-Storms" -> R.drawable.cloudy
-        "Mostly Cloudy w/ T-Storms" -> R.drawable.cloudy
-        "Partly Sunny w/ T-Storms" -> R.drawable.sunny
-        "Rain" -> R.drawable.rainy
-        "Flurries" -> R.drawable.snowy
-        "Mostly Cloudy w/ Flurries" -> R.drawable.snowy
-        "Partly Sunny w/ Flurries" -> R.drawable.snowy
-        "Mostly Cloudy w/ Snow" -> R.drawable.snowy
-        "Ice" -> R.drawable.snowy
-        "Sleet" -> R.drawable.snowy
-        "Freezing rain" -> R.drawable.grain
-        "Rain and snow" -> R.drawable.grain
+        "Showers", "Rain", "Partly Sunny w/ Showers", "Mostly Cloudy w/ Showers" -> R.drawable.rainy
+        "T-Storms", "Mostly Cloudy w/ T-Storms", "Partly Sunny w/ T-Storms" -> R.drawable.cloudy
+        "Snow", "Flurries", "Mostly Cloudy w/ Flurries", "Partly Sunny w/ Flurries", "Mostly Cloudy w/ Snow" -> R.drawable.snowy
+        "Ice", "Sleet", "Freezing rain", "Rain and snow" -> R.drawable.grain
         "Hot" -> R.drawable.sunny
         "Cold" -> R.drawable.snowy
         "Windy" -> R.drawable.cloudy
-        "Clear" -> R.drawable.sunny
-        "Mostly clear" -> R.drawable.sunny
-        "Partly cloudy" -> R.drawable.intermittentclouds
-        "Intermittent clouds" -> R.drawable.intermittentclouds
-        "Hazy moonlight" -> R.drawable.cloudy
-        "Mostly cloudy" -> R.drawable.cloudy
         else -> R.drawable.unknown_weather_condition
     }
 }

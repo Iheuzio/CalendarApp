@@ -1,9 +1,8 @@
 package com.example.calendar.presentation.screen
-
+import android.util.Log
 import WeatherResponse
 import android.icu.text.SimpleDateFormat
 import android.icu.util.Calendar
-import android.util.Log
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -95,7 +94,9 @@ fun FiveDayForecastScreen(navController: NavController, latitude: Double, longit
                         temperature = "${forecast.main.temp - 273.15}°C", // Kelvin to Celsius
                         condition = forecast.weather.first().description,
                         iconId = getDrawableResourceForCondition(forecast.weather.first().main)
+
                     )
+                    Log.d("weather", forecast.weather.first().main)
                 }
             }
         }
@@ -139,17 +140,5 @@ fun ForecastItem(
         Text(text = condition)
     }
 }
-fun generateForecastTimes(calendar: Calendar): List<String> {
-    val timeFormat = SimpleDateFormat("HH:mm", Locale.getDefault())
-    return List(8) { index ->
-        calendar.apply {
-            set(Calendar.HOUR_OF_DAY, index * 3)
-            set(Calendar.MINUTE, 0)
-        }
-        timeFormat.format(calendar.time)
-    }
-}
-fun formatTime(hour: Int): String {
-    return String.format("%02d:00", hour)
-}
+
 
