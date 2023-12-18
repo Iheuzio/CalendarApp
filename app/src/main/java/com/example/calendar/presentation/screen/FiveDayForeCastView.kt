@@ -37,7 +37,7 @@ import java.util.Locale
 fun FiveDayForecastScreen(navController: NavController, latitude: Double, longitude: Double) {
     var weatherData by remember { mutableStateOf<OpenWeatherMapForecastResponse?>(null) }
     val coroutineScope = rememberCoroutineScope()
-    val apiKey = "ERtoam8JXYf21rCXIfEhd9w1gZVhLkU6"
+    val apiKey = "012a14aa06d38dc98fca31414f0d7bf2"
 
     LaunchedEffect(Unit) {
         coroutineScope.launch {
@@ -84,39 +84,6 @@ fun FiveDayForecastScreen(navController: NavController, latitude: Double, longit
             Text("Back")
         }
 
-//        LazyColumn {
-//            weatherData?.DailyForecasts?.forEach { dailyForecast ->
-//                item {
-//                    val parsedDate = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZ", Locale.getDefault()).parse(dailyForecast.Date)
-//                    val formattedDate = SimpleDateFormat("EEEE, MMMM dd", Locale.getDefault()).format(parsedDate)
-//
-//                    Text(text = formattedDate, modifier = Modifier.padding(16.dp).fillMaxWidth())
-//                }
-//                item {
-//                    // Convert temp
-//                    val minTemp = dailyForecast.Temperature.Minimum.Value
-//                    val maxTemp = dailyForecast.Temperature.Maximum.Value
-//                    val avgTempCelsius = ((minTemp + maxTemp) / 2 - 32) * 5 / 9
-//                    val condition = dailyForecast.Day.IconPhrase
-//
-//                    Row(
-//                        modifier = Modifier
-//                            .padding(16.dp)
-//                            .fillMaxWidth(),
-//                        horizontalArrangement = Arrangement.SpaceBetween
-//                    ) {
-//                        Text(text = "Avg Temp: ${avgTempCelsius.toInt()}°C")
-//                        Text(text = "Condition: $condition")
-//                        Icon(
-//                            painter = painterResource(id = getDrawableResourceForCondition(condition)),
-//                            contentDescription = condition,
-//                            modifier = Modifier.size(48.dp)
-//                        )
-//
-//                    }
-//                }
-//            }
-//        }
         LazyColumn {
             weatherData?.list?.groupBy { it.dt_txt.substring(0, 10) }?.forEach { (date, forecasts) ->
                 item {
@@ -125,7 +92,7 @@ fun FiveDayForecastScreen(navController: NavController, latitude: Double, longit
                 items(forecasts) { forecast ->
                     ForecastItem(
                         time = forecast.dt_txt.substring(11, 16),
-                        temperature = "${forecast.main.temp - 273.15}°C",
+                        temperature = "${forecast.main.temp - 273.15}°C", // Kelvin to Celsius
                         condition = forecast.weather.first().description,
                         iconId = getDrawableResourceForCondition(forecast.weather.first().main)
                     )
@@ -136,7 +103,7 @@ fun FiveDayForecastScreen(navController: NavController, latitude: Double, longit
 }
 @Composable
 fun DayHeader(day: String) {
-    val parsedDate = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZ", Locale.getDefault()).parse(day)
+    val parsedDate = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).parse(day)
     val formattedDate = SimpleDateFormat("EEEE, MMMM d", Locale.getDefault()).format(parsedDate)
     Text(
         text = formattedDate,
@@ -144,8 +111,8 @@ fun DayHeader(day: String) {
             .padding(16.dp)
             .fillMaxWidth()
     )
-
 }
+
 @Composable
 fun ForecastItem(
     time: String,

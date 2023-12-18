@@ -94,7 +94,8 @@ fun WeatherDisplay(
         verticalAlignment = Alignment.CenterVertically,
         modifier = Modifier
             .padding(16.dp)
-            .clickable { navController.navigate(NavRoutes.FiveDayForecast.route) }
+            .clickable {     navController.navigate("fiveDayForecast/${location?.latitude}/${location?.longitude}")
+            }
     ) {
         weatherData?.let { data ->
             val tempCelsius = data.main.temp - 273.15 // Convert Kelvin to Celsius

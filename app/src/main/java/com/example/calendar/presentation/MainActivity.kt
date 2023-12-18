@@ -16,7 +16,6 @@ import androidx.compose.ui.Modifier
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.navigation.NavHostController
-import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
@@ -40,6 +39,8 @@ import java.text.SimpleDateFormat
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 import java.util.Locale
+import androidx.navigation.NavType
+
 
 
 fun Context.getStringResource(@StringRes resId: Int): String {
@@ -122,20 +123,13 @@ class MainActivity : ComponentActivity() {
                 MonthView(navController = navController, calendarModel = calendarModel, eventviewModel, database)
             }
 
-            composable(
-                route = "fiveDayForecast/{latitude}/{longitude}",
-                arguments = listOf(
-                    navArgument("latitude") { type = NavType.FloatType },
-                    navArgument("longitude") { type = NavType.FloatType }
-                )
-            ) { backStackEntry ->
+            composable("fiveDayForecast/{latitude}/{longitude}", arguments = listOf(
+                navArgument("latitude") { type = NavType.FloatType },
+                navArgument("longitude") { type = NavType.FloatType }
+            )) { backStackEntry ->
                 val latitude = backStackEntry.arguments?.getFloat("latitude") ?: 0f
                 val longitude = backStackEntry.arguments?.getFloat("longitude") ?: 0f
-                FiveDayForecastScreen(
-                    navController = navController,
-                    latitude = latitude.toDouble(),
-                    longitude = longitude.toDouble()
-                )
+                FiveDayForecastScreen(navController, latitude.toDouble(), longitude.toDouble())
             }
 
         }
