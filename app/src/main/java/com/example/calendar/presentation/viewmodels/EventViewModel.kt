@@ -1,46 +1,84 @@
 package com.example.calendar.presentation.viewmodels
 
-import android.icu.util.Calendar
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
-import com.example.calendar.data.Event
+import androidx.lifecycle.viewModelScope
+import com.example.calendar.data.database.AppDatabase
+import com.example.calendar.data.database.Event
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import java.util.Date
 
-class EventViewModel : ViewModel() {
+class EventViewModel(private val database: AppDatabase) : ViewModel() {
     var selectedEvent by mutableStateOf<Event?>(null)
-    var events by mutableStateOf(mutableListOf<Event>())
-    var idCount by mutableIntStateOf(0)
+    var events by mutableStateOf(listOf<Event>())
 
-    //FOr when a new event is created
-    fun addToList(item: Event) {
+    init {
+        fetchEvents()
+    }
+
+    private fun fetchEvents() {
+        viewModelScope.launch {
+            val eventsList = withContext(Dispatchers.IO) {
+                database.eventDao().getAll().toMutableList()
+            }
+            events = eventsList
+        }
+    }
+
+    fun addToList(item: Event, database: AppDatabase) {
         if (item.title.isNotEmpty() && item.title.isNotBlank()) {
-            if (!events.contains(item)) {
-                val updatedEventItems = events.toMutableList()
-                updatedEventItems.add(item)
-                events = updatedEventItems
+            viewModelScope.launch(Dispatchers.IO) {
+                database.eventDao().insertAll(
+                    Event(
+                        id = item.id,
+                        title = item.title,
+                        date = item.date,
+                        startTime = item.startTime,
+                        endTime = item.endTime,
+                        description = item.description,
+                        location = item.location,
+                        course = item.course
+                    )
+                )
+                val updatedEvents = database.eventDao().getAll().toMutableList()
+                withContext(Dispatchers.Main) {
+                    events = updatedEvents
+                }
             }
         }
     }
 
-    //For deleting an event
-    fun removeFromList(item: Event) {
-        val updatedEventItems = events.toMutableList()
-        updatedEventItems.remove(item)
-        events = updatedEventItems
+    fun modifyItem(item: Event, modifiedItem: Event, database: AppDatabase) {
+        viewModelScope.launch {
+            withContext(Dispatchers.IO)
+            {
+                database.eventDao().update(
+                    Event(
+                        id = item.id,
+                        title = modifiedItem.title,
+                        date = modifiedItem.date,
+                        startTime = modifiedItem.startTime,
+                        endTime = modifiedItem.endTime,
+                        description = modifiedItem.description,
+                        location = modifiedItem.location,
+                        course = modifiedItem.course
+                    )
+                )
+                events = database.eventDao().getAll().toMutableList()
+            }
+        }
     }
 
-    fun modifyItem(item: Event, modifiedItem: Event) {
-        val updatedEventItems = events.toMutableList()
-        val index = events.indexOf(item)
-        if (index != -1) {
-            updatedEventItems[index] = modifiedItem
-            events = updatedEventItems
-        } else {
-            removeFromList(item)
-            addToList(modifiedItem)
+    fun removeFromList(id: Int, database: AppDatabase) {
+        viewModelScope.launch {
+            withContext(Dispatchers.IO) {
+                database.eventDao().delete(id)
+                events = database.eventDao().getAll().toMutableList()
+            }
         }
     }
 
@@ -48,21 +86,42 @@ class EventViewModel : ViewModel() {
         return events.find { it.id == id }
     }
 
-    fun incrementId() {
-        idCount++
-    }
-
-    private fun getEventsByDate(date: String): List<Event> {
-        return events.filter { it.date == date }
+    private fun getEventsByDate(date: String, database: AppDatabase): List<Event> {
+        var filteredEvents: List<Event> = listOf()
+        viewModelScope.launch {
+            withContext(Dispatchers.IO) {
+                filteredEvents = database.eventDao().findEventsByDate(date)
+            }
+        }
+        return filteredEvents
     }
 
     fun checkEventsExist(time: Date): Any {
-        val calendar = Calendar.getInstance()
-        calendar.time = time
-        val date = "${calendar.get(Calendar.MONTH) + 1}-${calendar.get(Calendar.DAY_OF_MONTH)}-${calendar.get(Calendar.YEAR)}"
-        val events = getEventsByDate(date)
-        // return true or false if event is found on that day
+        val dateFormat = java.text.SimpleDateFormat("MM-dd-yyyy")
+        val date = dateFormat.format(time)
+        val events = getEventsByDate(date, database)
         return events.isNotEmpty()
     }
 
+    /*
+     fun checkEventsExist(time: Date): Any {
+        val dateFormat = java.text.SimpleDateFormat("MM-dd-yyyy")
+        val date = dateFormat.format(time)
+        val events = getEventsByDate(date, database)
+        var events: List<Event> = listOf()
+        viewModelScope.launch {
+            events = getEventsByDate(date, database)
+        }
+        return events.isNotEmpty()
+    }
+    */
+
+    /*
+    private suspend fun getEventsByDate(date: String, database: AppDatabase): List<Event> {
+        return withContext(Dispatchers.IO) {
+            database.eventDao().findEventsByDate(date)
+        }
+        return filteredEvents
+    }
+    */
 }

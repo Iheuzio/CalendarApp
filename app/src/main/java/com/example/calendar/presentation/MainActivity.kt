@@ -1,36 +1,46 @@
 package com.example.calendar.presentation
 
+import android.Manifest
 import android.content.Context
+import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.annotation.RequiresApi
-import androidx.activity.viewModels
+import androidx.annotation.StringRes
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
-import com.example.calendar.ui.theme.CalendarTheme
-import androidx.annotation.StringRes
+import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import com.example.calendar.data.Event
+import androidx.navigation.navArgument
 import com.example.calendar.data.NavRoutes
-import com.example.calendar.presentation.viewmodels.CalendarViewModel
-import com.example.calendar.presentation.viewmodels.EventViewModel
+import com.example.calendar.data.database.AppDatabase
+import com.example.calendar.data.database.Event
 import com.example.calendar.presentation.screen.CalendarView
 import com.example.calendar.presentation.screen.CreateEditEventScreen
 import com.example.calendar.presentation.screen.DailyOverview
-import com.example.calendar.presentation.viewmodels.DailyViewModel
+import com.example.calendar.presentation.screen.FiveDayForecastScreen
 import com.example.calendar.presentation.screen.MonthView
 import com.example.calendar.presentation.screen.ViewEventScreen
+import com.example.calendar.presentation.viewmodels.CalendarViewModel
+import com.example.calendar.presentation.viewmodels.DailyViewModel
+import com.example.calendar.presentation.viewmodels.EventViewModel
+import com.example.calendar.ui.theme.CalendarTheme
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import java.text.SimpleDateFormat
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 import java.util.Locale
+import androidx.navigation.NavType
+
 
 
 fun Context.getStringResource(@StringRes resId: Int): String {
@@ -41,23 +51,19 @@ class MainActivity : ComponentActivity() {
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        requestLocationPermission()
         setContent {
             CalendarTheme {
                 Surface(
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
-                    // remove this if wanting to test your event stuff, just uncomment 
-                    //CalendarView()
-                    //DailyOverviewScreen(null, null, null, null);
-                    //Greeting("Android")
-                    // remove this if wanting to test your event stuff, just uncomment
+                    // Create an instance of the AppDatabase
+                    val database = AppDatabase.getInstance(this)
 
-                    //Greeting("Android")
-                // CreateEditEventScreen(inputDate = "01/08/2023", inputTime = "9:22")
-                    //CalendarView()
-                    //CreateEditEventScreen(inputDate = "01/08/2023", inputTime = "9:22")
-                    CalendarApp()
+                    // Pass the database instance to the CalendarApp function
+                    // these are the viewmodels for the different screens
+                    CalendarApp(eventviewModel = EventViewModel(database = database), dayviewModel = DailyViewModel(), navController = rememberNavController(),calendarModel = CalendarViewModel(database), database = database)
                 }
             }
         }
@@ -65,52 +71,93 @@ class MainActivity : ComponentActivity() {
 
     @RequiresApi(Build.VERSION_CODES.O)
     @Composable
-    fun CalendarApp(eventviewModel: EventViewModel = EventViewModel(), dayviewModel: DailyViewModel = DailyViewModel(), navController: NavHostController = rememberNavController()) {
+    fun CalendarApp(eventviewModel: EventViewModel, dayviewModel: DailyViewModel, navController: NavHostController = rememberNavController(),calendarModel: CalendarViewModel, database: AppDatabase) {
 
-        val currentDateTime = LocalDateTime.now()
-        val dateFormatter = DateTimeFormatter.ofPattern("MM-dd-yyyy")
-        val currentDate = currentDateTime.format(dateFormatter)
-
-       val calendarModel by viewModels<CalendarViewModel>()
         NavHost(navController = navController, startDestination = NavRoutes.CalendarView.route) {
             composable(NavRoutes.CalendarView.route) {
-                CalendarView(navController = navController, calendarModel = calendarModel, eventviewModel, dayviewModel)
+                CalendarView(navController = navController, calendarModel = calendarModel, eventviewModel, dayviewModel, database)
             }
-            composable(NavRoutes.CreateEvent.route)
-            {
-                val event = Event(eventviewModel.idCount, currentDate, "12:00", "12:00")
-                eventviewModel.incrementId()
-                val format = SimpleDateFormat("MM-dd-yyyy", Locale.getDefault())
-                val date = format.format(calendarModel.selectedDate.value)
-                CreateEditEventScreen(eventviewModel, navController = navController, inputDate = date, event)
+            composable(NavRoutes.CreateEvent.route) {
+                var event by remember { mutableStateOf<Event?>(null) }
+                LaunchedEffect(key1 = Unit) {
+                    event = withContext(Dispatchers.IO) {
+                        eventviewModel.selectedEvent?.let {
+                            database.eventDao().getById(it.id)
+                        }
+                    }
+                }
+                if (event == null) {
+                    val currentDateTime = LocalDateTime.now()
+                    val dateFormatter = DateTimeFormatter.ofPattern("MM-dd-yyyy")
+                    val currentDate = currentDateTime.format(dateFormatter)
+                    event = Event(
+                        title = "",
+                        date = currentDate,
+                        startTime = "12:00",
+                        endTime = "1:00",
+                        description = "",
+                        location = "",
+                        course = ""
+                    )
+                }
+                event?.let {
+                    val format = SimpleDateFormat("MM-dd-yyyy", Locale.getDefault())
+                    val date = format.format(calendarModel.selectedDate.value)
+                    CreateEditEventScreen(eventviewModel, navController = navController, inputDate = date, inputEvent = event!!, database)
+                }
             }
             composable(NavRoutes.EditEvent.route) {
                 eventviewModel.selectedEvent?.let { event ->
                     CreateEditEventScreen(eventviewModel, navController = navController, inputDate = eventviewModel.selectedEvent!!.date,
-                        event
+                        inputEvent = event, database
                     )
                 }
             }
             composable(NavRoutes.EventView.route) {
-                ViewEventScreen(eventviewModel, navController = navController)
+                ViewEventScreen(eventviewModel, navController = navController, database)
             }
-            composable(NavRoutes.DayView.route + "/{date}") { navBackStackEntry ->
-                // Retrieve the date from the route's arguments
-                val date = remember {
-                    navBackStackEntry.arguments?.getString("date") ?: currentDate
-                }
-                val format = SimpleDateFormat("dd-MM-yy", Locale.getDefault())
-                val selectedDate = format.parse(date)
-
-                DailyOverview(navController, calendarModel,dayviewModel, eventviewModel)
+            composable(NavRoutes.DayView.route + "/{date}") {
+                DailyOverview(navController, calendarModel,dayviewModel, eventviewModel, database)
             }
             composable(NavRoutes.MonthView.route) {
-                MonthView(navController = navController, calendarModel = calendarModel, eventviewModel)
+                MonthView(navController = navController, calendarModel = calendarModel, eventviewModel, database)
+            }
+
+            composable("fiveDayForecast/{latitude}/{longitude}", arguments = listOf(
+                navArgument("latitude") { type = NavType.FloatType },
+                navArgument("longitude") { type = NavType.FloatType }
+            )) { backStackEntry ->
+                val latitude = backStackEntry.arguments?.getFloat("latitude") ?: 0f
+                val longitude = backStackEntry.arguments?.getFloat("longitude") ?: 0f
+                FiveDayForecastScreen(navController, latitude.toDouble(), longitude.toDouble())
+            }
+
+        }
+    }
+    private val LOCATION_PERMISSION_REQUEST_CODE = 1
+    private fun requestLocationPermission() {
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
+            != PackageManager.PERMISSION_GRANTED
+        ) {
+            ActivityCompat.requestPermissions(
+                this, arrayOf<String>(Manifest.permission.ACCESS_FINE_LOCATION),
+                LOCATION_PERMISSION_REQUEST_CODE
+            )
+        }
+    }
+    @Suppress("DEPRECATION")
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<String?>,
+        grantResults: IntArray
+    ) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+        if (requestCode == LOCATION_PERMISSION_REQUEST_CODE) {
+            if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+
+            } else {
             }
         }
     }
+
 }
-
-
-
-
