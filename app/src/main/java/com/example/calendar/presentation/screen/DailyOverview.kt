@@ -295,9 +295,7 @@ fun HolidayDisplay(holidayModel: HolidayViewModel, selectedDate: Date) {
             if (holiday.location.isNotEmpty() && holiday.location[0] != "null") {
                 Row {
                     Text("Celebrated in: ")
-                    for (location in holiday.location) {
-                        Text(location)
-                    }
+                    Text(holiday.location)
                 }
             }
         }
