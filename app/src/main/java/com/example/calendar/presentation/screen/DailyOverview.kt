@@ -39,7 +39,8 @@ import com.example.calendar.presentation.viewmodels.EventViewModel
 import com.example.calendar.presentation.getStringResource
 import com.example.calendar.presentation.viewmodels.DailyViewModel
 import androidx.compose.runtime.*
-import com.example.calendar.data.database.AppDatabase
+import androidx.compose.ui.text.font.FontWeight
+import com.example.calendar.presentation.viewmodels.HolidayViewModel
 
 
 @Composable
@@ -54,7 +55,7 @@ fun DailyOverviewScreen(
     onChangeDate: (Date) -> Unit,
     onBack: () -> Unit,
     onEditEvent: (Event) -> Unit,
-    database: AppDatabase
+    holidayModel: HolidayViewModel
 ) {
     //dailyViewModel.eventsForSelectedDate.observeAsState(listOf())
     val today = Calendar.getInstance().time
@@ -83,6 +84,9 @@ fun DailyOverviewScreen(
             WeatherDisplay(navController)
         }
         DailyHeader(selectedDate, onChangeDate)
+
+        HolidayDisplay(holidayModel, selectedDate)
+
         DailyEventsList(selectedDate = selectedDate, events = events, onEventSelected, onEditEvent)
     }
 }
@@ -251,7 +255,7 @@ fun DailyEventsList(selectedDate: Date, events: List<Event>, onEventSelected: (E
 
 
 @Composable
-fun DailyOverview(navController: NavController, calendarModel: CalendarViewModel, dailyViewModel: DailyViewModel, eventModel: EventViewModel, database: AppDatabase) {
+fun DailyOverview(navController: NavController, calendarModel: CalendarViewModel, dailyViewModel: DailyViewModel, eventModel: EventViewModel, holidayModel: HolidayViewModel) {
     val selectedDate = calendarModel.selectedDate.value
     val events = eventModel.events
 
@@ -282,10 +286,30 @@ fun DailyOverview(navController: NavController, calendarModel: CalendarViewModel
             navController.navigate(NavRoutes.EditEvent.route)
 
         },
-        database = database,
+        holidayModel
     )
 }
 
+@Composable
+fun HolidayDisplay(holidayModel: HolidayViewModel, selectedDate: Date) {
+    val format = SimpleDateFormat("MM-dd-yyyy", Locale.getDefault())
+    val date = format.format(selectedDate)
+    val holidaysToday = holidayModel.holidays.filter { holiday ->
+        holiday.date == date
+    }
+    for (holiday in holidaysToday) {
+        Column(horizontalAlignment = Alignment.CenterHorizontally,
+                modifier = Modifier.fillMaxWidth()) {
+            Text(holiday.name, fontWeight = FontWeight.Bold)
+            if (holiday.location.isNotEmpty() && holiday.location != "null") {
+                Row {
+                    Text("Celebrated in: ")
+                    Text(holiday.location)
+                }
+            }
+        }
+    }
+}
 
 //<<<<<<< HEAD
 //    Row(modifier = Modifier

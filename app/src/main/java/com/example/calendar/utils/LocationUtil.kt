@@ -4,6 +4,8 @@ import android.Manifest
 import android.content.Context
 import android.content.pm.PackageManager
 import android.location.Location
+import androidx.activity.result.contract.ActivityResultContracts.PickVisualMedia.ImageAndVideo.equals
+import androidx.activity.result.contract.ActivityResultContracts.PickVisualMedia.ImageOnly.equals
 import androidx.core.content.ContextCompat
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationCallback
@@ -12,6 +14,9 @@ import com.google.android.gms.location.LocationResult
 import com.google.android.gms.location.LocationServices
 import com.google.android.gms.tasks.OnFailureListener
 import com.google.android.gms.tasks.OnSuccessListener
+import androidx.activity.result.contract.ActivityResultContracts.PickVisualMedia.ImageAndVideo.equals
+import androidx.activity.result.contract.ActivityResultContracts.PickVisualMedia.ImageOnly.equals
+import com.example.calendar.presentation.MainActivity
 
 class LocationUtil(private val context: Context) {
     private val fusedLocationClient: FusedLocationProviderClient
@@ -56,7 +61,7 @@ class LocationUtil(private val context: Context) {
         }
         locationCallback = object : LocationCallback() {
             override fun onLocationResult(locationResult: LocationResult) {
-                if (locationResult == null) {
+                if (locationResult.locations.isEmpty()) {
                     return
                 }
                 for (location in locationResult.locations) {
@@ -64,14 +69,17 @@ class LocationUtil(private val context: Context) {
                 }
             }
         }
-        fusedLocationClient.requestLocationUpdates(createLocationRequest(), locationCallback, null)
-            .addOnFailureListener(onFailure)
+        createLocationRequest()?.let {
+            fusedLocationClient.requestLocationUpdates(it,
+                locationCallback as LocationCallback, context.mainLooper)
+                .addOnFailureListener(onFailure)
+        }
     }
 
 
     fun stopLocationUpdates() {
         if (locationCallback != null) {
-            fusedLocationClient.removeLocationUpdates(locationCallback)
+            fusedLocationClient.removeLocationUpdates(locationCallback!!)
         }
     }
     private fun createLocationRequest(): LocationRequest? {
