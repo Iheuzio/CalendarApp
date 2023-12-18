@@ -7,4 +7,5 @@ sealed class NavRoutes (val route: String) {
     object CreateEvent : NavRoutes("create-event")
     object EditEvent : NavRoutes("edit-event")
     object MonthView : NavRoutes("monthView")
+    object FiveDayForecast : NavRoutes("fiveDayForecast")
 }

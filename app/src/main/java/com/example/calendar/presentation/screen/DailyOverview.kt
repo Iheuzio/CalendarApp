@@ -44,6 +44,7 @@ import com.example.calendar.presentation.viewmodels.HolidayViewModel
 
 @Composable
 fun DailyOverviewScreen(
+    navController: NavController,
     dailyViewModel: DailyViewModel,
     viewModel: EventViewModel,
     selectedDate: Date,
@@ -55,6 +56,10 @@ fun DailyOverviewScreen(
     onEditEvent: (Event) -> Unit,
     holidayModel: HolidayViewModel
 ) {
+    //dailyViewModel.eventsForSelectedDate.observeAsState(listOf())
+    val today = Calendar.getInstance().time
+
+
     Column(modifier = Modifier.fillMaxSize()) {
         Row {
             Button(
@@ -73,7 +78,10 @@ fun DailyOverviewScreen(
                 }
             )
         }
-
+        //only display weather if it is today's date that is selected
+        if (selectedDate.isSameDayAs(today)) {
+            WeatherDisplay(navController)
+        }
         DailyHeader(selectedDate, onChangeDate)
 
         HolidayDisplay(holidayModel, selectedDate)
@@ -251,6 +259,7 @@ fun DailyOverview(navController: NavController, calendarModel: CalendarViewModel
     val events = eventModel.events
 
     DailyOverviewScreen(
+        navController = navController,
         dailyViewModel = dailyViewModel,
         viewModel = eventModel,
         selectedDate = selectedDate,
@@ -298,5 +307,30 @@ fun HolidayDisplay(holidayModel: HolidayViewModel, selectedDate: Date) {
             }
         }
     }
+}
+
+//<<<<<<< HEAD
+//    Row(modifier = Modifier
+//        .fillMaxWidth()
+//        .padding(8.dp)
+//        .height(60.dp)) {
+//        Text(
+//            text = time,
+//            modifier = Modifier.width(80.dp)
+//        )
+//        Spacer(modifier = Modifier.weight(1f))
+//    }
+//}
+fun getTime(dateStr: String): Date {
+    val format = SimpleDateFormat("HH:mm", Locale.getDefault())
+    return format.parse(dateStr)
+}
+//helper function to check if days are equal
+fun Date.isSameDayAs(otherDate: Date): Boolean {
+    val calendar1 = Calendar.getInstance().apply { time = this@isSameDayAs }
+    val calendar2 = Calendar.getInstance().apply { time = otherDate }
+    return calendar1.get(Calendar.ERA) == calendar2.get(Calendar.ERA) &&
+            calendar1.get(Calendar.YEAR) == calendar2.get(Calendar.YEAR) &&
+            calendar1.get(Calendar.DAY_OF_YEAR) == calendar2.get(Calendar.DAY_OF_YEAR)
 }
 

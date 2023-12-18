@@ -8,36 +8,39 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.annotation.RequiresApi
+import androidx.annotation.StringRes
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
-import com.example.calendar.ui.theme.CalendarTheme
-import androidx.annotation.StringRes
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import com.example.calendar.data.database.Event
+import androidx.navigation.navArgument
 import com.example.calendar.data.NavRoutes
-import com.example.calendar.presentation.viewmodels.CalendarViewModel
-import com.example.calendar.presentation.viewmodels.EventViewModel
+import com.example.calendar.data.database.AppDatabase
+import com.example.calendar.data.database.Event
 import com.example.calendar.presentation.screen.CalendarView
 import com.example.calendar.presentation.screen.CreateEditEventScreen
 import com.example.calendar.presentation.screen.DailyOverview
-import com.example.calendar.presentation.viewmodels.DailyViewModel
+import com.example.calendar.presentation.screen.FiveDayForecastScreen
 import com.example.calendar.presentation.screen.MonthView
 import com.example.calendar.presentation.screen.ViewEventScreen
-import com.example.calendar.data.database.AppDatabase
-import com.example.calendar.presentation.viewmodels.HolidayViewModel
+import com.example.calendar.presentation.viewmodels.CalendarViewModel
+import com.example.calendar.presentation.viewmodels.DailyViewModel
+import com.example.calendar.presentation.viewmodels.EventViewModel
+import com.example.calendar.ui.theme.CalendarTheme
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import java.text.SimpleDateFormat
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 import java.util.Locale
+import androidx.navigation.NavType
+import com.example.calendar.presentation.viewmodels.HolidayViewModel
 
 
 fun Context.getStringResource(@StringRes resId: Int): String {
@@ -48,6 +51,7 @@ class MainActivity : ComponentActivity() {
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        requestLocationPermission()
         setContent {
             CalendarTheme {
                 Surface(
@@ -57,21 +61,6 @@ class MainActivity : ComponentActivity() {
                     // Create an instance of the AppDatabase
                     val database = AppDatabase.getInstance(this)
                     val holidayModel = HolidayViewModel(database = database, context = this)
-
-                    // Check if the location permission is granted
-                    val locationPermissionGranted = ContextCompat.checkSelfPermission(
-                        this,
-                        Manifest.permission.ACCESS_FINE_LOCATION
-                    ) == PackageManager.PERMISSION_GRANTED
-
-                    if (!locationPermissionGranted) {
-                        // Request the location permission
-                        ActivityCompat.requestPermissions(
-                            this,
-                            arrayOf(Manifest.permission.ACCESS_FINE_LOCATION),
-                            LOCATION_PERMISSION_REQUEST_CODE
-                        )
-                    }
 
                     CalendarApp(
                         eventviewModel = EventViewModel(database = database),
@@ -84,10 +73,6 @@ class MainActivity : ComponentActivity() {
                 }
             }
         }
-    }
-
-    companion object {
-        const val LOCATION_PERMISSION_REQUEST_CODE = 1
     }
 
     @RequiresApi(Build.VERSION_CODES.O)
@@ -143,6 +128,42 @@ class MainActivity : ComponentActivity() {
             composable(NavRoutes.MonthView.route) {
                 MonthView(navController = navController, calendarModel = calendarModel, eventviewModel, database, holidayModel)
             }
+
+            composable("fiveDayForecast/{latitude}/{longitude}", arguments = listOf(
+                navArgument("latitude") { type = NavType.FloatType },
+                navArgument("longitude") { type = NavType.FloatType }
+            )) { backStackEntry ->
+                val latitude = backStackEntry.arguments?.getFloat("latitude") ?: 0f
+                val longitude = backStackEntry.arguments?.getFloat("longitude") ?: 0f
+                FiveDayForecastScreen(navController, latitude.toDouble(), longitude.toDouble())
+            }
+
         }
     }
+    private val LOCATION_PERMISSION_REQUEST_CODE = 1
+    private fun requestLocationPermission() {
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
+            != PackageManager.PERMISSION_GRANTED
+        ) {
+            ActivityCompat.requestPermissions(
+                this, arrayOf<String>(Manifest.permission.ACCESS_FINE_LOCATION),
+                LOCATION_PERMISSION_REQUEST_CODE
+            )
+        }
+    }
+    @Suppress("DEPRECATION")
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<String?>,
+        grantResults: IntArray
+    ) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+        if (requestCode == LOCATION_PERMISSION_REQUEST_CODE) {
+            if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+
+            } else {
+            }
+        }
+    }
+
 }
