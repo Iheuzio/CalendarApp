@@ -69,6 +69,14 @@ class HolidayTest {
         assertFalse(holidays.isEmpty())
     }
 
+    @Test
+    fun addHolidayToDb() {
+        val holiday = Holiday(0, "test holiday", "12-02-2023", "test description", "test location")
+        holidayDao.insertAll(holiday)
+        val dbHolidays = holidayDao.getAll()
+        assertEquals(1, dbHolidays.size)
+        assertEquals(holiday.name, dbHolidays[0].name)
+    }
     /*@OptIn(ExperimentalCoroutinesApi::class)
     @Test
     @Throws(Exception::class)

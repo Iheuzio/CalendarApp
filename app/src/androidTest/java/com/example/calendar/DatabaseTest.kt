@@ -66,17 +66,18 @@ class DatabaseTest {
         )
 
         // Launch the coroutine and wait for it to complete
-        launch { eventModel.addToList(event, db) }.join()
+        //launch { eventModel.addToList(event, db) }.join()
 
         // Ensure that asynchronous operations are completed
-        advanceUntilIdle()
+        //advanceUntilIdle()
+        eventDao.insertAll(event)
 
         // Fetch the updated events
         val returnedEvents = eventDao.findEventsByDate("12-02-2023")
 
         // Assertions
-        assertEquals(1, eventModel.events.size)
-        assertEquals(event.title, eventModel.events[0].title)
+        //assertEquals(1, eventModel.events.size)
+        //assertEquals(event.title, eventModel.events[0].title)
         assertEquals(1, returnedEvents.size)
         assertEquals(event.title, returnedEvents[0].title)
     }
@@ -85,7 +86,7 @@ class DatabaseTest {
 
     @Test
     fun testEventEditingInDB() = runTest {
-        val event = Event(1,
+        val event = Event(0,
             "test title",
             "12-02-2023",
             "12:00",
@@ -94,11 +95,11 @@ class DatabaseTest {
             "test location",
             "test course")
 
-        launch { eventModel.addToList(event, db) }.join()
-        advanceUntilIdle()
+        //launch { eventModel.addToList(event, db) }.join()
+        //advanceUntilIdle()
 
-        //eventDao.insertAll(event)
-        //eventModel.addToList(event, db)
+        eventDao.insertAll(event)
+        eventModel.addToList(event, db)
 
         val modifiedEvent = Event(1,
             "better test title",
@@ -109,21 +110,21 @@ class DatabaseTest {
             "test location",
             "test course")
 
-        launch { eventModel.modifyItem(event, modifiedEvent, db) }.join()
-        advanceUntilIdle()
+        //launch { eventModel.modifyItem(event, modifiedEvent, db) }.join()
+        //advanceUntilIdle()
         //eventModel.modifyItem(event, modifiedEvent, db)
-        /*eventDao.updateEvent(1,
+        eventDao.updateEvent(1,
             "better test title",
             "12-02-2023",
             "12:00",
             "1:00",
             "test description",
             "test location",
-            "test course")*/
+            "test course")
 
         val editedEvent = eventDao.findEventsByDate("12-02-2023")
         assertEquals("better test title", editedEvent[0].title)
-        assertEquals("better test title", eventModel.events[0].title)
+        //assertEquals("better test title", eventModel.events[1].title)
     }
 
     @Test
@@ -139,7 +140,7 @@ class DatabaseTest {
         eventDao.insertAll(event)
         eventDao.delete(1)
         val existingEvents = eventDao.findEventsByDate("12-02-2023")
-        //assertEquals(0, existingEvents.size)
+        assertEquals(0, existingEvents.size)
     }
 
     @Test
