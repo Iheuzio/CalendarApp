@@ -292,7 +292,7 @@ fun HolidayDisplay(holidayModel: HolidayViewModel, selectedDate: Date) {
         Column(horizontalAlignment = Alignment.CenterHorizontally,
                 modifier = Modifier.fillMaxWidth()) {
             Text(holiday.name, fontWeight = FontWeight.Bold)
-            if (holiday.location.isNotEmpty() && holiday.location[0] != "null") {
+            if (holiday.location.isNotEmpty() && holiday.location != "null") {
                 Row {
                     Text("Celebrated in: ")
                     Text(holiday.location)
