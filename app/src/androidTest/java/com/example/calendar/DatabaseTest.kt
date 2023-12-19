@@ -50,7 +50,6 @@ class DatabaseTest {
         db.close()
     }
 
-    @OptIn(ExperimentalCoroutinesApi::class)
     @Test
     @Throws(Exception::class)
     fun testEventCreationInDB() = runTest {
@@ -65,19 +64,12 @@ class DatabaseTest {
             "test course"
         )
 
-        // Launch the coroutine and wait for it to complete
-        //launch { eventModel.addToList(event, db) }.join()
-
-        // Ensure that asynchronous operations are completed
-        //advanceUntilIdle()
         eventDao.insertAll(event)
 
         // Fetch the updated events
         val returnedEvents = eventDao.findEventsByDate("12-02-2023")
 
         // Assertions
-        //assertEquals(1, eventModel.events.size)
-        //assertEquals(event.title, eventModel.events[0].title)
         assertEquals(1, returnedEvents.size)
         assertEquals(event.title, returnedEvents[0].title)
     }
@@ -95,24 +87,9 @@ class DatabaseTest {
             "test location",
             "test course")
 
-        //launch { eventModel.addToList(event, db) }.join()
-        //advanceUntilIdle()
-
         eventDao.insertAll(event)
         eventModel.addToList(event, db)
 
-        val modifiedEvent = Event(1,
-            "better test title",
-            "12-02-2023",
-            "12:00",
-            "1:00",
-            "test description",
-            "test location",
-            "test course")
-
-        //launch { eventModel.modifyItem(event, modifiedEvent, db) }.join()
-        //advanceUntilIdle()
-        //eventModel.modifyItem(event, modifiedEvent, db)
         eventDao.updateEvent(1,
             "better test title",
             "12-02-2023",
@@ -124,7 +101,6 @@ class DatabaseTest {
 
         val editedEvent = eventDao.findEventsByDate("12-02-2023")
         assertEquals("better test title", editedEvent[0].title)
-        //assertEquals("better test title", eventModel.events[1].title)
     }
 
     @Test
