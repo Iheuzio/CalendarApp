@@ -119,8 +119,8 @@ class HolidayViewModel(private val database: AppDatabase, private val context: C
 
                 val holiday = Holiday(
                     date = date,
-                    name = jsonArray.getJSONObject(i).getString("name"),
-                    description = jsonArray.getJSONObject(i).getString("localName"),
+                    name = jsonArray.getJSONObject(i).getString("localName"),
+                    description = jsonArray.getJSONObject(i).getString("name"),
                     location = countryCode
                 )
 
