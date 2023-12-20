@@ -77,16 +77,4 @@ class HolidayTest {
         assertEquals(1, dbHolidays.size)
         assertEquals(holiday.name, dbHolidays[0].name)
     }
-    /*@OptIn(ExperimentalCoroutinesApi::class)
-    @Test
-    @Throws(Exception::class)
-    fun testAddToDb() = runTest() {
-        // Launch the coroutine and wait for it to complete
-        launch { holidayModel.fetchHolidays("CA") }.join()
-
-        // Ensure that asynchronous operations are completed
-        advanceUntilIdle()
-
-        assertFalse(holidayModel.holidays.isEmpty())
-    }*/
 }
