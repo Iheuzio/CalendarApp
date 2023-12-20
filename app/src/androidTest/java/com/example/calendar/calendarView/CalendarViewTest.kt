@@ -12,6 +12,7 @@ import com.example.calendar.presentation.screen.CalendarView
 import com.example.calendar.presentation.viewmodels.DailyViewModel
 import com.example.calendar.presentation.viewmodels.CalendarViewModel
 import com.example.calendar.presentation.viewmodels.EventViewModel
+import com.example.calendar.presentation.viewmodels.HolidayViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.junit.Assert.assertNotEquals
 import org.junit.Before
@@ -39,8 +40,9 @@ class CalendarViewTest {
         ).allowMainThreadQueries().build()
         calendarModel = CalendarViewModel(db)
         eventViewModel = EventViewModel(db)
+        val holidayModel = HolidayViewModel(db, context)
         composeTestRule.setContent {
-            CalendarView(navController, calendarModel, eventViewModel, dayModel = DailyViewModel(), db)
+            CalendarView(navController, calendarModel, eventViewModel, dayModel = DailyViewModel(), db, holidayModel)
         }
 
     }

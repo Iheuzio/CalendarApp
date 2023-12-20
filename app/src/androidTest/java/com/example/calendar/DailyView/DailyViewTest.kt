@@ -15,6 +15,7 @@ import com.example.calendar.presentation.viewmodels.CalendarViewModel
 import com.example.calendar.presentation.viewmodels.EventViewModel
 import com.example.calendar.presentation.screen.DailyOverview
 import com.example.calendar.presentation.viewmodels.DailyViewModel
+import com.example.calendar.presentation.viewmodels.HolidayViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.junit.Assert.assertNotEquals
 import org.junit.Before
@@ -45,10 +46,11 @@ class DailyOverviewTest {
         dailyViewModel = DailyViewModel()
         calendarViewModel = CalendarViewModel(db)
         eventViewModel = EventViewModel(db)
+        val holidayModel = HolidayViewModel(db, context)
         composeTestRule.runOnUiThread {
             dailyViewModel.eventsForSelectedDate.value = createMockEvents()
             composeTestRule.setContent {
-                DailyOverview(navController, calendarViewModel, dailyViewModel, eventViewModel, db)
+                DailyOverview(navController, calendarViewModel, dailyViewModel, eventViewModel, holidayModel)
             }
         }
     }

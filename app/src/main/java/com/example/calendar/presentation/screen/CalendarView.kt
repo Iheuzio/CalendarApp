@@ -37,6 +37,7 @@ import com.example.calendar.presentation.viewmodels.CalendarViewModel
 import com.example.calendar.presentation.viewmodels.EventViewModel
 import com.example.calendar.presentation.getStringResource
 import com.example.calendar.presentation.viewmodels.DailyViewModel
+import com.example.calendar.presentation.viewmodels.HolidayViewModel
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -48,13 +49,13 @@ import java.util.*
  * @param eventModel The ViewModel that holds the state of the events.
  */
 @Composable
-fun CalendarView(navController: NavController, calendarModel: CalendarViewModel, eventModel: EventViewModel, dayModel: DailyViewModel, database: AppDatabase) {
+fun CalendarView(navController: NavController, calendarModel: CalendarViewModel, eventModel: EventViewModel, dayModel: DailyViewModel, database: AppDatabase, holidayModel: HolidayViewModel) {
     val showDailyOverview = calendarModel.showDailyOverview.value
 
     if (!showDailyOverview) {
-        MonthView(navController, calendarModel, eventModel, database)
+        MonthView(navController, calendarModel, eventModel, database, holidayModel)
     } else {
-        DailyOverview(navController, calendarModel, dayModel, eventModel, database)
+        DailyOverview(navController, calendarModel, dayModel, eventModel, holidayModel)
     }
 }
 
@@ -65,12 +66,12 @@ fun CalendarView(navController: NavController, calendarModel: CalendarViewModel,
  * @param eventModel The ViewModel that holds the state of the events.
  */
 @Composable
-fun MonthView(navController: NavController, calendarModel: CalendarViewModel, eventModel: EventViewModel, database: AppDatabase) {
+fun MonthView(navController: NavController, calendarModel: CalendarViewModel, eventModel: EventViewModel, database: AppDatabase, holidayModel: HolidayViewModel) {
     val selectedDate = calendarModel.selectedDate.value
     Column(modifier = Modifier.fillMaxSize()) {
         CalendarHeader(selectedDate, calendarModel::onDateChange)
         DayOfWeekHeader()
-        CalendarGrid(eventModel, selectedDate, calendarModel::onDateChange, database)
+        CalendarGrid(eventModel, selectedDate, calendarModel::onDateChange, holidayModel)
         AddEventButton(navController)
     }
 }
@@ -144,7 +145,7 @@ fun AddEventButton(navController: NavController) {
  * @param onDateClick The function to call when a date is clicked.
  */
 @Composable
-fun CalendarGrid(eventModel: EventViewModel, selectedDate: Date, onDateClick: (Calendar) -> Unit, database: AppDatabase) {
+fun CalendarGrid(eventModel: EventViewModel, selectedDate: Date, onDateClick: (Calendar) -> Unit, holidayModel: HolidayViewModel) {
     val calendar = Calendar.getInstance()
     calendar.time = selectedDate
 
@@ -182,7 +183,10 @@ fun CalendarGrid(eventModel: EventViewModel, selectedDate: Date, onDateClick: (C
                     val eventBool = eventModel.events.any { event ->
                         event.date == currentTime
                     }
-                    DayCell(day, isSelected, isCurrentMonth, cellSize, onDateClick, cellDate, eventBool)
+                    val holidayBool = holidayModel.holidays.any { holiday ->
+                        holiday.date == currentTime
+                    }
+                    DayCell(day, isSelected, isCurrentMonth, cellSize, onDateClick, cellDate, eventBool, holidayBool)
                 } else {
                     EmptyCell(cellSize)
                 }
@@ -210,7 +214,8 @@ fun DayCell(
     cellSize: Dp,
     onDateClick: (Calendar) -> Unit,
     cellDate: Calendar,
-    eventBool: Any
+    eventBool: Any,
+    holidayBool: Any
 ) {
     val today = Calendar.getInstance()
     val isToday = cellDate.get(Calendar.YEAR) == today.get(Calendar.YEAR) &&
@@ -225,6 +230,7 @@ fun DayCell(
                     isSelected -> MaterialTheme.colorScheme.primary
                     isToday -> Color.Black
                     eventBool == true -> Color.Red
+                    holidayBool == true -> Color.Green
                     isCurrentMonth -> Color.Transparent
                     else -> Color.Gray
                 }

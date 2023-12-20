@@ -255,7 +255,7 @@ fun SaveChangesButton(
     date: String, startTime: String, endTime: String, title: String,
     description: String, location: String, course: String, database: AppDatabase
 ) {
-    val isSaveEnabled = (!(startTime == "12:00" && endTime == "12:00") && isValidEndTime(startTime, endTime))
+    val isSaveEnabled = (!(startTime == "12:00" && endTime == "12:00") && isValidEndTime(startTime, endTime)) && title.isNotEmpty() && title.isNotBlank()
 
     Button(
         onClick = {

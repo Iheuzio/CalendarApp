@@ -59,6 +59,14 @@ android {
 }
 
 dependencies {
+    implementation("androidx.navigation:navigation-fragment-ktx:2.3.0")
+    implementation("androidx.navigation:navigation-ui-ktx:2.3.0")
+    implementation("com.google.android.gms:play-services-location:18.0.0")
+    implementation("com.squareup.retrofit2:retrofit:2.9.0")
+    implementation("com.squareup.retrofit2:converter-gson:2.9.0")
+    implementation ("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.3.9")
+    implementation("com.squareup.retrofit2:retrofit:2.9.0")
+    implementation("com.squareup.retrofit2:converter-gson:2.9.0")
     implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.6.1")
     implementation("androidx.core:core-ktx:1.9.0")
     implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.6.2")
@@ -70,10 +78,12 @@ dependencies {
     implementation("androidx.compose.material3:material3")
     implementation ("androidx.navigation:navigation-compose:2.5.3")
     implementation("androidx.navigation:navigation-runtime-ktx:2.7.5")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.4.1")
     androidTestImplementation("org.testng:testng:6.9.6")
     kapt ("androidx.room:room-compiler:2.6.0")
     implementation("androidx.room:room-ktx:2.6.0")
     implementation("androidx.room:room-runtime:2.6.0")
+    implementation("com.google.android.gms:play-services-location:19.0.1")
     testImplementation("junit:junit:4.13.2")
     androidTestImplementation("androidx.navigation:navigation-testing:2.4.1")
     androidTestImplementation("androidx.test.ext:junit:1.1.5")

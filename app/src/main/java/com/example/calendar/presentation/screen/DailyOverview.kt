@@ -39,11 +39,13 @@ import com.example.calendar.presentation.viewmodels.EventViewModel
 import com.example.calendar.presentation.getStringResource
 import com.example.calendar.presentation.viewmodels.DailyViewModel
 import androidx.compose.runtime.*
-import com.example.calendar.data.database.AppDatabase
+import androidx.compose.ui.text.font.FontWeight
+import com.example.calendar.presentation.viewmodels.HolidayViewModel
 
 
 @Composable
 fun DailyOverviewScreen(
+    navController: NavController,
     dailyViewModel: DailyViewModel,
     viewModel: EventViewModel,
     selectedDate: Date,
@@ -53,8 +55,12 @@ fun DailyOverviewScreen(
     onChangeDate: (Date) -> Unit,
     onBack: () -> Unit,
     onEditEvent: (Event) -> Unit,
-    database: AppDatabase
+    holidayModel: HolidayViewModel
 ) {
+    //dailyViewModel.eventsForSelectedDate.observeAsState(listOf())
+    val today = Calendar.getInstance().time
+
+
     Column(modifier = Modifier.fillMaxSize()) {
         Row {
             Button(
@@ -73,8 +79,14 @@ fun DailyOverviewScreen(
                 }
             )
         }
-
+        //only display weather if it is today's date that is selected
+        if (selectedDate.isSameDayAs(today)) {
+            WeatherDisplay(navController)
+        }
         DailyHeader(selectedDate, onChangeDate)
+
+        HolidayDisplay(holidayModel, selectedDate)
+
         DailyEventsList(selectedDate = selectedDate, events = events, onEventSelected, onEditEvent)
     }
 }
@@ -243,11 +255,12 @@ fun DailyEventsList(selectedDate: Date, events: List<Event>, onEventSelected: (E
 
 
 @Composable
-fun DailyOverview(navController: NavController, calendarModel: CalendarViewModel, dailyViewModel: DailyViewModel, eventModel: EventViewModel, database: AppDatabase) {
+fun DailyOverview(navController: NavController, calendarModel: CalendarViewModel, dailyViewModel: DailyViewModel, eventModel: EventViewModel, holidayModel: HolidayViewModel) {
     val selectedDate = calendarModel.selectedDate.value
     val events = eventModel.events
 
     DailyOverviewScreen(
+        navController = navController,
         dailyViewModel = dailyViewModel,
         viewModel = eventModel,
         selectedDate = selectedDate,
@@ -273,8 +286,53 @@ fun DailyOverview(navController: NavController, calendarModel: CalendarViewModel
             navController.navigate(NavRoutes.EditEvent.route)
 
         },
-        database = database,
+        holidayModel
     )
 }
 
+@Composable
+fun HolidayDisplay(holidayModel: HolidayViewModel, selectedDate: Date) {
+    val format = SimpleDateFormat("MM-dd-yyyy", Locale.getDefault())
+    val date = format.format(selectedDate)
+    val holidaysToday = holidayModel.holidays.filter { holiday ->
+        holiday.date == date
+    }
+    for (holiday in holidaysToday) {
+        Column(horizontalAlignment = Alignment.CenterHorizontally,
+                modifier = Modifier.fillMaxWidth()) {
+            Text(holiday.name, fontWeight = FontWeight.Bold)
+            if (holiday.location.isNotEmpty() && holiday.location != "null") {
+                Row {
+                    Text("Celebrated in: ")
+                    Text(holiday.location)
+                }
+            }
+        }
+    }
+}
+
+//<<<<<<< HEAD
+//    Row(modifier = Modifier
+//        .fillMaxWidth()
+//        .padding(8.dp)
+//        .height(60.dp)) {
+//        Text(
+//            text = time,
+//            modifier = Modifier.width(80.dp)
+//        )
+//        Spacer(modifier = Modifier.weight(1f))
+//    }
+//}
+fun getTime(dateStr: String): Date {
+    val format = SimpleDateFormat("HH:mm", Locale.getDefault())
+    return format.parse(dateStr)
+}
+//helper function to check if days are equal
+fun Date.isSameDayAs(otherDate: Date): Boolean {
+    val calendar1 = Calendar.getInstance().apply { time = this@isSameDayAs }
+    val calendar2 = Calendar.getInstance().apply { time = otherDate }
+    return calendar1.get(Calendar.ERA) == calendar2.get(Calendar.ERA) &&
+            calendar1.get(Calendar.YEAR) == calendar2.get(Calendar.YEAR) &&
+            calendar1.get(Calendar.DAY_OF_YEAR) == calendar2.get(Calendar.DAY_OF_YEAR)
+}
 
