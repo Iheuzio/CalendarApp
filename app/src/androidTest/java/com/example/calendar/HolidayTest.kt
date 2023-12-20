@@ -69,16 +69,12 @@ class HolidayTest {
         assertFalse(holidays.isEmpty())
     }
 
-    /*@OptIn(ExperimentalCoroutinesApi::class)
     @Test
-    @Throws(Exception::class)
-    fun testAddToDb() = runTest() {
-        // Launch the coroutine and wait for it to complete
-        launch { holidayModel.fetchHolidays("CA") }.join()
-
-        // Ensure that asynchronous operations are completed
-        advanceUntilIdle()
-
-        assertFalse(holidayModel.holidays.isEmpty())
-    }*/
+    fun addHolidayToDb() {
+        val holiday = Holiday(0, "test holiday", "12-02-2023", "test description", "test location")
+        holidayDao.insertAll(holiday)
+        val dbHolidays = holidayDao.getAll()
+        assertEquals(1, dbHolidays.size)
+        assertEquals(holiday.name, dbHolidays[0].name)
+    }
 }
