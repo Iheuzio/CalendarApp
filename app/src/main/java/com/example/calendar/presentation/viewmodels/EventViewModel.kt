@@ -86,7 +86,7 @@ class EventViewModel(private val database: AppDatabase) : ViewModel() {
         return events.find { it.id == id }
     }
 
-    private fun getEventsByDate(date: String, database: AppDatabase): List<Event> {
+    fun getEventsByDate(date: String, database: AppDatabase): List<Event> {
         var filteredEvents: List<Event> = listOf()
         viewModelScope.launch {
             withContext(Dispatchers.IO) {

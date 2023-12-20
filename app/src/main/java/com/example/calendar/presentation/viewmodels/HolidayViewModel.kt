@@ -101,8 +101,6 @@ class HolidayViewModel(private val database: AppDatabase, private val context: C
             val dataString = httpURLConnection.inputStream.bufferedReader()
                 .use { it.readText() }
 
-            val holidays = mutableListOf<Holiday>()
-
             val jsonArray = JSONTokener(dataString).nextValue() as JSONArray
             for (i in 0 until jsonArray.length()) {
                 // Reformat data
