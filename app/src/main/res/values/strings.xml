@@ -32,4 +32,12 @@
     <string name="location">Location</string>
     <string name="course">Course</string>
     <string name="save_changes">Save changes</string>
+
+    <string name="details">Details</string>
+    <string name="edit">Edit</string>
+    <string name="celebrated_in">Celebrated in: </string>
+    <string name="temperature">Temperature: </string>
+    <string name="condition">Condition: </string>
+    <string name="last_update">Last update: </string>
+    <string name="loading_weather">Loading weather...</string>
 </resources>

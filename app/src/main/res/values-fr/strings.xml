@@ -1,0 +1,40 @@
+<resources>
+    <string name="app_name">Calendrier</string>
+    <string name="create_event">Ajouter un événement</string>
+    <string name="next_month">Mois prochain</string>
+    <string name="previous_month">Mois précédent</string>
+
+    <string name="sunday">Dim</string>
+    <string name="monday">Lun</string>
+    <string name="tuesday">Mar</string>
+    <string name="wednesday">Mer</string>
+    <string name="thursday">Jeu</string>
+    <string name="friday">Ven</string>
+    <string name="saturday">Sam</string>
+
+    <string name="cancel">Annuler</string>
+    <string name="confirm">Sauvegarder</string>
+    <string name="previous_day">Jour précédent</string>
+    <string name="add_event">Ajouter un événement</string>
+
+    <string name="back">Retour</string>
+    <string name="next">Suivant</string>
+    <string name="done">Terminé</string>
+    <string name="delete">Supprimer</string>
+    <string name="title">Titre</string>
+    <string name="select_date">Sélectionner une date</string>
+    <string name="select_start_time">Sélectionner l\'heure de début</string>
+    <string name="select_end_time">Sélectionner l\'heure de fin</string>
+    <string name="description">Description</string>
+    <string name="location">Emplacement</string>
+    <string name="course">Cours</string>
+    <string name="save_changes">Sauvegarder les modifications</string>
+
+    <string name="details">Détails</string>
+    <string name="edit">Modifier</string>
+    <string name="celebrated_in">Célébré à: </string>
+    <string name="temperature">Température: </string>
+    <string name="condition">Condition: </string>
+    <string name="last_update">Dernière mise à jour: </string>
+    <string name="loading_weather">Chargement de la météo...</string>
+</resources>
