@@ -23,10 +23,12 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.example.calendar.R
+import com.example.calendar.presentation.getStringResource
 import com.example.calendar.utils.OpenWeatherMapForecastResponse
 import com.example.calendar.utils.RetrofitInstance
 import kotlinx.coroutines.launch
@@ -80,7 +82,7 @@ fun FiveDayForecastScreen(navController: NavController, latitude: Double, longit
             },
             modifier = Modifier.padding(16.dp)
         ) {
-            Text("Back")
+            Text(LocalContext.current.getStringResource(R.string.back))
         }
 
         LazyColumn {
