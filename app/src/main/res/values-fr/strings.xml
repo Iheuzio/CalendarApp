@@ -23,8 +23,8 @@
     <string name="delete">Supprimer</string>
     <string name="title">Titre</string>
     <string name="select_date">Sélectionner une date</string>
-    <string name="select_start_time">Sélectionner l'heure de début</string>
-    <string name="select_end_time">Sélectionner l'heure de fin</string>
+    <string name="select_start_time">Sélectionner l\'heure de début</string>
+    <string name="select_end_time">Sélectionner l\'heure de fin</string>
     <string name="description">Description</string>
     <string name="location">Emplacement</string>
     <string name="course">Cours</string>
