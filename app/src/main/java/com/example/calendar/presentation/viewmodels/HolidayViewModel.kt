@@ -66,7 +66,7 @@ class HolidayViewModel(private val database: AppDatabase, private val context: C
         }
     }
 
-     fun fetchHolidays(location: String? = null) {
+     private fun fetchHolidays(location: String? = null) {
          //For testing purpose
          if (location != null) {
              countryCode = location
@@ -111,8 +111,8 @@ class HolidayViewModel(private val database: AppDatabase, private val context: C
 
                 // convert locations to a string delimited by commas
                 var locationsString = ""
-                for (location in locations) {
-                    locationsString += "$location, "
+                for (loc in locations) {
+                    locationsString += "$loc, "
                 }
 
                 val holiday = Holiday(
