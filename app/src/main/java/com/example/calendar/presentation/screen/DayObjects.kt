@@ -17,14 +17,15 @@ import com.example.calendar.R
 import com.example.calendar.presentation.getStringResource
 import java.text.SimpleDateFormat
 import java.util.Calendar
+import java.util.Locale
 
 /**
  * This is the view for the month header. It displays the month and year.
  * @param calendar The calendar object used to get the month and year.
  */
 @Composable
-fun monthYearHeader(calendar: Calendar) {
-    val dateFormat = SimpleDateFormat("MMMM yyyy")
+fun MonthYearHeader(calendar: Calendar) {
+    val dateFormat = SimpleDateFormat("MMMM yyyy", Locale.getDefault())
     val monthYear = dateFormat.format(calendar.time)
 
     Text(

@@ -32,11 +32,9 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.calendar.R
 import com.example.calendar.data.NavRoutes
-import com.example.calendar.data.database.AppDatabase
 import com.example.calendar.presentation.viewmodels.CalendarViewModel
 import com.example.calendar.presentation.viewmodels.EventViewModel
 import com.example.calendar.presentation.getStringResource
-import com.example.calendar.presentation.viewmodels.DailyViewModel
 import com.example.calendar.presentation.viewmodels.HolidayViewModel
 import java.text.SimpleDateFormat
 import java.util.*
@@ -49,13 +47,13 @@ import java.util.*
  * @param eventModel The ViewModel that holds the state of the events.
  */
 @Composable
-fun CalendarView(navController: NavController, calendarModel: CalendarViewModel, eventModel: EventViewModel, dayModel: DailyViewModel, database: AppDatabase, holidayModel: HolidayViewModel) {
+fun CalendarView(navController: NavController, calendarModel: CalendarViewModel, eventModel: EventViewModel, holidayModel: HolidayViewModel) {
     val showDailyOverview = calendarModel.showDailyOverview.value
 
     if (!showDailyOverview) {
-        MonthView(navController, calendarModel, eventModel, database, holidayModel)
+        MonthView(navController, calendarModel, eventModel, holidayModel)
     } else {
-        DailyOverview(navController, calendarModel, dayModel, eventModel, holidayModel)
+        DailyOverview(navController, calendarModel, eventModel, holidayModel)
     }
 }
 
@@ -66,7 +64,7 @@ fun CalendarView(navController: NavController, calendarModel: CalendarViewModel,
  * @param eventModel The ViewModel that holds the state of the events.
  */
 @Composable
-fun MonthView(navController: NavController, calendarModel: CalendarViewModel, eventModel: EventViewModel, database: AppDatabase, holidayModel: HolidayViewModel) {
+fun MonthView(navController: NavController, calendarModel: CalendarViewModel, eventModel: EventViewModel, holidayModel: HolidayViewModel) {
     val selectedDate = calendarModel.selectedDate.value
     Column(modifier = Modifier.fillMaxSize()) {
         CalendarHeader(selectedDate, calendarModel::onDateChange)
@@ -92,7 +90,7 @@ fun CalendarHeader(selectedDate: Date, onDateChange: (Calendar) -> Unit) {
         verticalAlignment = Alignment.CenterVertically
     ) {
         MonthChangeButton(calendar, onDateChange, Icons.Default.KeyboardArrowLeft, -1, R.string.previous_month)
-        monthYearHeader(calendar)
+        MonthYearHeader(calendar)
         MonthChangeButton(calendar, onDateChange, Icons.Default.KeyboardArrowRight, 1, R.string.next_month)
     }
 }
@@ -178,7 +176,8 @@ fun CalendarGrid(eventModel: EventViewModel, selectedDate: Date, onDateClick: (C
                     val isCurrentMonth = cellDate.get(Calendar.MONTH) == selectedDate.month
                     val isSelected = cellDate.time == selectedDate
                     // check if events exist for this day
-                    val dateFormat = SimpleDateFormat("MM-dd-yyyy")
+                    val dateFormat = SimpleDateFormat("MM-dd-yyyy", Locale.getDefault())
+
                     val currentTime = dateFormat.format(cellDate.time)
                     val eventBool = eventModel.events.any { event ->
                         event.date == currentTime

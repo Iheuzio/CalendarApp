@@ -37,7 +37,6 @@ import com.example.calendar.data.NavRoutes
 import com.example.calendar.presentation.viewmodels.CalendarViewModel
 import com.example.calendar.presentation.viewmodels.EventViewModel
 import com.example.calendar.presentation.getStringResource
-import com.example.calendar.presentation.viewmodels.DailyViewModel
 import androidx.compose.runtime.*
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -47,8 +46,6 @@ import com.example.calendar.presentation.viewmodels.HolidayViewModel
 @Composable
 fun DailyOverviewScreen(
     navController: NavController,
-    dailyViewModel: DailyViewModel,
-    viewModel: EventViewModel,
     selectedDate: Date,
     events: List<Event>,
     onEventSelected: (Event?) -> Unit,
@@ -192,7 +189,7 @@ fun EventItem(event: Event, onEventSelected: (Event?) -> Unit, onEditEvent: (Eve
 fun DailyEventsList(selectedDate: Date, events: List<Event>, onEventSelected: (Event?) -> Unit, onEditEvent: (Event) -> Unit) {
     val hoursOfDay = (0..23).toList()
     val timeFormatter = remember { SimpleDateFormat("HH:mm", Locale.getDefault()) }
-    val sortedEvents = events.sortedBy { timeFormatter.parse(it.startTime).time }
+    val sortedEvents = events.sortedBy { timeFormatter.parse(it.startTime)?.time }
 
     LazyColumn {
         items(hoursOfDay) { hour ->
@@ -200,7 +197,7 @@ fun DailyEventsList(selectedDate: Date, events: List<Event>, onEventSelected: (E
             val hourStartString = String.format(Locale.getDefault(), "%02d:00", hour)
             val hourEndString = String.format(Locale.getDefault(), "%02d:00", hour + 1)
 
-            // Check if this hour is within any evts
+            // Check if this hour is within any events
             val eventsThisHour = remember { mutableStateListOf<Event>() }
             LaunchedEffect(key1 = selectedDate) {
                 eventsThisHour.addAll(
@@ -256,14 +253,12 @@ fun DailyEventsList(selectedDate: Date, events: List<Event>, onEventSelected: (E
 
 
 @Composable
-fun DailyOverview(navController: NavController, calendarModel: CalendarViewModel, dailyViewModel: DailyViewModel, eventModel: EventViewModel, holidayModel: HolidayViewModel) {
+fun DailyOverview(navController: NavController, calendarModel: CalendarViewModel, eventModel: EventViewModel, holidayModel: HolidayViewModel) {
     val selectedDate = calendarModel.selectedDate.value
     val events = eventModel.events
 
     DailyOverviewScreen(
         navController = navController,
-        dailyViewModel = dailyViewModel,
-        viewModel = eventModel,
         selectedDate = selectedDate,
         events = events,
         onEventSelected = { event ->
@@ -312,10 +307,6 @@ fun HolidayDisplay(holidayModel: HolidayViewModel, selectedDate: Date) {
     }
 }
 
-fun getTime(dateStr: String): Date {
-    val format = SimpleDateFormat("HH:mm", Locale.getDefault())
-    return format.parse(dateStr)
-}
 //helper function to check if days are equal
 fun Date.isSameDayAs(otherDate: Date): Boolean {
     val calendar1 = Calendar.getInstance().apply { time = this@isSameDayAs }
