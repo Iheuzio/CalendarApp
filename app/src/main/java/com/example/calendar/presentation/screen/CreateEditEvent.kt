@@ -143,7 +143,7 @@ fun StartTimePicker(initialStartTime: String, onStartTimeChange: (String) -> Uni
     val startTimePicker = TimePickerDialog(
         LocalContext.current,
         { _, selectedHour: Int, selectedMinute: Int ->
-            startTime = "$selectedHour:$selectedMinute"
+            startTime ="$selectedHour:$selectedMinute"
             onStartTimeChange(startTime) // Update the callback with the new value
             onEndTimeChange(startTime) // Update end time as well so it's not less than start time
         }, startTimeValues[0].toInt(), startTimeValues[1].toInt(), false
@@ -256,6 +256,7 @@ fun SaveChangesButton(
     description: String, location: String, course: String, database: AppDatabase
 ) {
     val isSaveEnabled = (!(startTime == "12:00" && endTime == "12:00") && isValidEndTime(startTime, endTime))
+    var timeIsValid = true
 
     Button(
         onClick = {
@@ -282,26 +283,33 @@ fun SaveChangesButton(
                     database = database
                 )
             } else {
+                viewModel.checkEventIsNotSameTimeSlot(date, startTime, endTime, database)
+                timeIsValid = viewModel.isTimeValid
+
                 // convert newEvent to database.Event and insert into database
-                viewModel.addToList(
-                    item = Event(
-                        id = inputEvent.id,
-                        title = title,
-                        date = date,
-                        startTime = startTime,
-                        endTime = endTime,
-                        description = description,
-                        location = location,
-                        course = course
-                    ),
-                    database = database
-                )
+                if (timeIsValid) {
+                    viewModel.addToList(
+                        item = Event(
+                            id = inputEvent.id,
+                            title = title,
+                            date = date,
+                            startTime = startTime,
+                            endTime = endTime,
+                            description = description,
+                            location = location,
+                            course = course
+                        ),
+                        database = database
+                    )
+                }
             }
-            //Navigate back to where the user was when pressing the create/edit event button
-            navController.navigate(NavRoutes.CalendarView.route) {
-                popUpTo(navController.graph.findStartDestination().id) {
-                    saveState = true
-                    inclusive = true
+            if (timeIsValid) {
+                //Navigate back to where the user was when pressing the create/edit event button
+                navController.navigate(NavRoutes.CalendarView.route) {
+                    popUpTo(navController.graph.findStartDestination().id) {
+                        saveState = true
+                        inclusive = true
+                    }
                 }
             }
         },
