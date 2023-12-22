@@ -33,6 +33,7 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.example.calendar.R
 import com.example.calendar.data.NavRoutes
+import com.example.calendar.presentation.getStringResource
 import com.example.calendar.utils.LocationUtil
 import com.example.calendar.utils.OpenWeatherMapForecastResponse
 import com.example.calendar.utils.RetrofitInstance
@@ -112,11 +113,11 @@ fun WeatherDisplay(
             )
 
             Column(modifier = Modifier.padding(start = 8.dp)) {
-                Text(text = "Temperature: ${tempCelsius.toInt()}°C")
-                Text(text = "Condition: $condition")
-                Text(text = "Last updated: ${lastUpdated.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm"))}")
+                Text(text = LocalContext.current.getStringResource(R.string.temperature) + "${tempCelsius.toInt()}°C")
+                Text(text = LocalContext.current.getStringResource(R.string.condition) + "$condition")
+                Text(text = LocalContext.current.getStringResource(R.string.last_update) + "${lastUpdated.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm"))}")
             }
-        } ?: Text(text = "Fetching weather...")
+        } ?: Text(text = LocalContext.current.getStringResource(R.string.loading_weather))
     }
 }
 

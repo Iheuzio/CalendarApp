@@ -172,7 +172,7 @@ fun EventItem(event: Event, onEventSelected: (Event?) -> Unit, onEditEvent: (Eve
                 modifier = Modifier
                     .size(100.dp, 40.dp)
             ) {
-                Text("Details")
+                Text(R.string.details.toString())
             }
             Button(
                 onClick = {
@@ -181,7 +181,7 @@ fun EventItem(event: Event, onEventSelected: (Event?) -> Unit, onEditEvent: (Eve
                 modifier = Modifier
                     .size(100.dp, 40.dp)
             ) {
-                Text("Edit")
+                Text(R.string.edit.toString())
             }
         }
     }
@@ -303,7 +303,7 @@ fun HolidayDisplay(holidayModel: HolidayViewModel, selectedDate: Date) {
             Text(holiday.name, fontWeight = FontWeight.Bold)
             if (holiday.location.isNotEmpty() && holiday.location != "null") {
                 Row {
-                    Text("Celebrated in: ")
+                    Text(LocalContext.current.getStringResource(R.string.celebrated_in))
                     Text(holiday.location)
                 }
             }
@@ -311,18 +311,6 @@ fun HolidayDisplay(holidayModel: HolidayViewModel, selectedDate: Date) {
     }
 }
 
-//<<<<<<< HEAD
-//    Row(modifier = Modifier
-//        .fillMaxWidth()
-//        .padding(8.dp)
-//        .height(60.dp)) {
-//        Text(
-//            text = time,
-//            modifier = Modifier.width(80.dp)
-//        )
-//        Spacer(modifier = Modifier.weight(1f))
-//    }
-//}
 fun getTime(dateStr: String): Date {
     val format = SimpleDateFormat("HH:mm", Locale.getDefault())
     return format.parse(dateStr)
