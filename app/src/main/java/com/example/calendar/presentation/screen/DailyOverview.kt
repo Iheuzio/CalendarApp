@@ -39,6 +39,7 @@ import com.example.calendar.presentation.viewmodels.EventViewModel
 import com.example.calendar.presentation.getStringResource
 import com.example.calendar.presentation.viewmodels.DailyViewModel
 import androidx.compose.runtime.*
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import com.example.calendar.presentation.viewmodels.HolidayViewModel
 
@@ -172,7 +173,7 @@ fun EventItem(event: Event, onEventSelected: (Event?) -> Unit, onEditEvent: (Eve
                 modifier = Modifier
                     .size(100.dp, 40.dp)
             ) {
-                Text(R.string.details.toString())
+                Text(stringResource(R.string.details))
             }
             Button(
                 onClick = {
@@ -181,7 +182,7 @@ fun EventItem(event: Event, onEventSelected: (Event?) -> Unit, onEditEvent: (Eve
                 modifier = Modifier
                     .size(100.dp, 40.dp)
             ) {
-                Text(R.string.edit.toString())
+                Text(stringResource(R.string.edit))
             }
         }
     }
