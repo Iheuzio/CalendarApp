@@ -96,7 +96,7 @@ class EventViewModel(private val database: AppDatabase) : ViewModel() {
     fun checkEventIsNotSameTimeSlot(date: String, startTime: String, endTime: String, database: AppDatabase) {
         viewModelScope.launch {
             var isValid = true
-            val eventsOnDate = getEventsByDate("date", database)
+            val eventsOnDate = getEventsByDate(date, database)
             for (event in eventsOnDate) {
                 if (event.startTime == startTime || event.endTime == endTime ||
                     (convertTimeToInt(event.startTime) >= convertTimeToInt(startTime) && convertTimeToInt(event.startTime) < convertTimeToInt(endTime))) {

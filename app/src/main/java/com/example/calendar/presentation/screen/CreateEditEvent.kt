@@ -143,7 +143,7 @@ fun StartTimePicker(initialStartTime: String, onStartTimeChange: (String) -> Uni
     val startTimePicker = TimePickerDialog(
         LocalContext.current,
         { _, selectedHour: Int, selectedMinute: Int ->
-            startTime ="$selectedHour:$selectedMinute"
+            startTime = String.format("%02d:%02d", selectedHour, selectedMinute)
             onStartTimeChange(startTime) // Update the callback with the new value
             onEndTimeChange(startTime) // Update end time as well so it's not less than start time
         }, startTimeValues[0].toInt(), startTimeValues[1].toInt(), false
@@ -173,7 +173,7 @@ fun EndTimePicker(initialEndTime: String, startTime: String, onEndTimeChange: (S
     val endTimePicker = TimePickerDialog(
         LocalContext.current,
         { _, selectedHour: Int, selectedMinute: Int ->
-            val selectedEndTime = "$selectedHour:$selectedMinute"
+            val selectedEndTime = String.format("%02d:%02d", selectedHour, selectedMinute)
             if (isValidEndTime(startTime, selectedEndTime)) {
                 endTime = selectedEndTime
                 onEndTimeChange(endTime) // Update the callback with the new value
