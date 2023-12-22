@@ -11,7 +11,7 @@ import com.example.calendar.presentation.viewmodels.EventViewModel
 import com.example.calendar.presentation.screen.CalendarHeader
 import com.example.calendar.presentation.screen.DayNameText
 import com.example.calendar.presentation.screen.DayOfWeekHeader
-import com.example.calendar.presentation.screen.monthYearHeader
+import com.example.calendar.presentation.screen.MonthYearHeader
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import android.content.Context
 import androidx.test.core.app.ApplicationProvider
@@ -64,7 +64,7 @@ class CalendarHeaderTest {
         }
 
         composeTestRule.setContent {
-            monthYearHeader(calendar)
+            MonthYearHeader(calendar)
         }
 
         composeTestRule.onNodeWithText("January 2022").assertExists()
