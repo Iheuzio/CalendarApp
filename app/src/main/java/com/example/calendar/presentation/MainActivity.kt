@@ -1,8 +1,6 @@
 package com.example.calendar.presentation
 
-import android.Manifest
 import android.content.Context
-import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Bundle
 import androidx.activity.ComponentActivity
@@ -13,8 +11,6 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
-import androidx.core.app.ActivityCompat
-import androidx.core.content.ContextCompat
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -30,7 +26,6 @@ import com.example.calendar.presentation.screen.FiveDayForecastScreen
 import com.example.calendar.presentation.screen.MonthView
 import com.example.calendar.presentation.screen.ViewEventScreen
 import com.example.calendar.presentation.viewmodels.CalendarViewModel
-import com.example.calendar.presentation.viewmodels.DailyViewModel
 import com.example.calendar.presentation.viewmodels.EventViewModel
 import com.example.calendar.ui.theme.CalendarTheme
 import kotlinx.coroutines.Dispatchers
@@ -51,7 +46,6 @@ class MainActivity : ComponentActivity() {
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        requestLocationPermission()
         setContent {
             CalendarTheme {
                 Surface(
@@ -63,8 +57,7 @@ class MainActivity : ComponentActivity() {
                     val holidayModel = HolidayViewModel(database = database, context = this)
 
                     CalendarApp(
-                        eventviewModel = EventViewModel(database = database),
-                        dayviewModel = DailyViewModel(),
+                        eventViewModel = EventViewModel(database = database),
                         navController = rememberNavController(),
                         calendarModel = CalendarViewModel(database),
                         database = database,
@@ -77,17 +70,17 @@ class MainActivity : ComponentActivity() {
 
     @RequiresApi(Build.VERSION_CODES.O)
     @Composable
-    fun CalendarApp(eventviewModel: EventViewModel, dayviewModel: DailyViewModel, navController: NavHostController = rememberNavController(),calendarModel: CalendarViewModel, database: AppDatabase, holidayModel: HolidayViewModel) {
+    fun CalendarApp(eventViewModel: EventViewModel, navController: NavHostController = rememberNavController(),calendarModel: CalendarViewModel, database: AppDatabase, holidayModel: HolidayViewModel) {
 
         NavHost(navController = navController, startDestination = NavRoutes.CalendarView.route) {
             composable(NavRoutes.CalendarView.route) {
-                CalendarView(navController = navController, calendarModel = calendarModel, eventviewModel, dayviewModel, database, holidayModel)
+                CalendarView(navController = navController, calendarModel = calendarModel, eventViewModel, holidayModel)
             }
             composable(NavRoutes.CreateEvent.route) {
                 var event by remember { mutableStateOf<Event?>(null) }
                 LaunchedEffect(key1 = Unit) {
                     event = withContext(Dispatchers.IO) {
-                        eventviewModel.selectedEvent?.let {
+                        eventViewModel.selectedEvent?.let {
                             database.eventDao().getById(it.id)
                         }
                     }
@@ -109,24 +102,24 @@ class MainActivity : ComponentActivity() {
                 event?.let {
                     val format = SimpleDateFormat("MM-dd-yyyy", Locale.getDefault())
                     val date = format.format(calendarModel.selectedDate.value)
-                    CreateEditEventScreen(eventviewModel, navController = navController, inputDate = date, inputEvent = event!!, database)
+                    CreateEditEventScreen(eventViewModel, navController = navController, inputDate = date, inputEvent = event!!, database)
                 }
             }
             composable(NavRoutes.EditEvent.route) {
-                eventviewModel.selectedEvent?.let { event ->
-                    CreateEditEventScreen(eventviewModel, navController = navController, inputDate = eventviewModel.selectedEvent!!.date,
+                eventViewModel.selectedEvent?.let { event ->
+                    CreateEditEventScreen(eventViewModel, navController = navController, inputDate = eventViewModel.selectedEvent!!.date,
                         inputEvent = event, database
                     )
                 }
             }
             composable(NavRoutes.EventView.route) {
-                ViewEventScreen(eventviewModel, navController = navController, database)
+                ViewEventScreen(eventViewModel, navController = navController, database)
             }
             composable(NavRoutes.DayView.route + "/{date}") {
-                DailyOverview(navController, calendarModel,dayviewModel, eventviewModel, holidayModel)
+                DailyOverview(navController, calendarModel, eventViewModel, holidayModel)
             }
             composable(NavRoutes.MonthView.route) {
-                MonthView(navController = navController, calendarModel = calendarModel, eventviewModel, database, holidayModel)
+                MonthView(navController = navController, calendarModel = calendarModel, eventViewModel, holidayModel)
             }
 
             composable("fiveDayForecast/{latitude}/{longitude}", arguments = listOf(
@@ -138,31 +131,6 @@ class MainActivity : ComponentActivity() {
                 FiveDayForecastScreen(navController, latitude.toDouble(), longitude.toDouble())
             }
 
-        }
-    }
-    private val LOCATION_PERMISSION_REQUEST_CODE = 1
-    private fun requestLocationPermission() {
-        if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
-            != PackageManager.PERMISSION_GRANTED
-        ) {
-            ActivityCompat.requestPermissions(
-                this, arrayOf<String>(Manifest.permission.ACCESS_FINE_LOCATION),
-                LOCATION_PERMISSION_REQUEST_CODE
-            )
-        }
-    }
-    @Suppress("DEPRECATION")
-    override fun onRequestPermissionsResult(
-        requestCode: Int,
-        permissions: Array<String?>,
-        grantResults: IntArray
-    ) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
-        if (requestCode == LOCATION_PERMISSION_REQUEST_CODE) {
-            if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-
-            } else {
-            }
         }
     }
 

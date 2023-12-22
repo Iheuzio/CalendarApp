@@ -10,11 +10,10 @@ import com.example.calendar.data.database.Event
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import java.util.Date
-
 class EventViewModel(private val database: AppDatabase) : ViewModel() {
     var selectedEvent by mutableStateOf<Event?>(null)
     var events by mutableStateOf(listOf<Event>())
+    var isTimeValid by mutableStateOf(true)
 
     init {
         fetchEvents()
@@ -82,46 +81,32 @@ class EventViewModel(private val database: AppDatabase) : ViewModel() {
         }
     }
 
-    fun getEventById(id: Int): Event? {
-        return events.find { it.id == id }
-    }
-
-    fun getEventsByDate(date: String, database: AppDatabase): List<Event> {
-        var filteredEvents: List<Event> = listOf()
-        viewModelScope.launch {
-            withContext(Dispatchers.IO) {
-                filteredEvents = database.eventDao().findEventsByDate(date)
-            }
-        }
-        return filteredEvents
-    }
-
-    fun checkEventsExist(time: Date): Any {
-        val dateFormat = java.text.SimpleDateFormat("MM-dd-yyyy")
-        val date = dateFormat.format(time)
-        val events = getEventsByDate(date, database)
-        return events.isNotEmpty()
-    }
-
-    /*
-     fun checkEventsExist(time: Date): Any {
-        val dateFormat = java.text.SimpleDateFormat("MM-dd-yyyy")
-        val date = dateFormat.format(time)
-        val events = getEventsByDate(date, database)
-        var events: List<Event> = listOf()
-        viewModelScope.launch {
-            events = getEventsByDate(date, database)
-        }
-        return events.isNotEmpty()
-    }
-    */
-
-    /*
     private suspend fun getEventsByDate(date: String, database: AppDatabase): List<Event> {
         return withContext(Dispatchers.IO) {
             database.eventDao().findEventsByDate(date)
         }
-        return filteredEvents
     }
-    */
+
+    fun checkEventIsNotSameTimeSlot(date: String, startTime: String, endTime: String, database: AppDatabase) {
+        viewModelScope.launch {
+            var isValid = true
+            val eventsOnDate = getEventsByDate(date, database)
+            for (event in eventsOnDate) {
+                if (event.startTime == startTime || event.endTime == endTime ||
+                    (convertTimeToInt(event.startTime) >= convertTimeToInt(startTime) && convertTimeToInt(event.startTime) < convertTimeToInt(endTime))) {
+                    isValid = false
+                }
+            }
+            isTimeValid = isValid
+        }
+    }
+
+    private fun convertTimeToInt(timeString: String): Int {
+        // Split the time string into hours and minutes
+        val (hours, minutes) = timeString.split(":").map { it.toInt() }
+
+        // Convert hours and minutes to a single integer (HH:MM format)
+        return hours * 100 + minutes
+    }
+
 }

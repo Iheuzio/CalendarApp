@@ -9,7 +9,6 @@ import androidx.test.core.app.ApplicationProvider
 import androidx.test.platform.app.InstrumentationRegistry
 import com.example.calendar.data.database.AppDatabase
 import com.example.calendar.presentation.screen.CalendarView
-import com.example.calendar.presentation.viewmodels.DailyViewModel
 import com.example.calendar.presentation.viewmodels.CalendarViewModel
 import com.example.calendar.presentation.viewmodels.EventViewModel
 import com.example.calendar.presentation.viewmodels.HolidayViewModel
@@ -42,7 +41,7 @@ class CalendarViewTest {
         eventViewModel = EventViewModel(db)
         val holidayModel = HolidayViewModel(db, context)
         composeTestRule.setContent {
-            CalendarView(navController, calendarModel, eventViewModel, dayModel = DailyViewModel(), db, holidayModel)
+            CalendarView(navController, calendarModel, eventViewModel, holidayModel)
         }
 
     }

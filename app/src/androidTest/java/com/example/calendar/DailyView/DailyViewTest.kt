@@ -50,7 +50,7 @@ class DailyOverviewTest {
         composeTestRule.runOnUiThread {
             dailyViewModel.eventsForSelectedDate.value = createMockEvents()
             composeTestRule.setContent {
-                DailyOverview(navController, calendarViewModel, dailyViewModel, eventViewModel, holidayModel)
+                DailyOverview(navController, calendarViewModel,eventViewModel, holidayModel)
             }
         }
     }
